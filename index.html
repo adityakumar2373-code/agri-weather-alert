@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kisan Weather Alert</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .bg-farm { background: linear-gradient(to bottom right, #f0fdf4, #dcfce7); }
+        /* Custom scrollbar for the search dropdown */
+        #search-results::-webkit-scrollbar { width: 6px; }
+        #search-results::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-farm min-h-screen flex flex-col items-center py-8 px-4">
+
+    <div class="max-w-md w-full bg-white rounded-2xl shadow-xl overflow-visible border border-green-100">
+        
+        <div class="bg-green-600 text-white p-6 rounded-b-3xl shadow-md relative z-10">
+            <div class="flex justify-between items-center mb-4">
+                <h1 id="app-title" class="text-2xl font-bold"><i class="fa-solid fa-seedling mr-2"></i>Agri Weather</h1>
+                <select id="language-selector" class="bg-green-700 text-white text-sm rounded-lg p-1 outline-none border border-green-500 cursor-pointer">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                    <option value="or">ଓଡ଼ିଆ (Odia)</option>
+                </select>
+            </div>
+            
+            <p id="select-label" class="text-green-100 text-sm mb-2">Search your village or city:</p>
+            <div class="relative w-full text-gray-800">
+                <input type="text" id="location-search" class="w-full bg-white rounded-lg p-3 outline-none font-semibold shadow-inner border-0 focus:ring-2 focus:ring-green-400" placeholder="e.g., Pipli, Balangir, Pune..." autocomplete="off">
+                
+                <div id="search-results" class="absolute w-full bg-white mt-2 rounded-lg shadow-2xl hidden max-h-60 overflow-y-auto border border-gray-200 z-50">
+                    </div>
+            </div>
+        </div>
+
+        <div class="p-6 relative z-0">
+            <div id="loader" class="text-center text-green-600 font-bold hidden py-4">
+                <i class="fa-solid fa-spinner fa-spin text-3xl"></i>
+                <p class="text-sm mt-2 text-gray-500">Fetching local data...</p>
+            </div>
+
+            <div id="weather-content" class="text-center">
+                <h2 id="current-weather-title" class="text-gray-500 text-sm uppercase tracking-wide font-bold mb-2">Current Conditions</h2>
+                <div class="flex justify-center items-center gap-4 mb-4">
+                    <i id="weather-icon" class="fa-solid fa-cloud-sun text-5xl text-blue-400"></i>
+                    <h1 id="temperature" class="text-5xl font-extrabold text-gray-800">--°C</h1>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 mt-6">
+                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <i class="fa-solid fa-droplet text-blue-500 mb-1"></i>
+                        <p id="rain-label" class="text-xs text-gray-500">Rainfall</p>
+                        <p id="rain-val" class="text-lg font-bold text-gray-700">-- mm</p>
+                    </div>
+                    <div class="bg-teal-50 p-4 rounded-xl border border-teal-100">
+                        <i class="fa-solid fa-wind text-teal-500 mb-1"></i>
+                        <p id="wind-label" class="text-xs text-gray-500">Wind Speed</p>
+                        <p id="wind-val" class="text-lg font-bold text-gray-700">-- km/h</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="alert-box" class="mt-6 p-4 rounded-xl hidden border">
+                <div class="flex items-start gap-3">
+                    <i id="alert-icon" class="fa-solid fa-triangle-exclamation text-2xl mt-1"></i>
+                    <div>
+                        <h3 id="alert-title" class="font-bold">Agri Alert</h3>
+                        <p id="alert-message" class="text-sm mt-1"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-6 border-t border-gray-100">
+                <h3 id="sms-heading" class="text-sm font-bold text-gray-700 mb-2">Get Free SMS Alerts</h3>
+                <div class="flex gap-2">
+                    <div class="relative w-full">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500 font-medium">
+                            +91
+                        </div>
+                        <input type="tel" id="farmer-phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-green-500 focus:border-green-500 block w-full pl-10 p-2.5 outline-none" placeholder="10-digit mobile number" pattern="[0-9]{10}" autocomplete="off">
+                    </div>
+                    <button id="send-sms-btn" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-4 py-2.5 transition-colors shadow-sm">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+                <p id="sms-help" class="text-xs text-gray-400 mt-2">We will send today's advisory to this number.</p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="sms-toast" class="fixed bottom-5 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-800 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3 z-50">
+        <i class="fa-solid fa-mobile-screen-button text-green-400 text-xl"></i>
+        <div>
+            <p class="font-bold text-sm">SMS Sent Successfully!</p>
+            <p id="toast-number" class="text-xs text-gray-300"></p>
+        </div>
+    </div>
+
+    <script src="js/translations.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
