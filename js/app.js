@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         try {
             // Send request to your local Node.js server
-            const response = await fetch('http://localhost:3000/send-sms', {
+            const response = await fetch('https://agri-weather-alert.onrender.com/send-sms', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ phone: phone, message: finalMessage })
