@@ -2,10 +2,13 @@ let currentWeatherData = null;
 let currentCoords = null; 
 let currentVillageName = ""; 
 let weatherChart = null; 
+let map = null;
+let radarLayer = null;
 
 // DOM Elements
 const searchInput = document.getElementById('location-search');
 const searchResults = document.getElementById('search-results');
+const cropSelector = document.getElementById('crop-selector'); // NEW
 const tempDisplay = document.getElementById('temperature');
 const rainDisplay = document.getElementById('rain-val');
 const windDisplay = document.getElementById('wind-val');
@@ -19,12 +22,17 @@ const readAloudBtn = document.getElementById('read-aloud-btn');
 
 document.addEventListener('DOMContentLoaded', () => {
     const langSelector = document.getElementById('language-selector');
-    langSelector.addEventListener('change', (e) => updateLanguage(e.target.value));
+    langSelector.addEventListener('change', (e) => {
+        updateLanguage(e.target.value);
+        triggerAIIfReady(); // Re-fetch AI if language changes
+    });
 
-    // --- THE WELCOME SCREEN (EMPTY STATE) ---
+    cropSelector.addEventListener('change', triggerAIIfReady);
+
     document.getElementById('weather-content').classList.add('hidden');
-    document.getElementById('forecastChart').parentElement.parentElement.classList.add('hidden'); 
-    document.getElementById('sms-heading').parentElement.classList.add('hidden'); 
+    document.getElementById('forecast-section').classList.add('hidden'); 
+    document.getElementById('radar-section').classList.add('hidden'); 
+    document.getElementById('sms-section').classList.add('hidden'); 
     
     loader.classList.remove('hidden');
     loader.innerHTML = `
@@ -38,11 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('live-time').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 });
 
-// --- GPS AUTO-LOCATION ---
 gpsBtn.addEventListener('click', () => {
     if (navigator.geolocation) {
         searchInput.value = "Detecting satellite location...";
-        
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const lat = position.coords.latitude;
@@ -62,7 +68,6 @@ gpsBtn.addEventListener('click', () => {
     }
 });
 
-// --- 9-LANGUAGE SMART TEXT-TO-SPEECH ---
 readAloudBtn.addEventListener('click', () => {
     const alertMsg = document.getElementById('alert-message').innerText;
     const currentLang = document.getElementById('language-selector').value; 
@@ -72,23 +77,14 @@ readAloudBtn.addEventListener('click', () => {
     window.speechSynthesis.cancel(); 
     const speech = new SpeechSynthesisUtterance(alertMsg);
     
-    // Voice Map for all 9 languages
     const voiceMap = {
-        'en': 'en-IN',
-        'hi': 'hi-IN',
-        'or': 'or-IN',
-        'bn': 'bn-IN', 
-        'mr': 'mr-IN', 
-        'te': 'te-IN', 
-        'ta': 'ta-IN',
-        'ml': 'ml-IN',
-        'bho': 'hi-IN' // Fallback for Bhojpuri
+        'en': 'en-IN', 'hi': 'hi-IN', 'or': 'or-IN',
+        'bn': 'bn-IN', 'mr': 'mr-IN', 'te': 'te-IN', 
+        'ta': 'ta-IN', 'ml': 'ml-IN', 'bho': 'hi-IN' 
     };
 
     const targetLangCode = voiceMap[currentLang] || 'en-IN';
     const voices = window.speechSynthesis.getVoices();
-    
-    // Check if the device has the required language voice pack installed
     const hasVoice = voices.some(voice => voice.lang.includes(targetLangCode.split('-')[0]));
 
     if (!hasVoice && currentLang !== 'en' && currentLang !== 'hi') {
@@ -102,7 +98,6 @@ readAloudBtn.addEventListener('click', () => {
     window.speechSynthesis.speak(speech);
 });
 
-// --- LIVE SEARCH (GEOCODING) ---
 let searchTimeout;
 searchInput.addEventListener('input', (e) => {
     clearTimeout(searchTimeout); 
@@ -160,7 +155,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// --- REAL BACKEND CONNECTION FOR SMS ---
 const sendBtn = document.getElementById('send-sms-btn');
 const phoneInput = document.getElementById('farmer-phone');
 const toast = document.getElementById('sms-toast');
@@ -168,7 +162,6 @@ const toastNumber = document.getElementById('toast-number');
 
 sendBtn.addEventListener('click', async () => {
     const phone = phoneInput.value.trim();
-    
     if(phone.length !== 10 || isNaN(phone)) {
         alert("Please enter a valid 10-digit mobile number.");
         return;
@@ -193,7 +186,6 @@ sendBtn.addEventListener('click', async () => {
             phoneInput.value = ''; 
             toastNumber.innerText = `Sent to +91 ${phone}`;
             toast.classList.remove('translate-y-24', 'opacity-0');
-            
             setTimeout(() => { 
                 toast.classList.add('translate-y-24', 'opacity-0'); 
                 sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
@@ -209,14 +201,12 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// --- WEATHER FETCHING ---
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m&daily=temperature_2m_max&timezone=auto`;
 
-    // THE PREMIUM ANIMATED SPINNER
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
             <div class="relative flex justify-center items-center mb-5">
@@ -231,8 +221,9 @@ async function fetchWeather(coords) {
     
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('alert-box').classList.add('hidden');
-    document.getElementById('forecastChart').parentElement.parentElement.classList.add('hidden');
-    document.getElementById('sms-heading').parentElement.classList.add('hidden');
+    document.getElementById('forecast-section').classList.add('hidden');
+    document.getElementById('radar-section').classList.add('hidden');
+    document.getElementById('sms-section').classList.add('hidden');
 
     try {
         const response = await fetch(url);
@@ -240,8 +231,9 @@ async function fetchWeather(coords) {
         
         currentWeatherData = data.current;
         updateUI(currentWeatherData);
-        
         drawChart(data.daily);
+        updateRadarMap(lat, lon); 
+        triggerAIIfReady(); // Check if we should call Gemini AI!
         
     } catch (error) {
         alert("Unable to fetch weather. Check your internet.");
@@ -249,62 +241,128 @@ async function fetchWeather(coords) {
     }
 }
 
-// --- 7-DAY FORECAST CHART ---
+// --- NEW: GEMINI AI CONNECTION ---
+function triggerAIIfReady() {
+    if (currentWeatherData && cropSelector.value) {
+        fetchAIAdvisory(
+            currentWeatherData.temperature_2m, 
+            currentWeatherData.rain, 
+            currentWeatherData.wind_speed_10m
+        );
+    }
+}
+
+async function fetchAIAdvisory(temp, rain, wind) {
+    const crop = cropSelector.value;
+    const langSelect = document.getElementById('language-selector');
+    const langName = langSelect.options[langSelect.selectedIndex].text; // e.g. "हिंदी (Hindi)"
+
+    const alertTitle = document.getElementById('alert-title');
+    const alertMsg = document.getElementById('alert-message');
+    const alertIcon = document.getElementById('alert-icon');
+    const audioIcon = document.getElementById('audio-icon');
+
+    // Make the UI look like "AI Thinking" Mode
+    alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 bg-purple-50 border border-purple-200 text-purple-900";
+    alertIcon.className = "fa-solid fa-sparkles text-lg text-purple-500 animate-pulse";
+    audioIcon.className = "fa-solid fa-volume-high text-purple-500";
+    alertTitle.innerText = "AI Agronomist Analyzing...";
+    alertMsg.innerText = `Generating custom advisory for ${crop}...`;
+    alertBox.classList.remove('hidden');
+
+    try {
+        const response = await fetch('https://agri-weather-alert.onrender.com/generate-advisory', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                location: currentVillageName,
+                crop: crop,
+                temp: temp,
+                rain: rain,
+                wind: wind,
+                language: langName
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alertIcon.classList.remove('animate-pulse');
+            alertTitle.innerHTML = `<i class="fa-solid fa-robot mr-1 opacity-70"></i> Smart Advisory: ${crop}`;
+            alertMsg.innerText = data.advisory;
+        } else {
+            alertMsg.innerText = "AI analysis failed. Please try again.";
+        }
+    } catch (error) {
+        alertMsg.innerText = "Could not connect to Gemini AI backend.";
+    }
+}
+
+async function updateRadarMap(lat, lon) {
+    document.getElementById('radar-section').classList.remove('hidden');
+    if (!map) {
+        map = L.map('weatherMap', { zoomControl: false }).setView([lat, lon], 7);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap, © CartoDB'
+        }).addTo(map);
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+    } else {
+        map.setView([lat, lon], 7);
+    }
+
+    setTimeout(() => { map.invalidateSize(); }, 200);
+
+    try {
+        const rvResponse = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+        const rvData = await rvResponse.json();
+        const pastFrames = rvData.radar.past;
+        if (pastFrames.length > 0) {
+            const latestFrame = pastFrames[pastFrames.length - 1]; 
+            if (radarLayer) map.removeLayer(radarLayer);
+            radarLayer = L.tileLayer(`${rvData.host}${latestFrame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
+                opacity: 0.65, transparent: true, zIndex: 10
+            }).addTo(map);
+        }
+    } catch (error) {
+        console.error("Failed to load radar data:", error);
+    }
+}
+
 function drawChart(dailyData) {
     const ctx = document.getElementById('forecastChart').getContext('2d');
-    
     const dayLabels = dailyData.time.map(dateString => {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { weekday: 'short' });
     });
 
-    if (weatherChart) {
-        weatherChart.destroy();
-    }
+    if (weatherChart) weatherChart.destroy();
 
     weatherChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: dayLabels,
             datasets: [{
-                label: 'Max Temp (°C)',
-                data: dailyData.temperature_2m_max,
-                borderColor: '#10b981', 
-                backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 3,
-                pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#10b981',
-                pointBorderWidth: 2,
-                pointRadius: 4,
-                fill: true,
-                tension: 0.4 
+                label: 'Max Temp (°C)', data: dailyData.temperature_2m_max,
+                borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                borderWidth: 3, pointBackgroundColor: '#ffffff',
+                pointBorderColor: '#10b981', pointBorderWidth: 2,
+                pointRadius: 4, fill: true, tension: 0.4 
             }]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) { return context.raw + '°C'; }
-                    }
-                }
-            },
-            scales: {
-                x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif" } } },
-                y: { display: false } 
-            }
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw + '°C'; } } } },
+            scales: { x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif" } } }, y: { display: false } }
         }
     });
 }
 
-// --- UPDATE UI & SMART ALERTS ---
 function updateUI(weather) {
     loader.classList.add('hidden');
     document.getElementById('weather-content').classList.remove('hidden');
-    document.getElementById('forecastChart').parentElement.parentElement.classList.remove('hidden');
-    document.getElementById('sms-heading').parentElement.classList.remove('hidden');
+    document.getElementById('forecast-section').classList.remove('hidden');
+    document.getElementById('sms-section').classList.remove('hidden');
     
     document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
@@ -326,33 +384,35 @@ function updateLanguage(langCode) {
     const t = translations[langCode];
 
     document.getElementById('app-title').innerHTML = `<i class="fa-solid fa-leaf text-emerald-500 mr-2"></i>${t.appTitle || "AgriAlert"}`;
-    document.getElementById('select-label').innerText = t.selectLabel || "Location"; 
     document.getElementById('current-weather-title').innerText = t.currentConditions || "Live Conditions";
     document.getElementById('rain-label').innerText = t.rainLabel;
     document.getElementById('wind-label').innerText = t.windLabel;
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
-    if (currentWeatherData) {
+    // Only do standard translations if the user HAS NOT selected a crop.
+    // If they have a crop selected, the AI function (triggerAIIfReady) takes over the alert box!
+    if (currentWeatherData && !cropSelector.value) {
         const alertBox = document.getElementById('alert-box');
         const alertTitle = document.getElementById('alert-title');
         const alertMsg = document.getElementById('alert-message');
         const alertIcon = document.getElementById('alert-icon');
+        const audioIcon = document.getElementById('audio-icon');
         
         alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-sm transition-all duration-300"; 
+        audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
+        alertBox.classList.remove('hidden');
 
         if (currentWeatherData.rain > 2) {
             alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
             alertTitle.innerText = t.alertRainTitle;
             alertMsg.innerText = t.alertRainMsg;
-            
         } else if (currentWeatherData.wind_speed_10m > 20) { 
             alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
             alertTitle.innerText = t.alertWindTitle;
             alertMsg.innerText = t.alertWindMsg;
-            
         } else {
             alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
             alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
@@ -362,17 +422,14 @@ function updateLanguage(langCode) {
     }
 }
 
-// --- 🕒 LIVE CLOCK FUNCTION ---
 function updateLiveTime() {
     const timeDisplay = document.getElementById('live-time');
     if (!timeDisplay) return;
-
     const now = new Date();
     const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
     const dateString = now.toLocaleDateString('en-US', dateOptions);
     const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
     const timeString = now.toLocaleTimeString('en-US', timeOptions);
-
     timeDisplay.innerHTML = `<i class="fa-regular fa-clock mr-1 text-emerald-400"></i> ${dateString} • ${timeString}`;
 }
 
