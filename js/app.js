@@ -170,7 +170,8 @@ sendBtn.addEventListener('click', async () => {
     sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
     
     try {
-        const response = await fetch('https://agri-weather-alert.onrender.com/send-sms', {
+        // VERCEL URL UPDATED HERE
+        const response = await fetch('https://weather-backend-mocha.vercel.app/send-sms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ phone: phone, message: finalMessage })
@@ -264,7 +265,8 @@ async function fetchAIAdvisory(temp, rain, wind) {
     alertBox.classList.remove('hidden');
 
     try {
-        const response = await fetch('https://agri-weather-alert.onrender.com/generate-advisory', {
+        // VERCEL URL UPDATED HERE
+        const response = await fetch('https://weather-backend-mocha.vercel.app/generate-advisory', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -460,7 +462,8 @@ async function analyzeCropImage(base64Data) {
     const langName = langSelect.options[langSelect.selectedIndex].text;
 
     try {
-        const response = await fetch('https://agri-weather-alert.onrender.com/analyze-crop', {
+        // VERCEL URL UPDATED HERE
+        const response = await fetch('https://weather-backend-mocha.vercel.app/analyze-crop', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ imageBase64: base64Data, language: langName }) 
