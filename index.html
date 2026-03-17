@@ -9,9 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="https://img.icons8.com/parakeet-line/48/emerald-500/leaf.png">
@@ -34,8 +31,6 @@
         #search-results::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 10px; }
         input[type=tel]::-webkit-inner-spin-button, 
         input[type=tel]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        .leaflet-pane { z-index: 10 !important; }
-        .leaflet-top, .leaflet-bottom { z-index: 10 !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center py-6 px-4 sm:py-10">
@@ -152,16 +147,6 @@
                 </div>
                 <div class="relative w-full h-[140px] bg-white rounded-2xl p-2 border border-gray-50 shadow-[0_4px_15px_rgb(0,0,0,0.02)]">
                     <canvas id="forecastChart"></canvas>
-                </div>
-            </div>
-
-            <div class="mt-8 pt-6 border-t border-gray-100/60 hidden" id="radar-section">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold text-gray-800">Live Precipitation Radar</h3>
-                    <i class="fa-solid fa-satellite-dish text-blue-500"></i>
-                </div>
-                <div class="relative w-full h-[180px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden z-0">
-                    <div id="weatherMap" class="w-full h-full z-0"></div>
                 </div>
             </div>
 

@@ -2,8 +2,6 @@ let currentWeatherData = null;
 let currentCoords = null; 
 let currentVillageName = ""; 
 let weatherChart = null; 
-let map = null;
-let radarLayer = null;
 
 // DOM Elements
 const searchInput = document.getElementById('location-search');
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden'); 
-    document.getElementById('radar-section').classList.add('hidden'); 
     document.getElementById('sms-section').classList.add('hidden'); 
     
     loader.classList.remove('hidden');
@@ -222,7 +219,6 @@ async function fetchWeather(coords) {
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('alert-box').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden');
-    document.getElementById('radar-section').classList.add('hidden');
     document.getElementById('sms-section').classList.add('hidden');
 
     try {
@@ -232,7 +228,6 @@ async function fetchWeather(coords) {
         currentWeatherData = data.current;
         updateUI(currentWeatherData);
         drawChart(data.daily);
-        updateRadarMap(lat, lon); 
         triggerAIIfReady(); 
         
     } catch (error) {
@@ -293,37 +288,6 @@ async function fetchAIAdvisory(temp, rain, wind) {
         }
     } catch (error) {
         alertMsg.innerText = "Could not connect to Gemini AI backend.";
-    }
-}
-
-async function updateRadarMap(lat, lon) {
-    document.getElementById('radar-section').classList.remove('hidden');
-    if (!map) {
-        map = L.map('weatherMap', { zoomControl: false }).setView([lat, lon], 7);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap, © CartoDB'
-        }).addTo(map);
-        L.control.zoom({ position: 'bottomright' }).addTo(map);
-    } else {
-        map.setView([lat, lon], 7);
-    }
-
-    setTimeout(() => { map.invalidateSize(); }, 200);
-
-    try {
-        const rvResponse = await fetch('https://api.rainviewer.com/public/weather-maps.json');
-        const rvData = await rvResponse.json();
-        const pastFrames = rvData.radar.past;
-        if (pastFrames.length > 0) {
-            const latestFrame = pastFrames[pastFrames.length - 1]; 
-            if (radarLayer) map.removeLayer(radarLayer);
-            radarLayer = L.tileLayer(`${rvData.host}${latestFrame.path}/256/{z}/{x}/{y}/2/1_1.png`, {
-                opacity: 0.65, transparent: true, zIndex: 10
-            }).addTo(map);
-        }
-    } catch (error) {
-        console.error("Failed to load radar data:", error);
     }
 }
 
@@ -433,7 +397,7 @@ setInterval(updateLiveTime, 1000);
 updateLiveTime();
 
 // ==========================================
-// NEW: PWA SERVICE WORKER REGISTRATION
+// PWA SERVICE WORKER REGISTRATION
 // ==========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -444,7 +408,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// NEW: AI PLANT DOCTOR LOGIC
+// AI PLANT DOCTOR LOGIC
 // ==========================================
 const cameraInput = document.getElementById('camera-input');
 const docResult = document.getElementById('doctor-result');
@@ -453,27 +417,23 @@ const docTitle = document.getElementById('doc-title');
 const docDiagnosis = document.getElementById('doc-diagnosis');
 const docIcon = document.getElementById('doc-icon');
 
-// Listen for when the user takes a photo or uploads a file
 if(cameraInput) {
     cameraInput.addEventListener('change', function(event) {
         const file = event.target.files[0];
         if (!file) return;
 
-        // Show "Loading" UI
         docResult.classList.remove('hidden');
         docTitle.innerText = "AI Pathologist Analyzing...";
         docDiagnosis.innerText = "Scanning leaf structure and searching for pathogens...";
         docIcon.className = "fa-solid fa-microscope text-emerald-500 animate-pulse";
-        imagePreview.classList.add('hidden'); // Hide old preview while loading new one
+        imagePreview.classList.add('hidden'); 
         
-        // Convert image to Base64 to send to backend
         const reader = new FileReader();
         reader.onload = function(e) {
             const base64Image = e.target.result;
             imagePreview.src = base64Image;
-            imagePreview.classList.remove('hidden'); // Show the newly uploaded photo
+            imagePreview.classList.remove('hidden'); 
             
-            // Send to our backend AI server
             analyzeCropImage(base64Image);
         };
         reader.readAsDataURL(file);
@@ -488,14 +448,12 @@ async function analyzeCropImage(base64Data) {
         const response = await fetch('https://agri-weather-alert.onrender.com/analyze-crop', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // We must send both the image and the user's selected language
             body: JSON.stringify({ imageBase64: base64Data, language: langName }) 
         });
 
         const data = await response.json();
 
         if (data.success) {
-            // Success UI
             docIcon.className = "fa-solid fa-check-circle text-emerald-500";
             docTitle.innerText = "Diagnosis Complete";
             docDiagnosis.innerText = data.diagnosis;
@@ -503,7 +461,6 @@ async function analyzeCropImage(base64Data) {
             throw new Error(data.error || "Server failed to process image.");
         }
     } catch (error) {
-        // Error UI
         console.error(error);
         docIcon.className = "fa-solid fa-triangle-exclamation text-red-500";
         docTitle.innerText = "Analysis Failed";
