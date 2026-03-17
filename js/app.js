@@ -424,17 +424,32 @@ if(cameraInput) {
 
         docResult.classList.remove('hidden');
         docTitle.innerText = "AI Pathologist Analyzing...";
-        docDiagnosis.innerText = "Scanning leaf structure and searching for pathogens...";
+        docDiagnosis.innerText = "Processing image structure and scanning for pathogens...";
         docIcon.className = "fa-solid fa-microscope text-emerald-500 animate-pulse";
         imagePreview.classList.add('hidden'); 
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            const base64Image = e.target.result;
-            imagePreview.src = base64Image;
-            imagePreview.classList.remove('hidden'); 
-            
-            analyzeCropImage(base64Image);
+            // SPEED OPTIMIZATION: Compress the image in the browser before sending
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 800; // Shrink to a web-friendly size
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+                
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                
+                // Convert to compressed JPEG (70% quality)
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                
+                imagePreview.src = compressedBase64;
+                imagePreview.classList.remove('hidden'); 
+                analyzeCropImage(compressedBase64);
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     });
