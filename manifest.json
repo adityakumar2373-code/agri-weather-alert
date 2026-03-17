@@ -1,0 +1,21 @@
+{
+  "name": "Kisan Weather Alert Pro",
+  "short_name": "AgriAlert",
+  "description": "Smart AI Weather & Crop Doctor for Farmers",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0fdf4",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "https://img.icons8.com/parakeet-line/192/emerald-500/leaf.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://img.icons8.com/parakeet-line/512/emerald-500/leaf.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

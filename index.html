@@ -16,6 +16,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="icon" type="image/png" href="https://img.icons8.com/parakeet-line/48/emerald-500/leaf.png">
     
+    <link rel="manifest" href="manifest.json">
+    
     <style>
         body { 
             font-family: 'Outfit', sans-serif; 
@@ -160,6 +162,31 @@
                 </div>
                 <div class="relative w-full h-[180px] bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden z-0">
                     <div id="weatherMap" class="w-full h-full z-0"></div>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-gray-100/60" id="doctor-section">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-gray-800">AI Plant Doctor</h3>
+                    <i class="fa-solid fa-camera text-emerald-500"></i>
+                </div>
+                
+                <div class="bg-white rounded-3xl p-5 border border-emerald-100 shadow-sm relative overflow-hidden">
+                    <p class="text-xs text-gray-500 mb-4">Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.</p>
+                    
+                    <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
+                    <button onclick="document.getElementById('camera-input').click()" class="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold py-3 rounded-2xl border border-emerald-200 transition-colors flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-camera"></i> Take Photo
+                    </button>
+
+                    <div id="doctor-result" class="mt-4 hidden p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fa-solid fa-microscope text-emerald-500 animate-pulse" id="doc-icon"></i>
+                            <h4 class="font-bold text-sm text-emerald-900" id="doc-title">Analyzing Leaf...</h4>
+                        </div>
+                        <img id="image-preview" class="w-full h-32 object-cover rounded-xl mb-3 hidden shadow-sm border border-emerald-200">
+                        <p id="doc-diagnosis" class="text-xs text-gray-700 leading-relaxed"></p>
+                    </div>
                 </div>
             </div>
 

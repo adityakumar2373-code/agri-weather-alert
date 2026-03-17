@@ -8,7 +8,7 @@ let radarLayer = null;
 // DOM Elements
 const searchInput = document.getElementById('location-search');
 const searchResults = document.getElementById('search-results');
-const cropSelector = document.getElementById('crop-selector'); // NEW
+const cropSelector = document.getElementById('crop-selector');
 const tempDisplay = document.getElementById('temperature');
 const rainDisplay = document.getElementById('rain-val');
 const windDisplay = document.getElementById('wind-val');
@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const langSelector = document.getElementById('language-selector');
     langSelector.addEventListener('change', (e) => {
         updateLanguage(e.target.value);
-        triggerAIIfReady(); // Re-fetch AI if language changes
+        triggerAIIfReady(); 
     });
 
     cropSelector.addEventListener('change', triggerAIIfReady);
@@ -233,7 +233,7 @@ async function fetchWeather(coords) {
         updateUI(currentWeatherData);
         drawChart(data.daily);
         updateRadarMap(lat, lon); 
-        triggerAIIfReady(); // Check if we should call Gemini AI!
+        triggerAIIfReady(); 
         
     } catch (error) {
         alert("Unable to fetch weather. Check your internet.");
@@ -241,7 +241,6 @@ async function fetchWeather(coords) {
     }
 }
 
-// --- NEW: GEMINI AI CONNECTION ---
 function triggerAIIfReady() {
     if (currentWeatherData && cropSelector.value) {
         fetchAIAdvisory(
@@ -255,14 +254,13 @@ function triggerAIIfReady() {
 async function fetchAIAdvisory(temp, rain, wind) {
     const crop = cropSelector.value;
     const langSelect = document.getElementById('language-selector');
-    const langName = langSelect.options[langSelect.selectedIndex].text; // e.g. "हिंदी (Hindi)"
+    const langName = langSelect.options[langSelect.selectedIndex].text; 
 
     const alertTitle = document.getElementById('alert-title');
     const alertMsg = document.getElementById('alert-message');
     const alertIcon = document.getElementById('alert-icon');
     const audioIcon = document.getElementById('audio-icon');
 
-    // Make the UI look like "AI Thinking" Mode
     alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 bg-purple-50 border border-purple-200 text-purple-900";
     alertIcon.className = "fa-solid fa-sparkles text-lg text-purple-500 animate-pulse";
     audioIcon.className = "fa-solid fa-volume-high text-purple-500";
@@ -390,8 +388,6 @@ function updateLanguage(langCode) {
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
-    // Only do standard translations if the user HAS NOT selected a crop.
-    // If they have a crop selected, the AI function (triggerAIIfReady) takes over the alert box!
     if (currentWeatherData && !cropSelector.value) {
         const alertBox = document.getElementById('alert-box');
         const alertTitle = document.getElementById('alert-title');
@@ -435,3 +431,82 @@ function updateLiveTime() {
 
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
+
+// ==========================================
+// NEW: PWA SERVICE WORKER REGISTRATION
+// ==========================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('PWA Registered successfully!'))
+            .catch(err => console.log('PWA Registration Failed:', err));
+    });
+}
+
+// ==========================================
+// NEW: AI PLANT DOCTOR LOGIC
+// ==========================================
+const cameraInput = document.getElementById('camera-input');
+const docResult = document.getElementById('doctor-result');
+const imagePreview = document.getElementById('image-preview');
+const docTitle = document.getElementById('doc-title');
+const docDiagnosis = document.getElementById('doc-diagnosis');
+const docIcon = document.getElementById('doc-icon');
+
+// Listen for when the user takes a photo or uploads a file
+if(cameraInput) {
+    cameraInput.addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // Show "Loading" UI
+        docResult.classList.remove('hidden');
+        docTitle.innerText = "AI Pathologist Analyzing...";
+        docDiagnosis.innerText = "Scanning leaf structure and searching for pathogens...";
+        docIcon.className = "fa-solid fa-microscope text-emerald-500 animate-pulse";
+        imagePreview.classList.add('hidden'); // Hide old preview while loading new one
+        
+        // Convert image to Base64 to send to backend
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64Image = e.target.result;
+            imagePreview.src = base64Image;
+            imagePreview.classList.remove('hidden'); // Show the newly uploaded photo
+            
+            // Send to our backend AI server
+            analyzeCropImage(base64Image);
+        };
+        reader.readAsDataURL(file);
+    });
+}
+
+async function analyzeCropImage(base64Data) {
+    const langSelect = document.getElementById('language-selector');
+    const langName = langSelect.options[langSelect.selectedIndex].text;
+
+    try {
+        const response = await fetch('https://agri-weather-alert.onrender.com/analyze-crop', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // We must send both the image and the user's selected language
+            body: JSON.stringify({ imageBase64: base64Data, language: langName }) 
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            // Success UI
+            docIcon.className = "fa-solid fa-check-circle text-emerald-500";
+            docTitle.innerText = "Diagnosis Complete";
+            docDiagnosis.innerText = data.diagnosis;
+        } else {
+            throw new Error(data.error || "Server failed to process image.");
+        }
+    } catch (error) {
+        // Error UI
+        console.error(error);
+        docIcon.className = "fa-solid fa-triangle-exclamation text-red-500";
+        docTitle.innerText = "Analysis Failed";
+        docDiagnosis.innerText = "Could not connect to the AI server. Is the backend running?";
+    }
+}
