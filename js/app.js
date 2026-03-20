@@ -170,7 +170,6 @@ sendBtn.addEventListener('click', async () => {
     sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
     
     try {
-        // VERCEL URL UPDATED HERE
         const response = await fetch('https://weather-backend-mocha.vercel.app/send-sms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -265,7 +264,6 @@ async function fetchAIAdvisory(temp, rain, wind) {
     alertBox.classList.remove('hidden');
 
     try {
-        // VERCEL URL UPDATED HERE
         const response = await fetch('https://weather-backend-mocha.vercel.app/generate-advisory', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -410,6 +408,59 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
+// MULTILINGUAL AI SEARCH LOGIC (NEW)
+// ==========================================
+const aiSearchBtn = document.getElementById('ai-search-btn');
+const aiSearchInput = document.getElementById('ai-search-input');
+const aiResultBox = document.getElementById('ai-search-result-box');
+const aiResultText = document.getElementById('ai-search-result');
+
+if(aiSearchBtn) {
+    aiSearchBtn.addEventListener('click', async () => {
+        const question = aiSearchInput.value.trim();
+        if (!question) return;
+
+        // Show loading state
+        aiSearchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+        aiSearchBtn.disabled = true;
+        aiResultBox.classList.remove('hidden');
+        aiResultText.innerHTML = '<span class="animate-pulse">The AI is thinking...</span>';
+
+        try {
+            const response = await fetch('https://weather-backend-mocha.vercel.app/ai-search', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Formatting the response nicely
+                aiResultText.innerHTML = `<i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> ${data.answer}`;
+            } else {
+                throw new Error(data.error || "Failed to get answer");
+            }
+        } catch (error) {
+            console.error(error);
+            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please try again.`;
+        } finally {
+            // Restore button state
+            aiSearchBtn.innerHTML = 'Ask';
+            aiSearchBtn.disabled = false;
+        }
+    });
+
+    // Allow pressing "Enter" to search
+    aiSearchInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            aiSearchBtn.click();
+        }
+    });
+}
+
+
+// ==========================================
 // AI PLANT DOCTOR LOGIC
 // ==========================================
 const cameraInput = document.getElementById('camera-input');
@@ -462,7 +513,6 @@ async function analyzeCropImage(base64Data) {
     const langName = langSelect.options[langSelect.selectedIndex].text;
 
     try {
-        // VERCEL URL UPDATED HERE
         const response = await fetch('https://weather-backend-mocha.vercel.app/analyze-crop', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
