@@ -74,10 +74,13 @@ readAloudBtn.addEventListener('click', () => {
     window.speechSynthesis.cancel(); 
     const speech = new SpeechSynthesisUtterance(alertMsg);
     
+    // UPDATED VOICE MAP FOR ALL 14 LANGUAGES
     const voiceMap = {
-        'en': 'en-IN', 'hi': 'hi-IN', 'or': 'or-IN',
-        'bn': 'bn-IN', 'mr': 'mr-IN', 'te': 'te-IN', 
-        'ta': 'ta-IN', 'ml': 'ml-IN', 'bho': 'hi-IN' 
+        'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 
+        'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN',
+        'gu': 'gu-IN', 'kn': 'kn-IN', 'or': 'or-IN',
+        'ml': 'ml-IN', 'pa': 'pa-IN', 'as': 'as-IN',
+        'ur': 'ur-IN', 'bho': 'hi-IN' // Fallback for Bhojpuri
     };
 
     const targetLangCode = voiceMap[currentLang] || 'en-IN';
@@ -345,10 +348,13 @@ function updateUI(weather) {
 function updateLanguage(langCode) {
     const t = translations[langCode];
 
+    // Check if translations exist for the selected language, fallback to English if missing
+    if (!t) return; 
+
     document.getElementById('app-title').innerHTML = `<i class="fa-solid fa-leaf text-emerald-500 mr-2"></i>${t.appTitle || "AgriAlert"}`;
     document.getElementById('current-weather-title').innerText = t.currentConditions || "Live Conditions";
-    document.getElementById('rain-label').innerText = t.rainLabel;
-    document.getElementById('wind-label').innerText = t.windLabel;
+    document.getElementById('rain-label').innerText = t.rainLabel || "Rainfall";
+    document.getElementById('wind-label').innerText = t.windLabel || "Wind Speed";
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
@@ -459,6 +465,63 @@ if(aiSearchBtn) {
     });
 }
 
+// --- MICROPHONE / VOICE-TO-TEXT LOGIC ---
+const micBtn = document.getElementById('mic-btn');
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (SpeechRecognition && micBtn) {
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    micBtn.addEventListener('click', () => {
+        // Get the current language selected in the dropdown to set the listening language
+        const currentLang = document.getElementById('language-selector').value;
+        
+        // UPDATED VOICE MAP FOR MICROPHONE
+        const voiceMap = {
+            'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 
+            'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN',
+            'gu': 'gu-IN', 'kn': 'kn-IN', 'or': 'or-IN',
+            'ml': 'ml-IN', 'pa': 'pa-IN', 'as': 'as-IN',
+            'ur': 'ur-IN', 'bho': 'hi-IN' 
+        };
+        
+        recognition.lang = voiceMap[currentLang] || 'en-IN';
+
+        // Start listening and change the mic icon to red & pulsing
+        recognition.start();
+        micBtn.innerHTML = '<i class="fa-solid fa-microphone-lines text-red-500 animate-pulse"></i>';
+        aiSearchInput.placeholder = "Listening...";
+    });
+
+    recognition.onresult = (event) => {
+        // Take the spoken words and put them in the text box
+        const transcript = event.results[0][0].transcript;
+        aiSearchInput.value = transcript;
+        
+        // Optional: Automatically click the 'Ask' button after speaking
+        // aiSearchBtn.click(); 
+    };
+
+    recognition.onend = () => {
+        // Reset the mic icon when done listening
+        micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        aiSearchInput.placeholder = "Type or speak your question...";
+    };
+
+    recognition.onerror = (event) => {
+        console.error("Microphone error:", event.error);
+        micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
+        aiSearchInput.placeholder = "Type or speak your question...";
+        if(event.error === 'not-allowed') {
+            alert("Please allow microphone access in your browser to use voice search.");
+        }
+    };
+} else if (micBtn) {
+    // If the browser doesn't support Voice AI, hide the button
+    micBtn.style.display = 'none';
+}
 
 // ==========================================
 // AI PLANT DOCTOR LOGIC
