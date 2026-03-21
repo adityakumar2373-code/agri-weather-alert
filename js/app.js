@@ -204,8 +204,8 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // UPDATED URL: Now fetches Humidity, plus 7-day Rain and Wind for the Soil Moisture algorithm!
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m&daily=temperature_2m_max,precipitation_sum,wind_speed_10m_max&timezone=auto`;
+    // UPDATED URL: Fetches Rain %, Humidity, and 7-day data
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability&daily=temperature_2m_max,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -230,7 +230,7 @@ async function fetchWeather(coords) {
         
         currentWeatherData = data.current;
         updateUI(currentWeatherData);
-        drawChart(data.daily); // Pass the 7-day data to the new chart
+        drawChart(data.daily); 
         triggerAIIfReady(); 
         
     } catch (error) {
@@ -318,7 +318,7 @@ function calculateSoilMoisturePrediction(dailyData) {
 }
 
 // ==========================================
-// DUAL-AXIS CHART LOGIC
+// CLEAN, FARMER-FRIENDLY MIXED CHART
 // ==========================================
 function drawChart(dailyData) {
     const ctx = document.getElementById('forecastChart').getContext('2d');
@@ -332,15 +332,15 @@ function drawChart(dailyData) {
     if (weatherChart) weatherChart.destroy();
 
     weatherChart = new Chart(ctx, {
-        type: 'line',
+        type: 'bar', // Set the base chart type to bar
         data: {
             labels: dayLabels,
             datasets: [
                 {
-                    label: 'Max Temp (°C)', 
+                    type: 'line', // Override to make Temperature a line
+                    label: 'Heat (°C)', 
                     data: dailyData.temperature_2m_max,
                     borderColor: '#f59e0b', // Amber/Orange
-                    backgroundColor: 'transparent',
                     borderWidth: 3, 
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#f59e0b', 
@@ -349,16 +349,11 @@ function drawChart(dailyData) {
                     yAxisID: 'yTemp'
                 },
                 {
-                    label: 'Est. Soil Moisture (%)', 
+                    type: 'bar', // Solid Blue Bars for Moisture
+                    label: 'Water in Soil (%)', 
                     data: moistureData,
-                    borderColor: '#3b82f6', // Blue
-                    backgroundColor: 'rgba(59, 130, 246, 0.15)', // Light blue fill
-                    borderWidth: 3, 
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#3b82f6', 
-                    pointRadius: 4, 
-                    fill: true, 
-                    tension: 0.4,
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)', // Solid blue fill
+                    borderRadius: 4, // Make the tops of the bars slightly rounded
                     yAxisID: 'yMoist'
                 }
             ]
@@ -370,7 +365,7 @@ function drawChart(dailyData) {
                 legend: { 
                     display: true, 
                     position: 'top',
-                    labels: { font: { family: "'Outfit', sans-serif", size: 10 }, usePointStyle: true }
+                    labels: { font: { family: "'Outfit', sans-serif", size: 11 }, usePointStyle: true }
                 }, 
                 tooltip: { mode: 'index', intersect: false } 
             },
@@ -378,14 +373,14 @@ function drawChart(dailyData) {
                 x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif" } } }, 
                 yTemp: { 
                     type: 'linear', display: true, position: 'left',
-                    title: { display: true, text: 'Temp °C', font: { size: 10 } },
-                    grid: { display: true, color: 'rgba(0,0,0,0.05)' }
+                    title: { display: true, text: 'Heat °C', color: '#f59e0b', font: { size: 10, weight: 'bold' } },
+                    grid: { display: false } // Hide grid to keep it clean
                 },
                 yMoist: {
                     type: 'linear', display: true, position: 'right',
-                    title: { display: true, text: 'Moisture %', font: { size: 10 } },
+                    title: { display: true, text: 'Water %', color: '#3b82f6', font: { size: 10, weight: 'bold' } },
                     min: 0, max: 100,
-                    grid: { display: false } 
+                    grid: { display: true, color: 'rgba(0,0,0,0.05)' } // Very light background grid
                 }
             }
         }
@@ -405,6 +400,10 @@ function updateUI(weather) {
     // UPDATED: Now populating the new Humidity box
     if(document.getElementById('humidity-val')) {
         document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
+    }
+    // NEW: Populate Rain Probability Box
+    if(document.getElementById('precip-prob-val')) {
+        document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
     }
 
     const icon = document.getElementById('weather-icon');
@@ -426,8 +425,6 @@ function updateLanguage(langCode) {
 
     document.getElementById('app-title').innerHTML = `<i class="fa-solid fa-leaf text-emerald-500 mr-2"></i>${t.appTitle || "AgriAlert"}`;
     document.getElementById('current-weather-title').innerText = t.currentConditions || "Live Conditions";
-    document.getElementById('rain-label').innerText = t.rainLabel || "Rain";
-    document.getElementById('wind-label').innerText = t.windLabel || "Wind";
     
     if(document.getElementById('humidity-label')) {
         document.getElementById('humidity-label').innerText = t.humidityLabel || "Humidity";
@@ -537,7 +534,7 @@ if(aiSearchBtn) {
 }
 
 // ==========================================
-// VOICE SEARCH LOGIC (WITH 4-SECOND SILENCE DETECTOR)
+// VOICE SEARCH LOGIC
 // ==========================================
 const micBtn = document.getElementById('mic-btn');
 
