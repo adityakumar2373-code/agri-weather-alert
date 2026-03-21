@@ -74,13 +74,12 @@ readAloudBtn.addEventListener('click', () => {
     window.speechSynthesis.cancel(); 
     const speech = new SpeechSynthesisUtterance(alertMsg);
     
-    // UPDATED VOICE MAP FOR ALL 14 LANGUAGES
     const voiceMap = {
         'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 
         'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN',
         'gu': 'gu-IN', 'kn': 'kn-IN', 'or': 'or-IN',
         'ml': 'ml-IN', 'pa': 'pa-IN', 'as': 'as-IN',
-        'ur': 'ur-IN', 'bho': 'hi-IN' // Fallback for Bhojpuri
+        'ur': 'ur-IN', 'bho': 'hi-IN' 
     };
 
     const targetLangCode = voiceMap[currentLang] || 'en-IN';
@@ -205,7 +204,8 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m&daily=temperature_2m_max&timezone=auto`;
+    // UPDATED URL: Now fetches Humidity, plus 7-day Rain and Wind for the Soil Moisture algorithm!
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m&daily=temperature_2m_max,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -230,7 +230,7 @@ async function fetchWeather(coords) {
         
         currentWeatherData = data.current;
         updateUI(currentWeatherData);
-        drawChart(data.daily);
+        drawChart(data.daily); // Pass the 7-day data to the new chart
         triggerAIIfReady(); 
         
     } catch (error) {
@@ -294,6 +294,32 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
+// ==========================================
+// PREDICTIVE SOIL MOISTURE ALGORITHM
+// ==========================================
+function calculateSoilMoisturePrediction(dailyData) {
+    let moistureLevels = [];
+    let currentMoisture = 60; // Base soil moisture assumption
+
+    for(let i = 0; i < dailyData.time.length; i++) {
+        let temp = dailyData.temperature_2m_max[i] || 30;
+        let rain = dailyData.precipitation_sum[i] || 0;
+        let wind = dailyData.wind_speed_10m_max[i] || 10;
+
+        // Custom Algorithm: Rain adds water. Heat and Wind dry it up.
+        currentMoisture = currentMoisture + (rain * 5) - (temp * 0.8) - (wind * 0.2);
+        
+        if(currentMoisture > 100) currentMoisture = 100;
+        if(currentMoisture < 10) currentMoisture = 10;
+
+        moistureLevels.push(Math.round(currentMoisture));
+    }
+    return moistureLevels;
+}
+
+// ==========================================
+// DUAL-AXIS CHART LOGIC
+// ==========================================
 function drawChart(dailyData) {
     const ctx = document.getElementById('forecastChart').getContext('2d');
     const dayLabels = dailyData.time.map(dateString => {
@@ -301,24 +327,67 @@ function drawChart(dailyData) {
         return date.toLocaleDateString('en-US', { weekday: 'short' });
     });
 
+    const moistureData = calculateSoilMoisturePrediction(dailyData);
+
     if (weatherChart) weatherChart.destroy();
 
     weatherChart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: dayLabels,
-            datasets: [{
-                label: 'Max Temp (°C)', data: dailyData.temperature_2m_max,
-                borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                borderWidth: 3, pointBackgroundColor: '#ffffff',
-                pointBorderColor: '#10b981', pointBorderWidth: 2,
-                pointRadius: 4, fill: true, tension: 0.4 
-            }]
+            datasets: [
+                {
+                    label: 'Max Temp (°C)', 
+                    data: dailyData.temperature_2m_max,
+                    borderColor: '#f59e0b', // Amber/Orange
+                    backgroundColor: 'transparent',
+                    borderWidth: 3, 
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#f59e0b', 
+                    pointRadius: 4, 
+                    tension: 0.4,
+                    yAxisID: 'yTemp'
+                },
+                {
+                    label: 'Est. Soil Moisture (%)', 
+                    data: moistureData,
+                    borderColor: '#3b82f6', // Blue
+                    backgroundColor: 'rgba(59, 130, 246, 0.15)', // Light blue fill
+                    borderWidth: 3, 
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#3b82f6', 
+                    pointRadius: 4, 
+                    fill: true, 
+                    tension: 0.4,
+                    yAxisID: 'yMoist'
+                }
+            ]
         },
         options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return c.raw + '°C'; } } } },
-            scales: { x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif" } } }, y: { display: false } }
+            responsive: true, 
+            maintainAspectRatio: false,
+            plugins: { 
+                legend: { 
+                    display: true, 
+                    position: 'top',
+                    labels: { font: { family: "'Outfit', sans-serif", size: 10 }, usePointStyle: true }
+                }, 
+                tooltip: { mode: 'index', intersect: false } 
+            },
+            scales: { 
+                x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif" } } }, 
+                yTemp: { 
+                    type: 'linear', display: true, position: 'left',
+                    title: { display: true, text: 'Temp °C', font: { size: 10 } },
+                    grid: { display: true, color: 'rgba(0,0,0,0.05)' }
+                },
+                yMoist: {
+                    type: 'linear', display: true, position: 'right',
+                    title: { display: true, text: 'Moisture %', font: { size: 10 } },
+                    min: 0, max: 100,
+                    grid: { display: false } 
+                }
+            }
         }
     });
 }
@@ -332,6 +401,11 @@ function updateUI(weather) {
     document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
+    
+    // UPDATED: Now populating the new Humidity box
+    if(document.getElementById('humidity-val')) {
+        document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
+    }
 
     const icon = document.getElementById('weather-icon');
     if (weather.rain > 0) {
@@ -348,13 +422,17 @@ function updateUI(weather) {
 function updateLanguage(langCode) {
     const t = translations[langCode];
 
-    // Check if translations exist for the selected language, fallback to English if missing
     if (!t) return; 
 
     document.getElementById('app-title').innerHTML = `<i class="fa-solid fa-leaf text-emerald-500 mr-2"></i>${t.appTitle || "AgriAlert"}`;
     document.getElementById('current-weather-title').innerText = t.currentConditions || "Live Conditions";
-    document.getElementById('rain-label').innerText = t.rainLabel || "Rainfall";
-    document.getElementById('wind-label').innerText = t.windLabel || "Wind Speed";
+    document.getElementById('rain-label').innerText = t.rainLabel || "Rain";
+    document.getElementById('wind-label').innerText = t.windLabel || "Wind";
+    
+    if(document.getElementById('humidity-label')) {
+        document.getElementById('humidity-label').innerText = t.humidityLabel || "Humidity";
+    }
+
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
@@ -372,18 +450,18 @@ function updateLanguage(langCode) {
         if (currentWeatherData.rain > 2) {
             alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
-            alertTitle.innerText = t.alertRainTitle;
-            alertMsg.innerText = t.alertRainMsg;
+            alertTitle.innerText = t.alertRainTitle || "Heavy Rain Alert";
+            alertMsg.innerText = t.alertRainMsg || "High rainfall detected.";
         } else if (currentWeatherData.wind_speed_10m > 20) { 
             alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
-            alertTitle.innerText = t.alertWindTitle;
-            alertMsg.innerText = t.alertWindMsg;
+            alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
+            alertMsg.innerText = t.alertWindMsg || "Strong winds detected.";
         } else {
             alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
             alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
-            alertTitle.innerText = t.alertSafeTitle;
-            alertMsg.innerText = t.alertSafeMsg;
+            alertTitle.innerText = t.alertSafeTitle || "Conditions Safe";
+            alertMsg.innerText = t.alertSafeMsg || "Current weather is optimal.";
         }
     }
 }
@@ -408,7 +486,6 @@ updateLiveTime();
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('service-worker.js')
-            .then(reg => console.log('PWA Registered successfully!'))
             .catch(err => console.log('PWA Registration Failed:', err));
     });
 }
@@ -426,7 +503,6 @@ if(aiSearchBtn) {
         const question = aiSearchInput.value.trim();
         if (!question) return;
 
-        // Show loading state
         aiSearchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         aiSearchBtn.disabled = true;
         aiResultBox.classList.remove('hidden');
@@ -442,7 +518,6 @@ if(aiSearchBtn) {
             const data = await response.json();
 
             if (data.success) {
-                // Formatting the response nicely
                 aiResultText.innerHTML = `<i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> ${data.answer}`;
             } else {
                 throw new Error(data.error || "Failed to get answer");
@@ -451,17 +526,13 @@ if(aiSearchBtn) {
             console.error(error);
             aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please try again.`;
         } finally {
-            // Restore button state
             aiSearchBtn.innerHTML = 'Ask';
             aiSearchBtn.disabled = false;
         }
     });
 
-    // Allow pressing "Enter" to search
     aiSearchInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') {
-            aiSearchBtn.click();
-        }
+        if (e.key === 'Enter') aiSearchBtn.click();
     });
 }
 
@@ -516,17 +587,14 @@ if (micBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in win
         
         aiSearchInput.value = fullText;
 
-        // --- THE 4-SECOND SILENCE DETECTOR ---
-        clearTimeout(silenceTimer); // You spoke! Cancel the shutdown.
+        clearTimeout(silenceTimer); 
         
         silenceTimer = setTimeout(() => {
-            recognition.stop(); // 4 seconds of silence detected? Shut off the mic.
-            
-            // Auto-Submit Magic: Ask the AI automatically
+            recognition.stop(); 
             if (aiSearchInput.value.trim() !== "") {
                 if (aiSearchBtn) aiSearchBtn.click(); 
             }
-        }, 4000); // 4000 milliseconds = 4 seconds
+        }, 4000); 
     };
 
     recognition.onerror = function(event) {
@@ -569,11 +637,10 @@ if(cameraInput) {
         
         const reader = new FileReader();
         reader.onload = function(e) {
-            // SPEED OPTIMIZATION: Compress the image in the browser before sending
             const img = new Image();
             img.onload = function() {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800; // Shrink to a web-friendly size
+                const MAX_WIDTH = 800; 
                 const scaleSize = MAX_WIDTH / img.width;
                 canvas.width = MAX_WIDTH;
                 canvas.height = img.height * scaleSize;
@@ -581,7 +648,6 @@ if(cameraInput) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 
-                // Convert to compressed JPEG (70% quality)
                 const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
                 
                 imagePreview.src = compressedBase64;
@@ -618,6 +684,6 @@ async function analyzeCropImage(base64Data) {
         console.error(error);
         docIcon.className = "fa-solid fa-triangle-exclamation text-red-500";
         docTitle.innerText = "Analysis Failed";
-        docDiagnosis.innerText = "Could not connect to the AI server. Is the backend running?";
+        docDiagnosis.innerText = "Could not connect to the AI server.";
     }
 }
