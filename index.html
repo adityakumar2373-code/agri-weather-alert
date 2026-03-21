@@ -133,20 +133,29 @@
                     <h1 id="temperature" class="text-6xl font-black text-gray-800 tracking-tighter">--°</h1>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mt-8">
-                    <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 p-4 rounded-3xl border border-blue-100 shadow-sm flex flex-col items-center">
-                        <div class="bg-blue-200/50 w-10 h-10 rounded-full flex items-center justify-center mb-2">
-                            <i class="fa-solid fa-droplet text-blue-600"></i>
+                <div class="grid grid-cols-3 gap-3 mt-8">
+                    <div class="bg-gradient-to-br from-blue-50 to-blue-100/50 p-3 rounded-2xl border border-blue-100 shadow-sm flex flex-col items-center">
+                        <div class="bg-blue-200/50 w-8 h-8 rounded-full flex items-center justify-center mb-2">
+                            <i class="fa-solid fa-droplet text-blue-600 text-sm"></i>
                         </div>
-                        <p id="rain-val" class="text-lg font-bold text-gray-800">-- mm</p>
-                        <p id="rain-label" class="text-xs font-medium text-gray-500">Rainfall</p>
+                        <p id="rain-val" class="text-base font-bold text-gray-800">-- mm</p>
+                        <p id="rain-label" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Rain</p>
                     </div>
-                    <div class="bg-gradient-to-br from-teal-50 to-teal-100/50 p-4 rounded-3xl border border-teal-100 shadow-sm flex flex-col items-center">
-                        <div class="bg-teal-200/50 w-10 h-10 rounded-full flex items-center justify-center mb-2">
-                            <i class="fa-solid fa-wind text-teal-600"></i>
+                    
+                    <div class="bg-gradient-to-br from-teal-50 to-teal-100/50 p-3 rounded-2xl border border-teal-100 shadow-sm flex flex-col items-center">
+                        <div class="bg-teal-200/50 w-8 h-8 rounded-full flex items-center justify-center mb-2">
+                            <i class="fa-solid fa-wind text-teal-600 text-sm"></i>
                         </div>
-                        <p id="wind-val" class="text-lg font-bold text-gray-800">-- km/h</p>
-                        <p id="wind-label" class="text-xs font-medium text-gray-500">Wind Speed</p>
+                        <p id="wind-val" class="text-base font-bold text-gray-800">-- km/h</p>
+                        <p id="wind-label" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Wind</p>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100/50 p-3 rounded-2xl border border-indigo-100 shadow-sm flex flex-col items-center">
+                        <div class="bg-indigo-200/50 w-8 h-8 rounded-full flex items-center justify-center mb-2">
+                            <i class="fa-solid fa-water text-indigo-600 text-sm"></i>
+                        </div>
+                        <p id="humidity-val" class="text-base font-bold text-gray-800">-- %</p>
+                        <p id="humidity-label" class="text-[10px] font-bold text-gray-500 uppercase tracking-wider mt-0.5">Humidity</p>
                     </div>
                 </div>
             </div>
@@ -170,10 +179,10 @@
 
             <div class="mt-8 pt-6 border-t border-gray-100/60 hidden" id="forecast-section">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-sm font-bold text-gray-800">7-Day Forecast</h3>
+                    <h3 class="text-sm font-bold text-gray-800">7-Day Forecast & Moisture</h3>
                     <i class="fa-solid fa-chart-line text-emerald-400"></i>
                 </div>
-                <div class="relative w-full h-[140px] bg-white rounded-2xl p-2 border border-gray-50 shadow-[0_4px_15px_rgb(0,0,0,0.02)]">
+                <div class="relative w-full h-[180px] bg-white rounded-2xl p-2 border border-gray-50 shadow-[0_4px_15px_rgb(0,0,0,0.02)]">
                     <canvas id="forecastChart"></canvas>
                 </div>
             </div>
