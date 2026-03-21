@@ -414,7 +414,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// MULTILINGUAL AI SEARCH LOGIC (NEW)
+// MULTILINGUAL AI SEARCH LOGIC
 // ==========================================
 const aiSearchBtn = document.getElementById('ai-search-btn');
 const aiSearchInput = document.getElementById('ai-search-input');
@@ -465,20 +465,28 @@ if(aiSearchBtn) {
     });
 }
 
-// --- MICROPHONE / VOICE-TO-TEXT LOGIC ---
+// ==========================================
+// VOICE SEARCH LOGIC (WITH 4-SECOND SILENCE DETECTOR)
+// ==========================================
 const micBtn = document.getElementById('mic-btn');
-const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if (SpeechRecognition && micBtn) {
+if (micBtn && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
-    recognition.continuous = false;
-    recognition.interimResults = false;
+
+    recognition.continuous = true; 
+    recognition.interimResults = true; 
+
+    let isListening = false;
+    let silenceTimer; 
 
     micBtn.addEventListener('click', () => {
-        // Get the current language selected in the dropdown to set the listening language
-        const currentLang = document.getElementById('language-selector').value;
-        
-        // UPDATED VOICE MAP FOR MICROPHONE
+        if (isListening) {
+            recognition.stop();
+            return;
+        }
+
+        const langCode = document.getElementById('language-selector').value;
         const voiceMap = {
             'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 
             'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN',
@@ -486,41 +494,56 @@ if (SpeechRecognition && micBtn) {
             'ml': 'ml-IN', 'pa': 'pa-IN', 'as': 'as-IN',
             'ur': 'ur-IN', 'bho': 'hi-IN' 
         };
-        
-        recognition.lang = voiceMap[currentLang] || 'en-IN';
+        recognition.lang = voiceMap[langCode] || 'en-IN';
 
-        // Start listening and change the mic icon to red & pulsing
         recognition.start();
-        micBtn.innerHTML = '<i class="fa-solid fa-microphone-lines text-red-500 animate-pulse"></i>';
-        aiSearchInput.placeholder = "Listening...";
     });
 
-    recognition.onresult = (event) => {
-        // Take the spoken words and put them in the text box
-        const transcript = event.results[0][0].transcript;
-        aiSearchInput.value = transcript;
+    recognition.onstart = function() {
+        isListening = true;
+        micBtn.innerHTML = '<i class="fa-solid fa-microphone-lines text-red-500 animate-pulse"></i>';
+        aiSearchInput.placeholder = "Listening... (Take your time)";
+        aiSearchInput.value = "";
+        clearTimeout(silenceTimer); 
+    };
+
+    recognition.onresult = function(event) {
+        let fullText = "";
         
-        // Optional: Automatically click the 'Ask' button after speaking
-        // aiSearchBtn.click(); 
-    };
-
-    recognition.onend = () => {
-        // Reset the mic icon when done listening
-        micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-        aiSearchInput.placeholder = "Type or speak your question...";
-    };
-
-    recognition.onerror = (event) => {
-        console.error("Microphone error:", event.error);
-        micBtn.innerHTML = '<i class="fa-solid fa-microphone"></i>';
-        aiSearchInput.placeholder = "Type or speak your question...";
-        if(event.error === 'not-allowed') {
-            alert("Please allow microphone access in your browser to use voice search.");
+        for (let i = 0; i < event.results.length; ++i) {
+            fullText += event.results[i][0].transcript;
         }
+        
+        aiSearchInput.value = fullText;
+
+        // --- THE 4-SECOND SILENCE DETECTOR ---
+        clearTimeout(silenceTimer); // You spoke! Cancel the shutdown.
+        
+        silenceTimer = setTimeout(() => {
+            recognition.stop(); // 4 seconds of silence detected? Shut off the mic.
+            
+            // Auto-Submit Magic: Ask the AI automatically
+            if (aiSearchInput.value.trim() !== "") {
+                if (aiSearchBtn) aiSearchBtn.click(); 
+            }
+        }, 4000); // 4000 milliseconds = 4 seconds
+    };
+
+    recognition.onerror = function(event) {
+        console.error("Mic error:", event.error);
+        recognition.stop();
+    };
+
+    recognition.onend = function() {
+        isListening = false;
+        clearTimeout(silenceTimer); 
+        micBtn.innerHTML = '<i class="fa-solid fa-microphone text-purple-500"></i>';
+        aiSearchInput.placeholder = "Type or speak your question...";
     };
 } else if (micBtn) {
-    // If the browser doesn't support Voice AI, hide the button
-    micBtn.style.display = 'none';
+    micBtn.addEventListener('click', () => {
+        alert("Sorry, Voice Search is not supported in this browser.");
+    });
 }
 
 // ==========================================
