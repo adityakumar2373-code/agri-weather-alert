@@ -1,30 +1,58 @@
-# 🍃 Kisan Alert - Frontend UI
+<div align="center">
 
-![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=for-the-badge)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![Status: Active](https://img.shields.io/badge/Status-Active-success.svg?style=for-the-badge)
-![Platform: Mobile Web](https://img.shields.io/badge/Platform-Mobile_Web-blue.svg?style=for-the-badge)
+# 🌾 Kisan Alert
 
-**Kisan Alert** is a premium, AI-powered agricultural advisory platform designed specifically for farmers. This repository contains the open-source frontend user interface, featuring a highly responsive, modern aesthetic.
+*Empowering Farmers with Generative AI & Real-Time Weather Data*
 
-## ✨ Features
-* **AI Agronomist Interface:** A sleek, modern chat input for interacting with the AI assistant.
-* **Live Weather Dashboard:** High-contrast Bento grid displaying real-time metrics (Rain Volume, Rain Probability, Wind, Humidity).
-* **AI Plant Doctor:** Intuitive dashed dropzone for uploading leaf photos for disease diagnosis.
-* **Fully Responsive:** Beautifully optimized for both narrow mobile phone screens and wider desktop browsers.
-* **Automated SMS Alerts:** Clean input field designed for fast mobile number entry.
+[![Live Demo](https://img.shields.io/badge/View_Live_Demo-10B981?style=for-the-badge&logo=vercel&logoColor=white)](#)
+
+![License](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Gemini AI](https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat-square&logo=google&logoColor=white)
+
+<br />
+
+<img src="screenshot.png" alt="Kisan Alert App Interface" width="600" style="border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);"/>
+
+</div>
+
+<br />
+
+## 🎯 Project Overview
+Access to accurate, hyper-local weather data and expert agronomy advice is critical for agricultural success. **Kisan Alert** bridges this information gap by providing a premium, mobile-first interface for farmers. It combines real-time meteorology with **Google Gemini AI** to generate actionable, village-level farming advisories and delivers them directly via SMS.
+
+## ✨ Key Features
+* 🤖 **AI Agronomist:** A sleek chat interface powered by Gemini to answer complex farming queries instantly.
+* 📸 **AI Plant Doctor:** Computer vision integration—farmers can upload photos of diseased leaves for instant diagnosis and treatment plans.
+* 💬 **Automated SMS Alerts:** Fully functional Twilio backend integration to send critical weather and crop advisories directly to basic mobile phones.
+* 📈 **Live Weather & 7-Day Forecast:** High-contrast Bento grid dashboard and interactive Chart.js graphs for moisture and weather tracking.
+* 🌐 **14-Language Support:** Seamlessly switch between regional languages (Hindi, Bengali, Telugu, Marathi, Tamil, etc.) for maximum accessibility.
+* 🗣️ **Text-to-Speech:** Accessibility feature that reads advisories out loud for users with low literacy.
 
 ## 🛠️ Tech Stack
-* **HTML5:** Semantic, clean structure.
-* **Tailwind CSS:** Utility-first CSS for rapid, modern styling without external stylesheets.
-* **JavaScript (Vanilla):** DOM manipulation and seamless event handling.
-* **Chart.js:** Integrated for rendering 7-day weather and moisture forecast graphs.
-* **FontAwesome:** Scalable vector icons.
+* **Frontend UI (This Repository):** HTML5, Vanilla JavaScript (ES6+), Tailwind CSS, Chart.js, FontAwesome.
+* **Backend API (Private Repository):** Node.js, Express.js.
+* **AI & External APIs:** Google Gen AI SDK (Gemini), Twilio SMS API, Open-Meteo API.
+* **Hosting & Deployment:** Vercel.
 
 ## 🏗️ Architecture Note
 This project operates on a professional split-repository model:
-* **Frontend (This Repository):** 100% Open Source. You are welcome to view, learn from, and use this UI code.
-* **Backend API (Private):** The server logic, Google Gemini AI integration, and Twilio SMS routing are kept in a separate, secure private repository to protect API keys and server infrastructure.
+* **Frontend (Public):** 100% Open Source UI. You are welcome to view, learn from, and use this code.
+* **Backend API (Private):** The server logic, AI prompts, and Twilio routing are securely locked in a separate repository to protect API keys and server limits.
+
+## 🔮 Future Enhancements
+* Integration with local Mandi (market) prices for real-time crop value tracking.
+* Soil health card data integration for personalized fertilizer recommendations.
+* Satellite imagery index (NDVI) mapping for large-scale farm monitoring.
+
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
 
 ## 📄 License
-This frontend project is licensed under the **MIT License**. You are free to use, modify, and distribute this UI code. See the `LICENSE` file for more details.
+This frontend project is licensed under the **MIT License**. See the `LICENSE` file for more details.
+
+---
+<div align="center">
+  <sub>Built to empower farmers with data and AI. 🌱</sub>
+</div>
