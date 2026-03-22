@@ -1,67 +1,30 @@
-# 🌾 Village-Level Micro Weather Alert System
+# 🍃 Kisan Alert - Frontend UI
 
-![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E)
-![Open-Meteo API](https://img.shields.io/badge/Open--Meteo-Free_API-blue?style=for-the-badge)
+![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg?style=for-the-badge)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Status: Active](https://img.shields.io/badge/Status-Active-success.svg?style=for-the-badge)
+![Platform: Mobile Web](https://img.shields.io/badge/Platform-Mobile_Web-blue.svg?style=for-the-badge)
 
-A lightweight, mobile-first web application designed to provide farmers with highly localized, village-level weather forecasts and critical agricultural alerts in their native regional languages.
+**Kisan Alert** is a premium, AI-powered agricultural advisory platform designed specifically for farmers. This repository contains the open-source frontend user interface, featuring a highly responsive, modern aesthetic.
 
-## 🎯 Project Overview
-Access to accurate, hyper-local weather data is critical for agricultural success. This project aims to bridge the information gap by providing a simple, easy-to-use interface for farmers to check current weather conditions and receive actionable farming advisories based on real-time data.
-
-## ✨ Key Features
-* **📍 Micro-Level Accuracy:** Fetches real-time weather data using exact latitude and longitude coordinates.
-* **🌐 Multilingual Support:** Seamlessly switch between English, Hindi, and Odia to ensure accessibility for local farmers.
-* **🚜 Smart Agri-Alerts:** Automatically generates actionable farming advice (e.g., advising against pesticide spraying during high winds or heavy rain).
-* **📱 Mobile-First UI:** Built with Tailwind CSS to ensure a smooth, app-like experience on low-end smartphones.
-* **💬 SMS Alert System (UI Mockup):** Features a sleek registration interface to simulate sending automated weather advisories directly to a farmer's mobile phone.
+## ✨ Features
+* **AI Agronomist Interface:** A sleek, modern chat input for interacting with the AI assistant.
+* **Live Weather Dashboard:** High-contrast Bento grid displaying real-time metrics (Rain Volume, Rain Probability, Wind, Humidity).
+* **AI Plant Doctor:** Intuitive dashed dropzone for uploading leaf photos for disease diagnosis.
+* **Fully Responsive:** Beautifully optimized for both narrow mobile phone screens and wider desktop browsers.
+* **Automated SMS Alerts:** Clean input field designed for fast mobile number entry.
 
 ## 🛠️ Tech Stack
-* **Frontend:** HTML5, Vanilla JavaScript (ES6+)
-* **Styling:** Tailwind CSS (via CDN)
-* **Icons:** FontAwesome
-* **Weather Data:** [Open-Meteo API](https://open-meteo.com/) (No API Key required)
+* **HTML5:** Semantic, clean structure.
+* **Tailwind CSS:** Utility-first CSS for rapid, modern styling without external stylesheets.
+* **JavaScript (Vanilla):** DOM manipulation and seamless event handling.
+* **Chart.js:** Integrated for rendering 7-day weather and moisture forecast graphs.
+* **FontAwesome:** Scalable vector icons.
 
-## 📂 Folder Structure
-\`\`\`text
-agri-weather-alert/
-│
-├── index.html           # Main user interface
-├── README.md            # Project documentation
-└── js/
-    ├── app.js           # Core weather fetching and UI logic
-    └── translations.js  # Language dictionaries for regional support
-\`\`\`
+## 🏗️ Architecture Note
+This project operates on a professional split-repository model:
+* **Frontend (This Repository):** 100% Open Source. You are welcome to view, learn from, and use this UI code.
+* **Backend API (Private):** The server logic, Google Gemini AI integration, and Twilio SMS routing are kept in a separate, secure private repository to protect API keys and server infrastructure.
 
-## 🚀 Getting Started (Local Development)
-
-This project requires zero build tools or package installations. 
-
-1. **Clone the repository:**
-   \`\`\`bash
-   git clone https://github.com/yourusername/agri-weather-alert.git
-   \`\`\`
-2. **Open the project:**
-   Navigate to the project folder and simply open `index.html` in any modern web browser.
-
-## 🌍 Live Deployment (GitHub Pages)
-
-This project is ready to be hosted for free via GitHub Pages.
-1. Upload this repository to your GitHub account.
-2. Go to your repository **Settings** > **Pages**.
-3. Under **Build and deployment**, select `Deploy from a branch`.
-4. Choose the `main` branch and click **Save**.
-5. Your app will be live at `https://[your-username].github.io/agri-weather-alert` in a few minutes!
-
-## 🔮 Future Enhancements
-* Integrate a real SMS Gateway (e.g., Twilio, MSG91) via a Node.js/Python backend.
-* Add a 7-day weather forecast chart using Chart.js.
-* Expand the village database and add more regional languages.
-* Implement a Progressive Web App (PWA) wrapper for offline access.
-
-## 🤝 Contributing
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/yourusername/agri-weather-alert/issues).
-
----
-*Built to empower farmers with data.* 🌱
+## 📄 License
+This frontend project is licensed under the **MIT License**. You are free to use, modify, and distribute this UI code. See the `LICENSE` file for more details.
