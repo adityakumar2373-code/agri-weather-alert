@@ -4,16 +4,10 @@
 
 *Empowering Farmers with Generative AI & Real-Time Weather Data*
 
-[![Live Demo](https://img.shields.io/badge/View_Live_Demo-10B981?style=for-the-badge&logo=vercel&logoColor=white)](#)
-
 ![License](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)
 ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
 ![Gemini AI](https://img.shields.io/badge/Google_Gemini-8E75B2?style=flat-square&logo=google&logoColor=white)
-
-<br />
-
-<img src="screenshot.png" alt="Kisan Alert App Interface" width="600" style="border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);"/>
 
 </div>
 
