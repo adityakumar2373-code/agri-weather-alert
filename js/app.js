@@ -259,7 +259,7 @@ async function fetchAIAdvisory(temp, rain, wind) {
     const alertIcon = document.getElementById('alert-icon');
     const audioIcon = document.getElementById('audio-icon');
 
-    alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 bg-purple-50 border border-purple-200 text-purple-900 w-full";
+    alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 bg-purple-50 border border-purple-200 text-purple-900";
     alertIcon.className = "fa-solid fa-sparkles text-lg text-purple-500 animate-pulse";
     audioIcon.className = "fa-solid fa-volume-high text-purple-500";
     alertTitle.innerText = "AI Agronomist Analyzing...";
@@ -294,15 +294,19 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
+// ==========================================
+// PREDICTIVE SOIL MOISTURE ALGORITHM
+// ==========================================
 function calculateSoilMoisturePrediction(dailyData) {
     let moistureLevels = [];
-    let currentMoisture = 60;
+    let currentMoisture = 60; // Base soil moisture assumption
 
     for(let i = 0; i < dailyData.time.length; i++) {
         let temp = dailyData.temperature_2m_max[i] || 30;
         let rain = dailyData.precipitation_sum[i] || 0;
         let wind = dailyData.wind_speed_10m_max[i] || 10;
 
+        // Custom Algorithm: Rain adds water. Heat and Wind dry it up.
         currentMoisture = currentMoisture + (rain * 5) - (temp * 0.8) - (wind * 0.2);
         
         if(currentMoisture > 100) currentMoisture = 100;
@@ -313,6 +317,9 @@ function calculateSoilMoisturePrediction(dailyData) {
     return moistureLevels;
 }
 
+// ==========================================
+// CLEAN, FARMER-FRIENDLY MIXED CHART
+// ==========================================
 function drawChart(dailyData) {
     const ctx = document.getElementById('forecastChart').getContext('2d');
     const dayLabels = dailyData.time.map(dateString => {
@@ -325,15 +332,15 @@ function drawChart(dailyData) {
     if (weatherChart) weatherChart.destroy();
 
     weatherChart = new Chart(ctx, {
-        type: 'bar',
+        type: 'bar', // Set the base chart type to bar
         data: {
             labels: dayLabels,
             datasets: [
                 {
-                    type: 'line',
+                    type: 'line', // Override to make Temperature a line
                     label: 'Heat (°C)', 
                     data: dailyData.temperature_2m_max,
-                    borderColor: '#f59e0b',
+                    borderColor: '#f59e0b', // Amber/Orange
                     borderWidth: 3, 
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#f59e0b', 
@@ -342,11 +349,11 @@ function drawChart(dailyData) {
                     yAxisID: 'yTemp'
                 },
                 {
-                    type: 'bar',
+                    type: 'bar', // Solid Blue Bars for Moisture
                     label: 'Water in Soil (%)', 
                     data: moistureData,
-                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                    borderRadius: 4,
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)', // Solid blue fill
+                    borderRadius: 4, // Make the tops of the bars slightly rounded
                     yAxisID: 'yMoist'
                 }
             ]
@@ -367,13 +374,13 @@ function drawChart(dailyData) {
                 yTemp: { 
                     type: 'linear', display: true, position: 'left',
                     title: { display: true, text: 'Heat °C', color: '#f59e0b', font: { size: 10, weight: 'bold' } },
-                    grid: { display: false }
+                    grid: { display: false } // Hide grid to keep it clean
                 },
                 yMoist: {
                     type: 'linear', display: true, position: 'right',
                     title: { display: true, text: 'Water %', color: '#3b82f6', font: { size: 10, weight: 'bold' } },
                     min: 0, max: 100,
-                    grid: { display: true, color: 'rgba(0,0,0,0.05)' }
+                    grid: { display: true, color: 'rgba(0,0,0,0.05)' } // Very light background grid
                 }
             }
         }
@@ -390,9 +397,11 @@ function updateUI(weather) {
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
     
+    // UPDATED: Now populating the new Humidity box
     if(document.getElementById('humidity-val')) {
         document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
     }
+    // NEW: Populate Rain Probability Box
     if(document.getElementById('precip-prob-val')) {
         document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
     }
@@ -423,6 +432,35 @@ function updateLanguage(langCode) {
 
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
+
+    if (currentWeatherData && !cropSelector.value) {
+        const alertBox = document.getElementById('alert-box');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMsg = document.getElementById('alert-message');
+        const alertIcon = document.getElementById('alert-icon');
+        const audioIcon = document.getElementById('audio-icon');
+        
+        alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-sm transition-all duration-300"; 
+        audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
+        alertBox.classList.remove('hidden');
+
+        if (currentWeatherData.rain > 2) {
+            alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
+            alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
+            alertTitle.innerText = t.alertRainTitle || "Heavy Rain Alert";
+            alertMsg.innerText = t.alertRainMsg || "High rainfall detected.";
+        } else if (currentWeatherData.wind_speed_10m > 20) { 
+            alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
+            alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
+            alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
+            alertMsg.innerText = t.alertWindMsg || "Strong winds detected.";
+        } else {
+            alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
+            alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
+            alertTitle.innerText = t.alertSafeTitle || "Conditions Safe";
+            alertMsg.innerText = t.alertSafeMsg || "Current weather is optimal.";
+        }
+    }
 }
 
 function updateLiveTime() {
@@ -450,7 +488,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// 🌟 SMART MULTILINGUAL AI SEARCH (STREAMING CAPABLE) 🌟
+// MULTILINGUAL AI SEARCH LOGIC
 // ==========================================
 const aiSearchBtn = document.getElementById('ai-search-btn');
 const aiSearchInput = document.getElementById('ai-search-input');
@@ -465,7 +503,7 @@ if(aiSearchBtn) {
         aiSearchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         aiSearchBtn.disabled = true;
         aiResultBox.classList.remove('hidden');
-        aiResultText.innerHTML = '<span class="animate-pulse text-purple-600">Connecting to AI Agronomist...</span>';
+        aiResultText.innerHTML = '<span class="animate-pulse">The AI is thinking...</span>';
 
         try {
             const response = await fetch('https://weather-backend-mocha.vercel.app/ai-search', {
@@ -474,38 +512,16 @@ if(aiSearchBtn) {
                 body: JSON.stringify({ question: question })
             });
 
-            // CHECK: Is the server sending Old JSON or New Streaming text?
-            const contentType = response.headers.get("content-type");
+            const data = await response.json();
 
-            if (contentType && contentType.includes("application/json")) {
-                // If it's JSON (Old method - wait for full response)
-                const data = await response.json();
-                if (data.success) {
-                    aiResultText.innerHTML = `<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ${data.answer}`;
-                } else {
-                    throw new Error(data.error || "Failed to get answer");
-                }
+            if (data.success) {
+                aiResultText.innerHTML = `<i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> ${data.answer}`;
             } else {
-                // If it's Text (New STREAMING method - Typewriter effect!)
-                aiResultText.innerHTML = '<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ';
-                
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder("utf-8");
-
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break; // AI finished typing
-                    
-                    // Decode the words and type them onto the screen immediately
-                    const textChunk = decoder.decode(value, { stream: true });
-                    // Replace newlines with HTML breaks so paragraphs format correctly
-                    aiResultText.innerHTML += textChunk.replace(/\n/g, '<br>'); 
-                }
+                throw new Error(data.error || "Failed to get answer");
             }
-
         } catch (error) {
             console.error(error);
-            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please check your backend connection.`;
+            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please try again.`;
         } finally {
             aiSearchBtn.innerHTML = 'Ask';
             aiSearchBtn.disabled = false;
