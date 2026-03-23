@@ -100,6 +100,20 @@
                         </button>
                     </div>
 
+                    <div class="mt-3.5 relative z-10">
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="document.getElementById('ai-search-input').value='What is the best fertilizer to use right now?'" class="bg-white/80 hover:bg-purple-100/50 text-purple-700 border border-purple-100/80 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all duration-300 transform hover:scale-105 flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-flask text-purple-400"></i> Fertilizer
+                            </button>
+                            <button type="button" onclick="document.getElementById('ai-search-input').value='How to identify and stop pest infections?'" class="bg-white/80 hover:bg-purple-100/50 text-purple-700 border border-purple-100/80 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all duration-300 transform hover:scale-105 flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-bug text-purple-400"></i> Pest Control
+                            </button>
+                            <button type="button" onclick="document.getElementById('ai-search-input').value='What is the optimal watering schedule?'" class="bg-white/80 hover:bg-purple-100/50 text-purple-700 border border-purple-100/80 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all duration-300 transform hover:scale-105 flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-droplet text-purple-400"></i> Irrigation
+                            </button>
+                        </div>
+                    </div>
+
                     <div id="ai-search-result-box" class="mt-4 hidden bg-white/70 backdrop-blur-md p-4 rounded-xl border border-purple-100 shadow-sm relative z-10">
                         <p id="ai-search-result" class="text-xs sm:text-sm text-purple-900 leading-relaxed font-semibold"></p>
                     </div>
