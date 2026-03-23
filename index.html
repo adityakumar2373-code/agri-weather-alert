@@ -19,7 +19,6 @@
     <style>
         body { 
             font-family: 'Outfit', sans-serif; 
-            /* Premium subtle background for Bento Layout */
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
@@ -37,7 +36,6 @@
             50% { transform: translateY(-5px); }
         }
 
-        /* Modern Card Hover Effects */
         .bento-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -123,8 +121,12 @@
                         </button>
                     </div>
                     
-                    <div id="ai-search-result-box" class="mt-5 hidden bg-white rounded-xl p-4 shadow-inner relative z-10">
-                        <p id="ai-search-result" class="text-sm text-gray-800 leading-relaxed font-medium"></p>
+                    <div id="ai-search-result-box" class="mt-5 hidden bg-white rounded-2xl p-5 shadow-inner relative z-10 w-full border border-purple-100">
+                        <div class="flex items-center gap-2 mb-3 border-b border-gray-100 pb-2">
+                            <i class="fa-solid fa-sparkles text-purple-500"></i>
+                            <h4 class="text-[10px] font-extrabold text-purple-800 uppercase tracking-widest">AI Analysis</h4>
+                        </div>
+                        <p id="ai-search-result" class="text-sm text-gray-800 leading-relaxed font-medium w-full break-words whitespace-pre-line"></p>
                     </div>
                 </div>
 
@@ -137,7 +139,7 @@
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
-                        <input type="text" id="location-search" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-12 p-3.5 outline-none font-semibold text-gray-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm" placeholder="Search village or city..." autocomplete="off">
+                        <input type="text" id="location-search" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-12 p-3.5 outline-none font-semibold text-gray-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm w-full" placeholder="Search village or city..." autocomplete="off">
                         
                         <button id="gps-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-500 hover:text-emerald-600 hover:bg-emerald-100 bg-emerald-50 p-2 rounded-lg transition-all" title="Use Current Location">
                             <i class="fa-solid fa-location-crosshairs text-md"></i>
@@ -151,7 +153,7 @@
                             <i class="fa-solid fa-seedling"></i>
                         </div>
                         
-                        <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-14 p-3.5 outline-none font-semibold text-gray-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm" placeholder="Type or search any crop..." autocomplete="off">
+                        <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-14 p-3.5 outline-none font-semibold text-gray-800 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-400 transition-all text-sm w-full" placeholder="Type or search any crop..." autocomplete="off">
                         
                         <datalist id="crop-suggestions">
                             <option value="Rice (Paddy)"></option>
@@ -196,7 +198,7 @@
                     <p class="text-base text-gray-600">AI is analyzing location data...</p>
                 </div>
 
-                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden">
+                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full">
                     <div class="flex justify-between items-center mb-6">
                         <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
                             <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
@@ -211,48 +213,52 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 w-full">
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 w-full">
                                 <div class="text-blue-500 text-xl w-8 text-center"><i class="fa-solid fa-droplet"></i></div>
-                                <div><p id="rain-val" class="text-base font-extrabold text-gray-800">-- mm</p><p id="rain-label" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Rain Vol.</p></div>
+                                <div><p id="rain-val" class="text-base font-extrabold text-gray-800">-- mm</p><p id="rain-label" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rain Vol.</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 w-full">
                                 <div class="text-cyan-500 text-xl w-8 text-center"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
-                                <div><p id="precip-prob-val" class="text-base font-extrabold text-gray-800">-- %</p><p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Rain %</p></div>
+                                <div><p id="precip-prob-val" class="text-base font-extrabold text-gray-800">-- %</p><p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Rain %</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 w-full">
                                 <div class="text-teal-500 text-xl w-8 text-center"><i class="fa-solid fa-wind"></i></div>
-                                <div><p id="wind-val" class="text-base font-extrabold text-gray-800">-- km/h</p><p id="wind-label" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Wind</p></div>
+                                <div><p id="wind-val" class="text-base font-extrabold text-gray-800">-- km/h</p><p id="wind-label" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Wind</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 w-full">
                                 <div class="text-indigo-500 text-xl w-8 text-center"><i class="fa-solid fa-water"></i></div>
-                                <div><p id="humidity-val" class="text-base font-extrabold text-gray-800">-- %</p><p id="humidity-label" class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Humidity</p></div>
+                                <div><p id="humidity-val" class="text-base font-extrabold text-gray-800">-- %</p><p id="humidity-label" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Humidity</p></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="alert-box" class="bento-card bg-gradient-to-r from-red-50 to-orange-50 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-red-100 hidden relative overflow-hidden">
+                <div id="alert-box" class="bento-card bg-gradient-to-r from-red-50 to-orange-50 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-red-100 hidden relative overflow-hidden w-full">
                     <div class="absolute right-0 top-0 bottom-0 w-8 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CiAgPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIj48L3JlY3Q+CiAgPHBhdGggZD0iTTAgMjBMMjAgMEgwaC0yMEwweiIgZmlsbD0icmdiYSgyNTUsIDAsIDAsIDAuMDUpIj48L3BhdGg+Cjwvc3ZnPg==')] opacity-50"></div>
                     
-                    <div class="flex items-start gap-4 relative z-10">
-                        <div class="bg-white text-red-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-red-100">
-                            <i id="alert-icon" class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                    <div class="flex flex-col relative z-10 w-full">
+                        
+                        <div class="flex justify-between items-start sm:items-center gap-4 w-full">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-white text-red-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border border-red-100">
+                                    <i id="alert-icon" class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                                </div>
+                                <h3 id="alert-title" class="font-extrabold text-base sm:text-lg text-gray-900">Agri Alert</h3>
+                            </div>
+                            
+                            <button id="read-aloud-btn" class="bg-white hover:bg-red-50 border border-red-100 text-red-600 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 transform active:scale-95 transition-all shadow-sm shrink-0">
+                                <i class="fa-solid fa-volume-high" id="audio-icon"></i>
+                                <span class="hidden sm:inline">Read Aloud</span>
+                            </button>
                         </div>
-                        <div class="flex-grow">
-                            <h3 id="alert-title" class="font-extrabold text-base text-gray-900">Agri Alert</h3>
-                            <p id="alert-message" class="text-sm mt-1.5 leading-relaxed text-gray-700 font-medium"></p>
-                        </div>
+                        
+                        <p id="alert-message" class="text-sm mt-5 leading-relaxed text-gray-800 font-medium w-full break-words whitespace-pre-line"></p>
                     </div>
-                    
-                    <button id="read-aloud-btn" class="mt-5 w-full bg-white hover:bg-gray-50 border border-gray-200 text-gray-800 text-sm font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transform active:scale-95 transition-all shadow-sm relative z-10">
-                        <i class="fa-solid fa-volume-high text-emerald-500" id="audio-icon"></i>
-                        <span>Read Advisory Aloud</span>
-                    </button>
                 </div>
 
-                <div class="grid grid-cols-1 gap-6">
+                <div class="grid grid-cols-1 gap-6 w-full">
                     
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden" id="forecast-section">
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full" id="forecast-section">
                         <div class="flex items-center justify-between mb-5">
                             <h3 class="text-base font-extrabold text-gray-800 flex items-center gap-2">
                                 <i class="fa-solid fa-chart-area text-emerald-500"></i> 7-Day Forecast & Moisture
@@ -263,7 +269,7 @@
                         </div>
                     </div>
 
-                    <div class="bento-card bg-emerald-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-emerald-800 relative overflow-hidden" id="doctor-section">
+                    <div class="bento-card bg-emerald-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-emerald-800 relative overflow-hidden w-full" id="doctor-section">
                         <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
                             <i class="fa-solid fa-microscope text-[15rem] text-emerald-300"></i>
                         </div>
@@ -275,7 +281,7 @@
                             <span class="bg-emerald-800 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-700">Computer Vision</span>
                         </div>
                         
-                        <div class="relative z-10">
+                        <div class="relative z-10 w-full">
                             <p class="text-sm text-emerald-100/80 mb-5 font-medium leading-relaxed max-w-md">Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.</p>
                             
                             <input type="file" id="camera-input" accept="image/*" class="hidden">
@@ -283,15 +289,15 @@
                                 <i class="fa-solid fa-camera text-lg"></i> Scan Leaf Now
                             </button>
 
-                            <div id="doctor-result" class="mt-6 hidden bg-white/10 backdrop-blur-md rounded-xl p-5 border border-emerald-700">
-                                <div class="flex items-center gap-3 mb-4">
+                            <div id="doctor-result" class="mt-6 hidden bg-white/10 backdrop-blur-md rounded-xl p-5 border border-emerald-700 w-full">
+                                <div class="flex items-center gap-3 mb-4 border-b border-emerald-700/50 pb-3">
                                     <div class="bg-emerald-500/20 p-2 rounded-lg border border-emerald-500/30">
                                         <i class="fa-solid fa-microscope text-emerald-300 animate-pulse text-lg" id="doc-icon"></i>
                                     </div>
-                                    <h4 class="font-extrabold text-base text-emerald-100" id="doc-title">Analyzing...</h4>
+                                    <h4 class="font-extrabold text-sm text-emerald-100 uppercase tracking-widest" id="doc-title">Analyzing...</h4>
                                 </div>
                                 <img id="image-preview" class="w-full h-48 sm:h-56 object-cover rounded-xl mb-4 hidden border border-emerald-700/50 shadow-inner">
-                                <p id="doc-diagnosis" class="text-sm text-emerald-50 leading-relaxed font-medium"></p>
+                                <p id="doc-diagnosis" class="text-sm text-emerald-50 leading-relaxed font-medium w-full break-words whitespace-pre-line"></p>
                             </div>
                         </div>
                     </div>
