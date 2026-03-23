@@ -100,20 +100,6 @@
                         </button>
                     </div>
 
-                    <div class="mt-3.5 relative z-10">
-                        <div class="flex flex-wrap gap-2">
-                            <button type="button" onclick="document.getElementById('ai-search-input').value='What is the best fertilizer to use right now?'" class="bg-white/80 hover:bg-purple-100/50 text-purple-700 border border-purple-100/80 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all duration-300 transform hover:scale-105 flex items-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-flask text-purple-400"></i> Fertilizer
-                            </button>
-                            <button type="button" onclick="document.getElementById('ai-search-input').value='How to identify and stop pest infections?'" class="bg-white/80 hover:bg-purple-100/50 text-purple-700 border border-purple-100/80 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all duration-300 transform hover:scale-105 flex items-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-bug text-purple-400"></i> Pest Control
-                            </button>
-                            <button type="button" onclick="document.getElementById('ai-search-input').value='What is the optimal watering schedule?'" class="bg-white/80 hover:bg-purple-100/50 text-purple-700 border border-purple-100/80 text-[10px] sm:text-xs font-bold px-3 py-1.5 rounded-full shadow-sm backdrop-blur-sm transition-all duration-300 transform hover:scale-105 flex items-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-droplet text-purple-400"></i> Irrigation
-                            </button>
-                        </div>
-                    </div>
-                    
                     <div id="ai-search-result-box" class="mt-4 hidden bg-white/70 backdrop-blur-md p-4 rounded-xl border border-purple-100 shadow-sm relative z-10">
                         <p id="ai-search-result" class="text-xs sm:text-sm text-purple-900 leading-relaxed font-semibold"></p>
                     </div>
@@ -136,20 +122,24 @@
 
                 <div class="relative w-full group mb-7 lg:mb-0">
                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-emerald-500">
-                        <i class="fa-solid fa-wheat-awn"></i>
+                        <i class="fa-solid fa-seedling"></i>
                     </div>
-                    <select id="crop-selector" class="w-full bg-white shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-gray-100/80 rounded-2xl pl-11 p-4 outline-none font-semibold text-gray-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-300 hover:border-emerald-100 hover:shadow-md transition-all duration-300 cursor-pointer appearance-none text-sm">
-                        <option value="" disabled selected>Select your crop...</option>
-                        <option value="Rice">Rice (Paddy)</option>
-                        <option value="Wheat">Wheat</option>
-                        <option value="Cotton">Cotton</option>
-                        <option value="Sugarcane">Sugarcane</option>
-                        <option value="Maize">Maize</option>
-                        <option value="Potato">Potato</option>
-                        <option value="Soybean">Soybean</option>
-                    </select>
+                    <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-white shadow-[0_4px_20px_rgb(0,0,0,0.04)] border border-gray-100/80 rounded-2xl pl-11 pr-12 p-4 outline-none font-semibold text-gray-800 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-300 hover:border-emerald-100 hover:shadow-md transition-all duration-300 text-sm" placeholder="Type or search any crop..." autocomplete="off">
+                    
+                    <datalist id="crop-suggestions">
+                        <option value="Rice (Paddy)">
+                        <option value="Wheat">
+                        <option value="Cotton">
+                        <option value="Sugarcane">
+                        <option value="Maize">
+                        <option value="Potato">
+                        <option value="Soybean">
+                        <option value="Tomato">
+                        <option value="Onion">
+                    </datalist>
+
                     <div class="absolute inset-y-0 right-5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
-                        <i class="fa-solid fa-chevron-down text-sm"></i>
+                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
                     </div>
                 </div>
 
@@ -284,9 +274,18 @@
         </div>
     </div>
 
-    <footer class="mt-6 sm:mt-8 text-center text-[10px] sm:text-xs text-emerald-900/60 font-medium px-4">
-        <p>© 2026 Kisan Alert. All Rights Reserved.</p>
-        <p class="mt-1.5 tracking-wide">Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span></p>
+    <footer class="mt-6 sm:mt-8 text-center px-4 w-full max-w-5xl">
+        <p class="text-[10px] sm:text-xs text-emerald-900/60 font-medium">© 2026 Kisan Alert. All Rights Reserved.</p>
+        <p class="mt-1 text-[10px] sm:text-xs text-emerald-900/60 font-medium tracking-wide">Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span></p>
+        
+        <div class="mt-4 pt-4 border-t border-emerald-900/10 flex flex-col items-center justify-center gap-1.5">
+            <p class="text-[9px] sm:text-[10px] text-gray-500 font-medium uppercase tracking-widest">Meteorological Data Source</p>
+            <p class="text-[10px] sm:text-xs text-gray-600 font-semibold leading-relaxed max-w-md">
+                Copyright Met Centre Bhubaneswar<br>
+                India Meteorological Department<br>
+                Ministry of Earth Sciences, New Delhi, India
+            </p>
+        </div>
     </footer>
 
     <div id="sms-toast" class="fixed bottom-6 transform translate-y-24 opacity-0 transition-all duration-500 bg-gray-900/95 backdrop-blur-md text-white px-5 py-4 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.3)] flex items-center gap-4 z-50 border border-gray-700/50">
