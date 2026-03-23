@@ -49,21 +49,22 @@
 </head>
 <body class="min-h-screen flex flex-col text-gray-800">
 
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 px-6 py-4 shadow-sm">
-        <div class="max-w-7xl mx-auto w-full flex justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-10 h-10 rounded-xl flex items-center justify-center shadow-inner shrink-0">
-                    <i class="fa-solid fa-leaf text-white text-xl"></i>
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm">
+        <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center gap-2 sm:gap-4">
+            
+            <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-inner shrink-0">
+                    <i class="fa-solid fa-leaf text-white text-sm sm:text-xl"></i>
                 </div>
-                <div>
-                    <h1 id="app-title" class="text-xl sm:text-2xl font-extrabold tracking-tight text-gray-900 leading-none whitespace-nowrap">
+                <div class="min-w-0">
+                    <h1 id="app-title" class="text-base sm:text-2xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
                         Kisan Alert <span class="text-emerald-500">Pro</span>
                     </h1>
-                    <p id="live-time" class="text-[10px] sm:text-xs font-bold text-gray-500 tracking-wider uppercase mt-0.5 whitespace-nowrap"></p>
+                    <p id="live-time" class="text-[8px] sm:text-xs font-bold text-gray-500 tracking-wider uppercase mt-0.5 truncate"></p>
                 </div>
             </div>
             
-            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-xs rounded-xl px-4 py-2.5 outline-none border border-gray-200 cursor-pointer hover:bg-gray-100 hover:border-gray-300 transition-all focus:ring-2 focus:ring-emerald-500/20">
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[10px] sm:text-xs rounded-lg sm:rounded-xl px-2 py-1.5 sm:px-4 sm:py-2.5 outline-none border border-gray-200 cursor-pointer hover:bg-gray-100 transition-all focus:ring-2 focus:ring-emerald-500/20 max-w-[90px] sm:max-w-xs truncate">
                 <option value="en">English</option>
                 <option value="hi">हिंदी (Hindi)</option>
                 <option value="bn">বাংলা (Bengali)</option>
@@ -82,13 +83,13 @@
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-8">
+    <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8">
         
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             <div class="lg:col-span-5 flex flex-col gap-6">
                 
-                <div class="bento-card bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 rounded-[2rem] p-6 shadow-lg border border-purple-800/50 relative overflow-hidden group">
+                <div class="bento-card bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-purple-800/50 relative overflow-hidden group">
                     <div class="absolute -top-20 -right-20 w-48 h-48 bg-purple-500/30 rounded-full blur-[50px] pointer-events-none"></div>
                     
                     <div class="flex items-center gap-3 mb-5 relative z-10">
@@ -127,7 +128,7 @@
                     </div>
                 </div>
 
-                <div class="bento-card bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100">
                     <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-map-location-dot"></i> Setup Parameters
                     </h3>
@@ -170,7 +171,7 @@
                     </div>
                 </div>
 
-                <div class="bento-card bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hidden" id="sms-section">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden" id="sms-section">
                     <div class="flex items-center gap-3 mb-3">
                         <div class="bg-gray-100 p-2 rounded-lg text-gray-600"><i class="fa-solid fa-mobile-screen"></i></div>
                         <h3 id="sms-heading" class="text-base font-extrabold text-gray-800">Automated Alerts</h3>
@@ -195,7 +196,7 @@
                     <p class="text-base text-gray-600">AI is analyzing location data...</p>
                 </div>
 
-                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hidden">
+                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden">
                     <div class="flex justify-between items-center mb-6">
                         <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
                             <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
@@ -204,7 +205,7 @@
                     </div>
                     
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10">
-                        <div class="flex items-center gap-4 sm:gap-6 animate-float-slow shrink-0 pl-2 sm:pl-6">
+                        <div class="flex items-center gap-4 sm:gap-6 animate-float-slow shrink-0 sm:pl-6">
                             <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md"></i>
                             <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black text-gray-800 tracking-tighter">--°</h1>
                         </div>
@@ -230,7 +231,7 @@
                     </div>
                 </div>
 
-                <div id="alert-box" class="bento-card bg-gradient-to-r from-red-50 to-orange-50 rounded-[2rem] p-6 shadow-sm border border-red-100 hidden relative overflow-hidden">
+                <div id="alert-box" class="bento-card bg-gradient-to-r from-red-50 to-orange-50 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-red-100 hidden relative overflow-hidden">
                     <div class="absolute right-0 top-0 bottom-0 w-8 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+CiAgPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJub25lIj48L3JlY3Q+CiAgPHBhdGggZD0iTTAgMjBMMjAgMEgwaC0yMEwweiIgZmlsbD0icmdiYSgyNTUsIDAsIDAsIDAuMDUpIj48L3BhdGg+Cjwvc3ZnPg==')] opacity-50"></div>
                     
                     <div class="flex items-start gap-4 relative z-10">
@@ -251,7 +252,7 @@
 
                 <div class="grid grid-cols-1 gap-6">
                     
-                    <div class="bento-card bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 hidden" id="forecast-section">
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden" id="forecast-section">
                         <div class="flex items-center justify-between mb-5">
                             <h3 class="text-base font-extrabold text-gray-800 flex items-center gap-2">
                                 <i class="fa-solid fa-chart-area text-emerald-500"></i> 7-Day Forecast & Moisture
@@ -262,7 +263,7 @@
                         </div>
                     </div>
 
-                    <div class="bento-card bg-emerald-900 rounded-[2rem] p-6 shadow-lg border border-emerald-800 relative overflow-hidden" id="doctor-section">
+                    <div class="bento-card bg-emerald-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-emerald-800 relative overflow-hidden" id="doctor-section">
                         <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
                             <i class="fa-solid fa-microscope text-[15rem] text-emerald-300"></i>
                         </div>
@@ -300,7 +301,7 @@
         </div>
     </main>
 
-    <footer class="w-full py-8 mt-auto border-t border-gray-200 bg-white">
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
             <p class="text-xs text-gray-500 font-medium">© 2026 Kisan Alert. All Rights Reserved.</p>
             <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100">
