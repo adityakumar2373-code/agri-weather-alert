@@ -27,7 +27,7 @@ const translations = {
         "docTitle": "AI Plant Doctor",
         "docBadge": "Computer Vision",
         "docDesc": "Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.",
-        "docBtn: "Scan Leaf Now",
+        "docBtn": "Scan Leaf Now",
         "realtimeBadge": "Real-Time",
         "readAloudBtn": "Read Aloud"
     },
@@ -82,7 +82,7 @@ const translations = {
         "askPlaceholder": "ଟାଇପ୍ କରନ୍ତୁ କିମ୍ବା କୁହନ୍ତୁ...",
         "askBtn": "ପଚାରନ୍ତୁ",
         "pillFertilizer": "ସାର",
-        "pillPest: "କୀଟ ନିୟନ୍ତ୍ରଣ",
+        "pillPest": "କୀଟ ନିୟନ୍ତ୍ରଣ",
         "pillIrrigation": "ଜଳସେଚନ",
         "setupTitle": "ପାରାମିଟର ସେଟ୍ କରନ୍ତୁ",
         "searchVillagePlaceholder": "ଗାଁ ଖୋଜନ୍ତୁ...",
@@ -186,7 +186,7 @@ const translations = {
         "forecastTitle": "7-రోజుల సూచన",
         "docTitle": "AI ప్లాంట్ డాక్టర్",
         "docBadge": "కంప్యూటర్ విజన్",
-        "docDesc: "వ్యాధిగ్రస్తులైన ఆకు ఫోటో తీయండి. మా AI వెంటనే సమస్యను గుర్తించి పరిష్కారాన్ని సూచిస్తుంది.",
+        "docDesc": "వ్యాధిగ్రస్తులైన ఆకు ఫోటో తీయండి. మా AI వెంటనే సమస్యను గుర్తించి పరిష్కారాన్ని సూచిస్తుంది.",
         "docBtn": "ఆకును స్కాన్ చేయండి",
         "realtimeBadge": "రియల్-టైమ్",
         "readAloudBtn": "చదివి వినిపించు"
