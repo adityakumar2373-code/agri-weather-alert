@@ -421,7 +421,16 @@ function updateLanguage(langCode) {
 
     if (!t) return; 
 
-    document.getElementById('app-title').innerHTML = `<i class="fa-solid fa-leaf text-emerald-500 mr-2"></i>${t.appTitle || "AgriAlert"}`;
+    // 🌟 FIXED 1 & 2: No more double leaf, and strict rule for the English name!
+    if (langCode === 'en') {
+        document.getElementById('app-title').innerHTML = 'Kisan Alert <span class="text-emerald-500">Pro</span>';
+    } else {
+        // We use .replace() here just in case the translations.js file has hidden leaf icons inside it!
+        let translatedTitle = t.appTitle || 'Kisan Alert <span class="text-emerald-500">Pro</span>';
+        translatedTitle = translatedTitle.replace(/<i class="fa-solid fa-leaf[^>]*><\/i>/g, '').trim();
+        document.getElementById('app-title').innerHTML = translatedTitle;
+    }
+
     document.getElementById('current-weather-title').innerText = t.currentConditions || "Live Conditions";
     
     if(document.getElementById('humidity-label')) {
