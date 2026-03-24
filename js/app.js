@@ -398,7 +398,7 @@ function updateUI(weather) {
         document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
     }
 
-    // 🌟 FIXED DAY/NIGHT ICON LOGIC 🌟
+    // 🌟 DAY/NIGHT ICON LOGIC (Already working perfectly here!) 🌟
     const icon = document.getElementById('weather-icon');
     const currentHour = new Date().getHours();
     const isNight = currentHour < 6 || currentHour >= 18; 
@@ -486,7 +486,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// 🌟 SMART MULTILINGUAL AI SEARCH (STREAMING CAPABLE) 🌟
+// 🌟 SMART MULTILINGUAL AI SEARCH (BULLETPROOF TYPEWRITER) 🌟
 // ==========================================
 const aiSearchBtn = document.getElementById('ai-search-btn');
 const aiSearchInput = document.getElementById('ai-search-input');
@@ -510,39 +510,44 @@ if(aiSearchBtn) {
                 body: JSON.stringify({ question: question })
             });
 
-            // CHECK: Is the server sending Old JSON or New Streaming text?
+            let fullText = "";
             const contentType = response.headers.get("content-type");
 
+            // Catch the text securely from Vercel
             if (contentType && contentType.includes("application/json")) {
-                // If it's JSON (Old method - wait for full response)
                 const data = await response.json();
-                if (data.success) {
-                    aiResultText.innerHTML = `<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ${data.answer}`;
-                } else {
-                    throw new Error(data.error || "Failed to get answer");
-                }
+                if (data.success) fullText = data.answer;
+                else throw new Error(data.error);
             } else {
-                // If it's Text (New STREAMING method - Typewriter effect!)
-                aiResultText.innerHTML = '<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ';
-                
-                const reader = response.body.getReader();
-                const decoder = new TextDecoder("utf-8");
+                fullText = await response.text(); 
+            }
 
-                while (true) {
-                    const { done, value } = await reader.read();
-                    if (done) break; // AI finished typing
-                    
-                    // Decode the words and type them onto the screen immediately
-                    const textChunk = decoder.decode(value, { stream: true });
-                    // Replace newlines with HTML breaks so paragraphs format correctly
-                    aiResultText.innerHTML += textChunk.replace(/\n/g, '<br>'); 
+            // 🎨 THE BULLETPROOF TYPEWRITER LOGIC 🎨
+            aiResultText.innerHTML = '<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ';
+            let i = 0;
+            const typingSpeed = 15; // Change this number to make it type faster/slower
+
+            function typeWriter() {
+                if (i < fullText.length) {
+                    if (fullText.charAt(i) === '\n') {
+                        aiResultText.innerHTML += '<br>';
+                    } else {
+                        aiResultText.insertAdjacentText('beforeend', fullText.charAt(i));
+                    }
+                    i++;
+                    setTimeout(typeWriter, typingSpeed);
+                } else {
+                    // Turn the Ask button back on when finished
+                    aiSearchBtn.innerHTML = 'Ask';
+                    aiSearchBtn.disabled = false;
                 }
             }
 
+            typeWriter(); // Start the typing effect!
+
         } catch (error) {
             console.error(error);
-            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please check your backend connection.`;
-        } finally {
+            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please try again.`;
             aiSearchBtn.innerHTML = 'Ask';
             aiSearchBtn.disabled = false;
         }
