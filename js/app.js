@@ -294,9 +294,6 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
-// ==========================================
-// PREDICTIVE SOIL MOISTURE ALGORITHM
-// ==========================================
 function calculateSoilMoisturePrediction(dailyData) {
     let moistureLevels = [];
     let currentMoisture = 60; // Base soil moisture assumption
@@ -317,9 +314,6 @@ function calculateSoilMoisturePrediction(dailyData) {
     return moistureLevels;
 }
 
-// ==========================================
-// CLEAN, FARMER-FRIENDLY MIXED CHART
-// ==========================================
 function drawChart(dailyData) {
     const ctx = document.getElementById('forecastChart').getContext('2d');
     const dayLabels = dailyData.time.map(dateString => {
@@ -332,15 +326,15 @@ function drawChart(dailyData) {
     if (weatherChart) weatherChart.destroy();
 
     weatherChart = new Chart(ctx, {
-        type: 'bar', // Set the base chart type to bar
+        type: 'bar', 
         data: {
             labels: dayLabels,
             datasets: [
                 {
-                    type: 'line', // Override to make Temperature a line
+                    type: 'line', 
                     label: 'Heat (°C)', 
                     data: dailyData.temperature_2m_max,
-                    borderColor: '#f59e0b', // Amber/Orange
+                    borderColor: '#f59e0b', 
                     borderWidth: 3, 
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#f59e0b', 
@@ -349,11 +343,11 @@ function drawChart(dailyData) {
                     yAxisID: 'yTemp'
                 },
                 {
-                    type: 'bar', // Solid Blue Bars for Moisture
+                    type: 'bar', 
                     label: 'Water in Soil (%)', 
                     data: moistureData,
-                    backgroundColor: 'rgba(59, 130, 246, 0.7)', // Solid blue fill
-                    borderRadius: 4, // Make the tops of the bars slightly rounded
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)', 
+                    borderRadius: 4, 
                     yAxisID: 'yMoist'
                 }
             ]
@@ -374,13 +368,13 @@ function drawChart(dailyData) {
                 yTemp: { 
                     type: 'linear', display: true, position: 'left',
                     title: { display: true, text: 'Heat °C', color: '#f59e0b', font: { size: 10, weight: 'bold' } },
-                    grid: { display: false } // Hide grid to keep it clean
+                    grid: { display: false } 
                 },
                 yMoist: {
                     type: 'linear', display: true, position: 'right',
                     title: { display: true, text: 'Water %', color: '#3b82f6', font: { size: 10, weight: 'bold' } },
                     min: 0, max: 100,
-                    grid: { display: true, color: 'rgba(0,0,0,0.05)' } // Very light background grid
+                    grid: { display: true, color: 'rgba(0,0,0,0.05)' } 
                 }
             }
         }
@@ -397,20 +391,24 @@ function updateUI(weather) {
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
     
-    // UPDATED: Now populating the new Humidity box
     if(document.getElementById('humidity-val')) {
         document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
     }
-    // NEW: Populate Rain Probability Box
     if(document.getElementById('precip-prob-val')) {
         document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
     }
 
+    // 🌟 FIXED DAY/NIGHT ICON LOGIC 🌟
     const icon = document.getElementById('weather-icon');
+    const currentHour = new Date().getHours();
+    const isNight = currentHour < 6 || currentHour >= 18; 
+
     if (weather.rain > 0) {
         icon.className = "fa-solid fa-cloud-rain text-6xl text-blue-500 drop-shadow-md";
     } else if (weather.wind_speed_10m > 15) { 
         icon.className = "fa-solid fa-wind text-6xl text-teal-400 drop-shadow-md";
+    } else if (isNight) {
+        icon.className = "fa-solid fa-moon text-6xl text-indigo-400 drop-shadow-md";
     } else {
         icon.className = "fa-solid fa-sun text-6xl text-amber-400 drop-shadow-md";
     }
@@ -488,7 +486,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // ==========================================
-// MULTILINGUAL AI SEARCH LOGIC
+// 🌟 SMART MULTILINGUAL AI SEARCH (STREAMING CAPABLE) 🌟
 // ==========================================
 const aiSearchBtn = document.getElementById('ai-search-btn');
 const aiSearchInput = document.getElementById('ai-search-input');
@@ -503,7 +501,7 @@ if(aiSearchBtn) {
         aiSearchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         aiSearchBtn.disabled = true;
         aiResultBox.classList.remove('hidden');
-        aiResultText.innerHTML = '<span class="animate-pulse">The AI is thinking...</span>';
+        aiResultText.innerHTML = '<span class="animate-pulse text-purple-600">Connecting to AI Agronomist...</span>';
 
         try {
             const response = await fetch('https://weather-backend-mocha.vercel.app/ai-search', {
@@ -512,16 +510,38 @@ if(aiSearchBtn) {
                 body: JSON.stringify({ question: question })
             });
 
-            const data = await response.json();
+            // CHECK: Is the server sending Old JSON or New Streaming text?
+            const contentType = response.headers.get("content-type");
 
-            if (data.success) {
-                aiResultText.innerHTML = `<i class="fa-solid fa-check-circle text-emerald-500 mr-1"></i> ${data.answer}`;
+            if (contentType && contentType.includes("application/json")) {
+                // If it's JSON (Old method - wait for full response)
+                const data = await response.json();
+                if (data.success) {
+                    aiResultText.innerHTML = `<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ${data.answer}`;
+                } else {
+                    throw new Error(data.error || "Failed to get answer");
+                }
             } else {
-                throw new Error(data.error || "Failed to get answer");
+                // If it's Text (New STREAMING method - Typewriter effect!)
+                aiResultText.innerHTML = '<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ';
+                
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break; // AI finished typing
+                    
+                    // Decode the words and type them onto the screen immediately
+                    const textChunk = decoder.decode(value, { stream: true });
+                    // Replace newlines with HTML breaks so paragraphs format correctly
+                    aiResultText.innerHTML += textChunk.replace(/\n/g, '<br>'); 
+                }
             }
+
         } catch (error) {
             console.error(error);
-            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please try again.`;
+            aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please check your backend connection.`;
         } finally {
             aiSearchBtn.innerHTML = 'Ask';
             aiSearchBtn.disabled = false;
