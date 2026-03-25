@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" class="overflow-x-hidden">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kisan Chat - Pro Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="https://img.icons8.com/parakeet-line/48/emerald-500/leaf.png">
+    
+    <style>
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        /* Custom scrollbar for the chat box */
+        #chat-box::-webkit-scrollbar { width: 6px; }
+        #chat-box::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        
+        .bento-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
+
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
+
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100">
+        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h2 class="font-extrabold text-gray-900 text-lg flex items-center gap-2">
+                <i class="fa-solid fa-leaf text-emerald-500"></i> Menu
+            </h2>
+            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 transition-colors p-1">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        
+        <nav class="flex-1 overflow-y-auto p-4 space-y-1.5">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+                <i class="fa-solid fa-house w-5 text-center text-lg"></i> Dashboard
+            </a>
+            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+                <i class="fa-solid fa-cloud-showers-water w-5 text-center text-lg"></i> Precipitation Map
+            </a>
+            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+                <i class="fa-solid fa-newspaper w-5 text-center text-lg"></i> Kisan News
+            </a>
+            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm transition-colors">
+                <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Kisan Chat
+            </a>
+        </nav>
+    </div>
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
+        <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
+            <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+
+                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0">
+                    <i class="fa-solid fa-leaf text-white text-sm"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
+                        Kisan Alert <span class="text-emerald-500">Pro</span>
+                    </h1>
+                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1 truncate"></p>
+                </div>
+            </div>
+            
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px]">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="bn">বাংলা</option>
+                <option value="te">తెలుగు</option>
+                <option value="mr">मराठी</option>
+                <option value="ta">தமிழ்</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="ml">മലയാളം</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="as">অসমীয়া</option>
+                <option value="ur">اردو</option>
+                <option value="bho">भोजपुरी</option>
+            </select>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex flex-col h-[calc(100vh-140px)]">
+        
+        <div class="flex items-center gap-3 mb-6 shrink-0">
+            <div class="bg-indigo-500/10 p-3 rounded-xl border border-indigo-500/20 text-indigo-500">
+                <i class="fa-solid fa-comments text-2xl"></i>
+            </div>
+            <div>
+                <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Kisan Community <span class="bg-emerald-100 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ml-2 shadow-sm animate-pulse">Online</span></h2>
+                <p class="text-sm font-medium text-gray-500">Ask questions and share updates with farmers across India.</p>
+            </div>
+        </div>
+
+        <div class="bento-card bg-white rounded-[2rem] shadow-sm border border-gray-100 w-full flex-grow flex flex-col overflow-hidden relative">
+            
+            <div class="bg-gray-50 p-4 border-b border-gray-100 flex items-center gap-3 shrink-0 z-10">
+                <i class="fa-solid fa-user-circle text-gray-400 text-lg"></i>
+                <input type="text" id="farmer-name" placeholder="Enter your name to chat..." class="bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold outline-none focus:border-indigo-400 w-full max-w-[250px] shadow-sm" value="Farmer">
+            </div>
+
+            <div id="chat-box" class="flex-1 overflow-y-auto p-4 sm:p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-50/30 flex flex-col gap-4">
+                <div class="flex justify-center my-4">
+                    <span class="bg-indigo-50 text-indigo-500 text-[10px] font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-widest"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Connecting to server...</span>
+                </div>
+            </div>
+
+            <div class="p-4 bg-white border-t border-gray-100 shrink-0 z-10">
+                <div class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl p-1.5 shadow-inner">
+                    <input type="text" id="chat-input" placeholder="Type your message here..." class="flex-1 bg-transparent px-4 py-2.5 text-sm font-medium text-gray-800 outline-none w-full" autocomplete="off">
+                    <button id="send-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl w-12 h-10 sm:w-24 flex items-center justify-center gap-2 font-bold transition-all shadow-md shrink-0">
+                        <i class="fa-solid fa-paper-plane"></i> <span class="hidden sm:inline text-sm">Send</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white shrink-0">
+        <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
+            <p class="text-xs text-gray-500 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
+            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shrink-0 max-w-full truncate">
+                Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span>
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // 1. Live Time Logic
+        function updateLiveTime() {
+            const timeDisplay = document.getElementById('live-time');
+            if (!timeDisplay) return;
+            const now = new Date();
+            const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+            const dateString = now.toLocaleDateString('en-US', dateOptions);
+            const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+            const timeString = now.toLocaleTimeString('en-US', timeOptions);
+            timeDisplay.innerHTML = `<i class="fa-regular fa-clock mr-1 text-emerald-400"></i> ${dateString} • ${timeString}`;
+        }
+        setInterval(updateLiveTime, 1000);
+        updateLiveTime();
+
+        // 2. Sidebar Animation Logic
+        const menuBtn = document.getElementById('menu-btn');
+        const closeMenuBtn = document.getElementById('close-menu-btn');
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const sidebarOverlay = document.getElementById('sidebar-overlay');
+
+        function openSidebar() {
+            sidebarOverlay.classList.remove('hidden');
+            setTimeout(() => sidebarOverlay.classList.remove('opacity-0'), 10);
+            sidebarMenu.classList.remove('-translate-x-full');
+        }
+
+        function closeSidebar() {
+            sidebarOverlay.classList.add('opacity-0');
+            sidebarMenu.classList.add('-translate-x-full');
+            setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+        }
+
+        menuBtn.addEventListener('click', openSidebar);
+        closeMenuBtn.addEventListener('click', closeSidebar);
+        sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // 3. REAL-TIME CHAT LOGIC
+        const chatBox = document.getElementById('chat-box');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const farmerNameInput = document.getElementById('farmer-name');
+        
+        let lastMessageCount = 0;
+        let isUserScrolling = false;
+
+        // Check if user has scrolled up to prevent auto-scrolling to bottom
+        chatBox.addEventListener('scroll', () => {
+            const isAtBottom = chatBox.scrollHeight - chatBox.scrollTop <= chatBox.clientHeight + 50;
+            isUserScrolling = !isAtBottom;
+        });
+
+        function scrollToBottom() {
+            if (!isUserScrolling) {
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        async function loadMessages() {
+            try {
+                // Ensure this matches your Vercel deployment!
+                const res = await fetch('https://weather-backend-mocha.vercel.app/api/chat');
+                const data = await res.json();
+                
+                if(data.success && data.messages.length > lastMessageCount) {
+                    renderMessages(data.messages);
+                    lastMessageCount = data.messages.length;
+                    scrollToBottom();
+                }
+            } catch(e) { 
+                console.error("Chat sync failed", e); 
+            }
+        }
+
+        function renderMessages(msgs) {
+            chatBox.innerHTML = ''; // Clear loading spinner
+            const currentUser = farmerNameInput.value.trim() || "Farmer";
+            
+            msgs.forEach(msg => {
+                const isSystem = msg.sender === "System";
+                const isMe = msg.sender === currentUser && !isSystem;
+                
+                let html = '';
+
+                if (isSystem) {
+                    html = `
+                        <div class="flex justify-center my-2 w-full">
+                            <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full border border-gray-200 shadow-sm"><i class="fa-solid fa-robot mr-1"></i> ${msg.text}</span>
+                        </div>
+                    `;
+                } else {
+                    const bubbleClass = isMe ? "bg-indigo-600 text-white rounded-br-none ml-auto" : "bg-white text-gray-800 rounded-bl-none border border-gray-100";
+                    const alignClass = isMe ? "items-end" : "items-start";
+                    const timeString = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    html = `
+                        <div class="flex flex-col ${alignClass} w-full max-w-[85%] sm:max-w-[70%] ${isMe ? 'ml-auto' : ''}">
+                            <span class="text-[10px] text-gray-400 font-bold mb-1 px-1">${msg.sender} • ${timeString}</span>
+                            <div class="px-4 py-2.5 rounded-2xl ${bubbleClass} text-sm font-medium shadow-sm leading-relaxed break-words w-auto">
+                                ${msg.text}
+                            </div>
+                        </div>
+                    `;
+                }
+                chatBox.insertAdjacentHTML('beforeend', html);
+            });
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            const sender = farmerNameInput.value.trim() || "Farmer";
+            if(!text) return;
+
+            // Instantly clear box & disable to prevent spam
+            chatInput.value = '';
+            chatInput.disabled = true;
+            sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            
+            try {
+                await fetch('https://weather-backend-mocha.vercel.app/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sender: sender, text: text })
+                });
+                await loadMessages(); // Force reload immediately
+                scrollToBottom();
+            } catch(e) { 
+                console.error(e); 
+            } finally {
+                chatInput.disabled = false;
+                sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> <span class="hidden sm:inline text-sm">Send</span>';
+                chatInput.focus();
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        chatInput.addEventListener('keypress', e => { 
+            if(e.key === 'Enter') sendMessage(); 
+        });
+
+        // Fetch new messages every 3 seconds
+        setInterval(loadMessages, 3000);
+        loadMessages(); // Initial load
+    </script>
+</body>
+</html>
