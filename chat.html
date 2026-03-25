@@ -28,6 +28,17 @@
         .bento-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
+        /* 🌟 UPGRADE 4: Premium Animations */
+        .glow-effect {
+            box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.3);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+        .icon-float { animation: float-icon 3s ease-in-out infinite; }
+        @keyframes float-icon { 
+            0%, 100% { transform: translateY(0); } 
+            50% { transform: translateY(-6px); } 
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -98,25 +109,80 @@
     </header>
 
     <div id="login-gateway" class="absolute inset-0 z-40 bg-white/95 backdrop-blur-md flex items-center justify-center transition-opacity duration-500">
-        <div class="bg-white rounded-[2rem] p-8 sm:p-10 shadow-2xl border border-gray-100 max-w-md w-full mx-4 text-center transform transition-transform duration-500 scale-100">
-            <div class="bg-indigo-50 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-6 shadow-inner border border-indigo-100">
-                <i class="fa-solid fa-users text-4xl text-indigo-500"></i>
-            </div>
-            <h2 class="text-2xl font-black text-gray-900 mb-2 tracking-tight">Join Kisan Community</h2>
-            <p class="text-sm text-gray-500 font-medium mb-8">Connect, ask questions, and share crop insights with farmers across India in real-time.</p>
+        <div class="bg-white rounded-[2rem] p-6 sm:p-10 shadow-2xl max-w-lg w-full mx-4 text-center transform transition-transform duration-500 scale-100 glow-effect relative overflow-hidden">
             
-            <div class="text-left mb-6">
-                <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Your Name</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
-                        <i class="fa-solid fa-user"></i>
+            <div class="absolute -top-20 -right-20 w-48 h-48 bg-indigo-500/10 rounded-full blur-[40px] pointer-events-none"></div>
+
+            <div class="bg-gradient-to-br from-indigo-100 to-indigo-50 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner border border-indigo-200 icon-float relative z-10">
+                <i class="fa-solid fa-users text-4xl text-indigo-600"></i>
+            </div>
+            <h2 class="text-2xl font-black text-gray-900 mb-1 tracking-tight relative z-10">Join Kisan Community</h2>
+            <p class="text-sm text-gray-500 font-medium mb-6 relative z-10">Set up your profile to connect with farmers across India.</p>
+            
+            <div class="space-y-5 text-left relative z-10">
+                
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Your Name</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <input type="text" id="login-name-input" placeholder="e.g. Ramesh Singh" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm" autocomplete="off">
                     </div>
-                    <input type="text" id="login-name-input" placeholder="e.g. Ramesh Singh" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3.5 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm" autocomplete="off">
                 </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Select Avatar</label>
+                    <div class="flex justify-center gap-3">
+                        <button type="button" class="avatar-btn bg-indigo-600 text-white w-12 h-12 rounded-full shadow-md transition-all border-2 border-indigo-200" data-icon="fa-user-tie"><i class="fa-solid fa-user-tie text-lg"></i></button>
+                        <button type="button" class="avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all" data-icon="fa-tractor"><i class="fa-solid fa-tractor text-lg"></i></button>
+                        <button type="button" class="avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all" data-icon="fa-seedling"><i class="fa-solid fa-seedling text-lg"></i></button>
+                        <button type="button" class="avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all" data-icon="fa-wheat-awn"><i class="fa-solid fa-wheat-awn text-lg"></i></button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">State / Region</label>
+                        <div class="relative">
+                            <select id="login-state" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-3 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm cursor-pointer">
+                                <option value="Odisha">Odisha</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Uttar Pradesh">UP</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="West Bengal">Bengal</option>
+                                <option value="Andhra Pradesh">AP</option>
+                            </select>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-indigo-400">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Primary Crop</label>
+                        <div class="relative">
+                            <select id="login-crop" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-3 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm cursor-pointer">
+                                <option value="Paddy">Paddy</option>
+                                <option value="Wheat">Wheat</option>
+                                <option value="Sugarcane">Sugarcane</option>
+                                <option value="Cotton">Cotton</option>
+                                <option value="Vegetables">Vegetables</option>
+                                <option value="Fruits">Fruits</option>
+                            </select>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-emerald-500">
+                                <i class="fa-solid fa-seedling"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             
-            <button id="join-chat-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
-                Join Live Chat <i class="fa-solid fa-arrow-right"></i>
+            <button id="join-chat-btn" class="mt-8 w-full bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold py-3.5 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 relative z-10">
+                <span id="join-btn-text">Join Live Chat</span> <i id="join-btn-icon" class="fa-solid fa-arrow-right"></i>
             </button>
         </div>
     </div>
@@ -136,13 +202,15 @@
         <div class="bento-card bg-white rounded-[2rem] shadow-sm border border-gray-100 w-full flex-grow flex flex-col overflow-hidden relative">
             
             <div class="bg-gray-50 p-4 border-b border-gray-100 flex justify-between items-center shrink-0 z-10">
-                <div class="flex items-center gap-2">
-                    <div class="bg-indigo-100 text-indigo-600 w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-sm">
-                        <i class="fa-solid fa-user text-sm"></i>
+                <div class="flex items-center gap-3">
+                    <div id="display-logged-in-icon" class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm border-2 border-indigo-200">
+                        <i class="fa-solid fa-user-tie text-lg"></i>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Logged in as</p>
-                        <p id="display-logged-in-name" class="text-sm font-extrabold text-gray-800 leading-none">Farmer</p>
+                        <p id="display-logged-in-name" class="text-sm font-extrabold text-gray-800 leading-none flex items-center gap-2">
+                            Farmer <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">🌾 Crop</span>
+                        </p>
                     </div>
                 </div>
                 <button id="logout-btn" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-red-100">
@@ -219,47 +287,84 @@
         const loginGateway = document.getElementById('login-gateway');
         const chatInterface = document.getElementById('chat-interface');
         const loginNameInput = document.getElementById('login-name-input');
+        const stateSelect = document.getElementById('login-state');
+        const cropSelect = document.getElementById('login-crop');
         const joinChatBtn = document.getElementById('join-chat-btn');
+        const joinBtnText = document.getElementById('join-btn-text');
+        const joinBtnIcon = document.getElementById('join-btn-icon');
         const displayLoggedInName = document.getElementById('display-logged-in-name');
+        const displayLoggedInIcon = document.getElementById('display-logged-in-icon');
         const logoutBtn = document.getElementById('logout-btn');
         
         const chatBox = document.getElementById('chat-box');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
         
-        let currentUser = "";
+        let currentUserProfile = ""; // Holds "Name|Icon|State|Crop"
+        let currentUserName = "";
+        let selectedAvatar = "fa-user-tie";
         let lastMessageCount = 0;
         let isUserScrolling = false;
         let chatInterval;
 
+        // Avatar Selection Logic
+        document.querySelectorAll('.avatar-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.avatar-btn').forEach(b => {
+                    b.className = "avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all";
+                });
+                btn.className = "avatar-btn bg-indigo-600 text-white w-12 h-12 rounded-full shadow-md transition-all border-2 border-indigo-200";
+                selectedAvatar = btn.dataset.icon;
+            });
+        });
+
         // --- LOGIN LOGIC ---
         function joinChat() {
             const name = loginNameInput.value.trim();
+            const state = stateSelect.value;
+            const crop = cropSelect.value;
+
             if(!name) {
                 alert("Please enter your name to join the chat.");
                 return;
             }
             
-            currentUser = name;
-            localStorage.setItem("kisanChatUser", name); // Remember them for next time
+            // Pack profile into a string to send to the backend
+            currentUserProfile = `${name}|${selectedAvatar}|${state}|${crop}`;
+            currentUserName = name;
+            localStorage.setItem("kisanChatProfile", currentUserProfile); 
             
-            displayLoggedInName.innerText = currentUser;
+            // Update Header UI
+            displayLoggedInIcon.innerHTML = `<i class="fa-solid ${selectedAvatar} text-lg"></i>`;
+            displayLoggedInName.innerHTML = `${name} <span class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded ml-1">📍 ${state}</span>`;
             
-            // Hide Gateway, Show Chat
-            loginGateway.classList.add('opacity-0');
+            // 🌟 UPGRADE 4: Authentic-feeling Loading Delay
+            joinChatBtn.disabled = true;
+            joinBtnText.innerText = "Authenticating...";
+            joinBtnIcon.className = "fa-solid fa-spinner fa-spin";
+
             setTimeout(() => {
-                loginGateway.classList.add('hidden');
-                chatInterface.classList.remove('opacity-0', 'pointer-events-none');
-                
-                // Start loading messages
-                loadMessages();
-                chatInterval = setInterval(loadMessages, 3000);
-            }, 500);
+                // Hide Gateway, Show Chat
+                loginGateway.classList.add('opacity-0');
+                setTimeout(() => {
+                    loginGateway.classList.add('hidden');
+                    chatInterface.classList.remove('opacity-0', 'pointer-events-none');
+                    
+                    joinChatBtn.disabled = false;
+                    joinBtnText.innerText = "Join Live Chat";
+                    joinBtnIcon.className = "fa-solid fa-arrow-right";
+
+                    // Start loading messages
+                    loadMessages();
+                    chatInterval = setInterval(loadMessages, 3000);
+                }, 500);
+            }, 1000);
         }
 
         function exitChat() {
-            localStorage.removeItem("kisanChatUser");
-            currentUser = "";
+            localStorage.removeItem("kisanChatProfile");
+            currentUserProfile = "";
+            currentUserName = "";
             loginNameInput.value = "";
             clearInterval(chatInterval);
             
@@ -276,9 +381,23 @@
 
         // Auto-login if they visited before
         window.addEventListener('DOMContentLoaded', () => {
-            const savedName = localStorage.getItem("kisanChatUser");
-            if (savedName) {
-                loginNameInput.value = savedName;
+            const savedProfile = localStorage.getItem("kisanChatProfile");
+            if (savedProfile) {
+                const parts = savedProfile.split('|');
+                loginNameInput.value = parts[0];
+                selectedAvatar = parts[1] || "fa-user-tie";
+                stateSelect.value = parts[2] || "Odisha";
+                cropSelect.value = parts[3] || "Wheat";
+                
+                // Visually select the right avatar
+                document.querySelectorAll('.avatar-btn').forEach(b => {
+                    if(b.dataset.icon === selectedAvatar) {
+                        b.className = "avatar-btn bg-indigo-600 text-white w-12 h-12 rounded-full shadow-md transition-all border-2 border-indigo-200";
+                    } else {
+                        b.className = "avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all";
+                    }
+                });
+
                 joinChat();
             }
         });
@@ -296,10 +415,9 @@
         }
 
         async function loadMessages() {
-            if(!currentUser) return; // Don't fetch if not logged in
+            if(!currentUserProfile) return; 
 
             try {
-                // Ensure this matches your Vercel deployment!
                 const res = await fetch('https://weather-backend-mocha.vercel.app/api/chat');
                 const data = await res.json();
                 
@@ -314,11 +432,19 @@
         }
 
         function renderMessages(msgs) {
-            chatBox.innerHTML = ''; // Clear loading spinner
+            chatBox.innerHTML = ''; 
             
             msgs.forEach(msg => {
                 const isSystem = msg.sender === "System";
-                const isMe = msg.sender === currentUser && !isSystem;
+                
+                // Decode profile string from backend
+                const parts = msg.sender.split('|');
+                const msgName = parts[0] || "Farmer";
+                const msgIcon = parts[1] || "fa-user-circle";
+                const msgState = parts[2] || "";
+                const msgCrop = parts[3] || "";
+
+                const isMe = !isSystem && msgName === currentUserName;
                 
                 let html = '';
 
@@ -333,9 +459,18 @@
                     const alignClass = isMe ? "items-end" : "items-start";
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
+                    // Build Rich Header
+                    let richHeader = `<i class="fa-solid ${msgIcon} ${isMe ? 'text-indigo-200' : 'text-indigo-400'} text-[10px] mr-1"></i> <span class="text-[10px] ${isMe ? 'text-indigo-100' : 'text-gray-500'} font-extrabold mr-2">${msgName}</span>`;
+                    
+                    if(msgState) richHeader += `<span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-400'} font-medium mr-2"><i class="fa-solid fa-location-dot"></i> ${msgState}</span>`;
+                    if(msgCrop) richHeader += `<span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold"><i class="fa-solid fa-seedling"></i> ${msgCrop}</span>`;
+
                     html = `
-                        <div class="flex flex-col ${alignClass} w-full max-w-[85%] sm:max-w-[70%] ${isMe ? 'ml-auto' : ''}">
-                            <span class="text-[10px] text-gray-400 font-bold mb-1 px-1">${msg.sender} • ${timeString}</span>
+                        <div class="flex flex-col ${alignClass} w-full max-w-[90%] sm:max-w-[75%] ${isMe ? 'ml-auto' : ''}">
+                            <div class="flex items-center flex-wrap mb-1.5 px-1">
+                                ${richHeader}
+                                <span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-300'} font-medium ml-auto pl-2">${timeString}</span>
+                            </div>
                             <div class="px-4 py-2.5 rounded-2xl ${bubbleClass} text-sm font-medium shadow-sm leading-relaxed break-words w-auto">
                                 ${msg.text}
                             </div>
@@ -348,9 +483,8 @@
 
         async function sendMessage() {
             const text = chatInput.value.trim();
-            if(!text || !currentUser) return;
+            if(!text || !currentUserProfile) return;
 
-            // Instantly clear box & disable to prevent spam
             chatInput.value = '';
             chatInput.disabled = true;
             sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
@@ -359,9 +493,9 @@
                 await fetch('https://weather-backend-mocha.vercel.app/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ sender: currentUser, text: text })
+                    body: JSON.stringify({ sender: currentUserProfile, text: text })
                 });
-                await loadMessages(); // Force reload immediately
+                await loadMessages(); 
                 scrollToBottom();
             } catch(e) { 
                 console.error(e); 
