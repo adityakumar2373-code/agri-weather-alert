@@ -132,51 +132,23 @@
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Select Avatar</label>
-                    <div class="flex justify-center gap-3">
-                        <button type="button" class="avatar-btn bg-indigo-600 text-white w-12 h-12 rounded-full shadow-md transition-all border-2 border-indigo-200" data-icon="fa-user-tie"><i class="fa-solid fa-user-tie text-lg"></i></button>
-                        <button type="button" class="avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all" data-icon="fa-tractor"><i class="fa-solid fa-tractor text-lg"></i></button>
-                        <button type="button" class="avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all" data-icon="fa-seedling"><i class="fa-solid fa-seedling text-lg"></i></button>
-                        <button type="button" class="avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all" data-icon="fa-wheat-awn"><i class="fa-solid fa-wheat-awn text-lg"></i></button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">State / Region</label>
-                        <div class="relative">
-                            <select id="login-state" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-3 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm cursor-pointer">
-                                <option value="Odisha">Odisha</option>
-                                <option value="Punjab">Punjab</option>
-                                <option value="Maharashtra">Maharashtra</option>
-                                <option value="Uttar Pradesh">UP</option>
-                                <option value="Haryana">Haryana</option>
-                                <option value="Gujarat">Gujarat</option>
-                                <option value="West Bengal">Bengal</option>
-                                <option value="Andhra Pradesh">AP</option>
-                            </select>
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-indigo-400">
-                                <i class="fa-solid fa-location-dot"></i>
-                            </div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">State / Region <span class="text-indigo-400 normal-case tracking-normal ml-1">(Private)</span></label>
+                    <div class="relative">
+                        <select id="login-state" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-3 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm cursor-pointer">
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Uttar Pradesh">UP</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="West Bengal">Bengal</option>
+                            <option value="Andhra Pradesh">AP</option>
+                        </select>
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-indigo-400">
+                            <i class="fa-solid fa-location-dot"></i>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Primary Crop</label>
-                        <div class="relative">
-                            <select id="login-crop" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-3 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm cursor-pointer">
-                                <option value="Paddy">Paddy</option>
-                                <option value="Wheat">Wheat</option>
-                                <option value="Sugarcane">Sugarcane</option>
-                                <option value="Cotton">Cotton</option>
-                                <option value="Vegetables">Vegetables</option>
-                                <option value="Fruits">Fruits</option>
-                            </select>
-                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-emerald-500">
-                                <i class="fa-solid fa-seedling"></i>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-[10px] text-gray-400 mt-1 ml-1 text-center">Your state is kept private and will not be shown in the chat.</p>
                 </div>
 
             </div>
@@ -204,12 +176,12 @@
             <div class="bg-gray-50 p-4 border-b border-gray-100 flex justify-between items-center shrink-0 z-10">
                 <div class="flex items-center gap-3">
                     <div id="display-logged-in-icon" class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm border-2 border-indigo-200">
-                        <i class="fa-solid fa-user-tie text-lg"></i>
+                        <i class="fa-solid fa-user-circle text-lg"></i>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Logged in as</p>
                         <p id="display-logged-in-name" class="text-sm font-extrabold text-gray-800 leading-none flex items-center gap-2">
-                            Farmer <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded">🌾 Crop</span>
+                            Farmer
                         </p>
                     </div>
                 </div>
@@ -288,57 +260,54 @@
         const chatInterface = document.getElementById('chat-interface');
         const loginNameInput = document.getElementById('login-name-input');
         const stateSelect = document.getElementById('login-state');
-        const cropSelect = document.getElementById('login-crop');
         const joinChatBtn = document.getElementById('join-chat-btn');
         const joinBtnText = document.getElementById('join-btn-text');
         const joinBtnIcon = document.getElementById('join-btn-icon');
         const displayLoggedInName = document.getElementById('display-logged-in-name');
-        const displayLoggedInIcon = document.getElementById('display-logged-in-icon');
         const logoutBtn = document.getElementById('logout-btn');
         
         const chatBox = document.getElementById('chat-box');
         const chatInput = document.getElementById('chat-input');
         const sendBtn = document.getElementById('send-btn');
         
-        let currentUserProfile = ""; // Holds "Name|Icon|State|Crop"
+        let currentUserProfile = ""; // Holds "Name|UserId" (State is kept private)
         let currentUserName = "";
-        let selectedAvatar = "fa-user-tie";
+        let currentUserId = "";
         let lastMessageCount = 0;
         let isUserScrolling = false;
         let chatInterval;
-
-        // Avatar Selection Logic
-        document.querySelectorAll('.avatar-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.avatar-btn').forEach(b => {
-                    b.className = "avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all";
-                });
-                btn.className = "avatar-btn bg-indigo-600 text-white w-12 h-12 rounded-full shadow-md transition-all border-2 border-indigo-200";
-                selectedAvatar = btn.dataset.icon;
-            });
-        });
 
         // --- LOGIN LOGIC ---
         function joinChat() {
             const name = loginNameInput.value.trim();
             const state = stateSelect.value;
-            const crop = cropSelect.value;
 
             if(!name) {
                 alert("Please enter your name to join the chat.");
                 return;
             }
             
-            // Pack profile into a string to send to the backend
-            currentUserProfile = `${name}|${selectedAvatar}|${state}|${crop}`;
+            // Generate a unique user ID like Instagram (e.g. @rameshsingh8273)
+            let userId = localStorage.getItem("kisanChatUserId");
+            if(!userId) {
+                userId = '@' + name.toLowerCase().replace(/[^a-z0-9]/g, '') + Math.floor(1000 + Math.random() * 9000);
+                localStorage.setItem("kisanChatUserId", userId);
+            }
+            
+            currentUserId = userId;
             currentUserName = name;
-            localStorage.setItem("kisanChatProfile", currentUserProfile); 
+            
+            // Pack profile string to send to the backend (State is EXCLUDED to remain private)
+            currentUserProfile = `${name}|${userId}`;
+            
+            // Save locally
+            localStorage.setItem("kisanChatName", name); 
+            localStorage.setItem("kisanChatState", state); // Saved locally but never sent
             
             // Update Header UI
-            displayLoggedInIcon.innerHTML = `<i class="fa-solid ${selectedAvatar} text-lg"></i>`;
-            displayLoggedInName.innerHTML = `${name} <span class="text-[10px] bg-indigo-50 text-indigo-600 border border-indigo-100 px-1.5 py-0.5 rounded ml-1">📍 ${state}</span>`;
+            displayLoggedInName.innerHTML = `${name} <span class="text-[10px] font-medium text-gray-400 ml-1.5">${userId}</span>`;
             
-            // 🌟 UPGRADE 4: Authentic-feeling Loading Delay
+            // Authentic-feeling Loading Delay
             joinChatBtn.disabled = true;
             joinBtnText.innerText = "Authenticating...";
             joinBtnIcon.className = "fa-solid fa-spinner fa-spin";
@@ -362,9 +331,14 @@
         }
 
         function exitChat() {
-            localStorage.removeItem("kisanChatProfile");
+            // Clear local storage for a fresh start next time
+            localStorage.removeItem("kisanChatName");
+            localStorage.removeItem("kisanChatState");
+            localStorage.removeItem("kisanChatUserId");
+            
             currentUserProfile = "";
             currentUserName = "";
+            currentUserId = "";
             loginNameInput.value = "";
             clearInterval(chatInterval);
             
@@ -381,23 +355,12 @@
 
         // Auto-login if they visited before
         window.addEventListener('DOMContentLoaded', () => {
-            const savedProfile = localStorage.getItem("kisanChatProfile");
-            if (savedProfile) {
-                const parts = savedProfile.split('|');
-                loginNameInput.value = parts[0];
-                selectedAvatar = parts[1] || "fa-user-tie";
-                stateSelect.value = parts[2] || "Odisha";
-                cropSelect.value = parts[3] || "Wheat";
-                
-                // Visually select the right avatar
-                document.querySelectorAll('.avatar-btn').forEach(b => {
-                    if(b.dataset.icon === selectedAvatar) {
-                        b.className = "avatar-btn bg-indigo-600 text-white w-12 h-12 rounded-full shadow-md transition-all border-2 border-indigo-200";
-                    } else {
-                        b.className = "avatar-btn bg-gray-50 text-gray-500 hover:bg-indigo-50 hover:text-indigo-500 w-12 h-12 rounded-full border border-gray-200 transition-all";
-                    }
-                });
-
+            const savedName = localStorage.getItem("kisanChatName");
+            const savedState = localStorage.getItem("kisanChatState");
+            
+            if (savedName) {
+                loginNameInput.value = savedName;
+                if(savedState) stateSelect.value = savedState;
                 joinChat();
             }
         });
@@ -440,11 +403,10 @@
                 // Decode profile string from backend
                 const parts = msg.sender.split('|');
                 const msgName = parts[0] || "Farmer";
-                const msgIcon = parts[1] || "fa-user-circle";
-                const msgState = parts[2] || "";
-                const msgCrop = parts[3] || "";
+                const msgUserId = parts[1] || "";
 
-                const isMe = !isSystem && msgName === currentUserName;
+                // It's "Me" if both Name and User ID match
+                const isMe = !isSystem && msgName === currentUserName && msgUserId === currentUserId;
                 
                 let html = '';
 
@@ -459,11 +421,9 @@
                     const alignClass = isMe ? "items-end" : "items-start";
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
-                    // Build Rich Header
-                    let richHeader = `<i class="fa-solid ${msgIcon} ${isMe ? 'text-indigo-200' : 'text-indigo-400'} text-[10px] mr-1"></i> <span class="text-[10px] ${isMe ? 'text-indigo-100' : 'text-gray-500'} font-extrabold mr-2">${msgName}</span>`;
-                    
-                    if(msgState) richHeader += `<span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-400'} font-medium mr-2"><i class="fa-solid fa-location-dot"></i> ${msgState}</span>`;
-                    if(msgCrop) richHeader += `<span class="text-[9px] bg-emerald-50 text-emerald-600 px-1.5 py-0.5 rounded border border-emerald-100 font-bold"><i class="fa-solid fa-seedling"></i> ${msgCrop}</span>`;
+                    // Build Rich Header with Name and User ID
+                    let richHeader = `<i class="fa-solid fa-user-circle ${isMe ? 'text-indigo-200' : 'text-indigo-400'} text-[10px] mr-1"></i> <span class="text-[11px] ${isMe ? 'text-white' : 'text-gray-800'} font-extrabold mr-1.5">${msgName}</span>`;
+                    if(msgUserId) richHeader += `<span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-400'} font-medium mr-2">${msgUserId}</span>`;
 
                     html = `
                         <div class="flex flex-col ${alignClass} w-full max-w-[90%] sm:max-w-[75%] ${isMe ? 'ml-auto' : ''}">
