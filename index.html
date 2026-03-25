@@ -61,7 +61,7 @@
                 </div>
             </div>
             
-            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none w-[95px] sm:w-[140px] text-center shadow-sm cursor-pointer">
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none w-[95px] sm:w-auto appearance-none text-center shadow-sm">
                 <option value="en">English</option>
                 <option value="hi">हिंदी</option>
                 <option value="bn">বাংলা</option>
@@ -93,7 +93,7 @@
                         <div class="bg-white/10 p-2 rounded-xl border border-white/10 backdrop-blur-sm">
                             <i class="fa-solid fa-robot text-purple-300 text-lg"></i>
                         </div>
-                        <h3 class="font-extrabold text-base text-white tracking-wide">Ask AI Agronomist</h3>
+                        <h3 id="ui-ask-ai-title" class="font-extrabold text-base text-white tracking-wide">Ask AI Agronomist</h3>
                     </div>
                     
                     <div class="flex gap-2 relative z-10 w-full">
@@ -109,13 +109,13 @@
                     </div>
 
                     <div class="mt-4 relative z-10 flex flex-wrap gap-2">
-                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the best fertilizer to use right now?'" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
+                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the best fertilizer to use right now?'" id="ui-pill-fertilizer" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-flask text-purple-400"></i> Fertilizer
                         </button>
-                        <button type="button" onclick="document.getElementById('ai-search-input').value='How to identify and stop pest infections?'" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
+                        <button type="button" onclick="document.getElementById('ai-search-input').value='How to identify and stop pest infections?'" id="ui-pill-pest" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-bug text-purple-400"></i> Pest Control
                         </button>
-                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the optimal watering schedule?'" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
+                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the optimal watering schedule?'" id="ui-pill-irrigation" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-droplet text-purple-400"></i> Irrigation
                         </button>
                     </div>
@@ -130,7 +130,7 @@
                 </div>
 
                 <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full">
-                    <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                    <h3 id="ui-setup-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-map-location-dot"></i> Setup Parameters
                     </h3>
                     
@@ -189,7 +189,7 @@
                         <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
                             <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
                         </h2>
-                        <span class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
+                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
@@ -231,7 +231,7 @@
                             
                             <button id="read-aloud-btn" class="bg-emerald-50 text-emerald-700 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
                                 <i class="fa-solid fa-volume-high" id="audio-icon"></i>
-                                <span class="hidden sm:inline">Read Aloud</span>
+                                <span id="ui-read-aloud" class="hidden sm:inline">Read Aloud</span>
                             </button>
                         </div>
                         
@@ -243,7 +243,7 @@
                     
                     <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full overflow-hidden" id="forecast-section">
                         <div class="flex items-center justify-between mb-5">
-                            <h3 class="text-base font-extrabold text-gray-800 flex items-center gap-2 truncate">
+                            <h3 id="ui-forecast-title" class="text-base font-extrabold text-gray-800 flex items-center gap-2 truncate">
                                 <i class="fa-solid fa-chart-area text-emerald-500"></i> 7-Day Forecast
                             </h3>
                         </div>
@@ -258,17 +258,17 @@
                         </div>
 
                         <div class="flex items-center justify-between mb-4 relative z-10 gap-2">
-                            <h3 class="text-base font-extrabold text-white flex items-center gap-2 min-w-0 truncate">
+                            <h3 id="ui-doc-title" class="text-base font-extrabold text-white flex items-center gap-2 min-w-0 truncate">
                                 <i class="fa-solid fa-camera text-emerald-400 shrink-0"></i> AI Plant Doctor
                             </h3>
-                            <span class="bg-emerald-800 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-700 shrink-0 hidden sm:inline-block">Computer Vision</span>
+                            <span id="ui-doc-badge" class="bg-emerald-800 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-700 shrink-0 hidden sm:inline-block">Computer Vision</span>
                         </div>
                         
                         <div class="relative z-10 w-full min-w-0">
-                            <p class="text-sm text-emerald-100/80 mb-5 font-medium leading-relaxed">Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.</p>
+                            <p id="ui-doc-desc" class="text-sm text-emerald-100/80 mb-5 font-medium leading-relaxed">Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.</p>
                             
                             <input type="file" id="camera-input" accept="image/*" class="hidden">
-                            <button onclick="document.getElementById('camera-input').click()" class="w-full sm:w-auto bg-emerald-400 text-emerald-950 font-extrabold py-3.5 px-6 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm">
+                            <button onclick="document.getElementById('camera-input').click()" id="ui-doc-btn" class="w-full sm:w-auto bg-emerald-400 text-emerald-950 font-extrabold py-3.5 px-6 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm">
                                 <i class="fa-solid fa-camera text-lg"></i> Scan Leaf Now
                             </button>
 
