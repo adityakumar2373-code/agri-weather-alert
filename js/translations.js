@@ -29,8 +29,7 @@ const translations = {
         "docDesc": "Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.",
         "docBtn": "Scan Leaf Now",
         "realtimeBadge": "Real-Time",
-        "readAloudBtn": "Read Aloud",
-        "precipLabel": "Rain %"
+        "readAloudBtn": "Read Aloud"
     },
     "hi": {
         "appTitle": 'कृषि-अलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -62,8 +61,7 @@ const translations = {
         "docDesc": "बीमार पत्ती की फोटो लें। हमारा एआई तुरंत समस्या की पहचान करेगा और इलाज का सुझाव देगा।",
         "docBtn": "पत्ती स्कैन करें",
         "realtimeBadge": "वास्तविक समय",
-        "readAloudBtn": "जोर से पढ़ें",
-        "precipLabel": "बारिश %"
+        "readAloudBtn": "जोर से पढ़ें"
     },
     "or": {
         "appTitle": 'କୃଷି-ଆଲର୍ଟ <span class="text-emerald-500">ପ୍ରୋ</span>',
@@ -95,8 +93,7 @@ const translations = {
         "docDesc": "ରୋଗାକ୍ରାନ୍ତ ପତ୍ରର ଏକ ଫଟୋ ନିଅନ୍ତୁ। ଆମର AI ତୁରନ୍ତ ସମସ୍ୟା ଚିହ୍ନଟ କରିବ ଏବଂ ପ୍ରତିକାର ପରାମର୍ଶ ଦେବ।",
         "docBtn": "ପତ୍ର ସ୍କାନ୍ କରନ୍ତୁ",
         "realtimeBadge": "ରିୟଲ-ଟାଇମ୍",
-        "readAloudBtn": "ପଢନ୍ତୁ",
-        "precipLabel": "ବର୍ଷା %"
+        "readAloudBtn": "ପଢନ୍ତୁ"
     },
     "bn": {
         "appTitle": 'এগ্রিঅ্যালার্ট <span class="text-emerald-500">প্রো</span>',
@@ -128,8 +125,7 @@ const translations = {
         "docDesc": "আক্রান্ত পাতার ছবি তুলুন। আমাদের এআই তাৎক্ষণিকভাবে সমস্যা শনাক্ত করে প্রতিকারের পরামর্শ দেবে।",
         "docBtn": "পাতা স্ক্যান করুন",
         "realtimeBadge": "রিয়েল-টাইম",
-        "readAloudBtn": "পড়ে শোনান",
-        "precipLabel": "বৃষ্টি %"
+        "readAloudBtn": "পড়ে শোনান"
     },
     "mr": {
         "appTitle": 'अॅग्रीअलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -161,8 +157,7 @@ const translations = {
         "docDesc": "रोगग्रस्त पानाचा फोटो काढा. आमचे एआय त्वरित समस्या ओळखून उपाय सुचवेल.",
         "docBtn": "पान स्कॅन करा",
         "realtimeBadge": "रिअल-टाइम",
-        "readAloudBtn": "वाचून दाखवा",
-        "precipLabel": "पाऊस %"
+        "readAloudBtn": "वाचून दाखवा"
     },
     "te": {
         "appTitle": 'అగ్రిఅలర్ట్ <span class="text-emerald-500">ప్రో</span>',
@@ -194,8 +189,7 @@ const translations = {
         "docDesc": "వ్యాధిగ్రస్తులైన ఆకు ఫోటో తీయండి. మా AI వెంటనే సమస్యను గుర్తించి పరిష్కారాన్ని సూచిస్తుంది.",
         "docBtn": "ఆకును స్కాన్ చేయండి",
         "realtimeBadge": "రియల్-టైమ్",
-        "readAloudBtn": "చదివి వినిపించు",
-        "precipLabel": "వర్షం %"
+        "readAloudBtn": "చదివి వినిపించు"
     },
     "ta": {
         "appTitle": 'அக்ரிஅலர்ட் <span class="text-emerald-500">ப்ரோ</span>',
@@ -227,8 +221,7 @@ const translations = {
         "docDesc": "நோயுற்ற இலையின் புகைப்படத்தை எடுக்கவும். எங்கள் AI உடனடியாக சிக்கலை கண்டறிந்து தீர்வு பரிந்துரைக்கும்.",
         "docBtn": "இலையை ஸ்கேன் செய்யவும்",
         "realtimeBadge": "நிகழ்நேரம்",
-        "readAloudBtn": "படித்து காட்டு",
-        "precipLabel": "மழை %"
+        "readAloudBtn": "படித்து காட்டு"
     },
     "ml": {
         "appTitle": 'അഗ്രിഅലർട്ട് <span class="text-emerald-500">പ്രോ</span>',
@@ -260,8 +253,7 @@ const translations = {
         "docDesc": "രോഗം ബാധിച്ച ഇലയുടെ ഫോട്ടോ എടുക്കുക. ഞങ്ങളുടെ AI തൽക്ഷണം പ്രശ്നം തിരിച്ചറിഞ്ഞ് പരിഹാരം നിർദ്ദേശിക്കും.",
         "docBtn": "ഇല സ്കാൻ ചെയ്യുക",
         "realtimeBadge": "തത്സമയം",
-        "readAloudBtn": "വായിച്ചു കേൾപ്പിക്കുക",
-        "precipLabel": "മഴ %"
+        "readAloudBtn": "വായിച്ചു കേൾപ്പിക്കുക"
     },
     "bho": {
         "appTitle": 'एग्री-अलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -293,7 +285,6 @@ const translations = {
         "docDesc": "बेमार पत्ता के फोटो लीं। हमार AI तुरंत दिक्कत के पहिचान करी अउर इलाज बताई।",
         "docBtn": "पत्ता स्कैन करीं",
         "realtimeBadge": "वास्तविक समय",
-        "readAloudBtn": "जोर से पढ़ीं",
-        "precipLabel": "बरखा %"
+        "readAloudBtn": "जोर से पढ़ीं"
     }
 };

@@ -418,7 +418,7 @@ function updateUI(weather) {
 function updateLanguage(langCode) {
     const t = translations[langCode] || translations['en']; 
 
-    // 🌟 Option 1 Title Translation
+    // 🌟 FIXED 1 & 2: No more double leaf, and strict rule for the English name!
     if (langCode === 'en') {
         document.getElementById('app-title').innerHTML = 'Kisan Alert <span class="text-emerald-500">Pro</span>';
     } else {
@@ -427,20 +427,37 @@ function updateLanguage(langCode) {
         document.getElementById('app-title').innerHTML = translatedTitle;
     }
 
-    // 🌟 Option 1 Weather Title
     document.getElementById('current-weather-title').innerHTML = `<i class="fa-solid fa-tower-observation text-emerald-500"></i> ${t.currentConditions || "Live Conditions"}`;
     
-    // 🌟 Option 1 Weather Labels
+    // NEW FULL UI TRANSLATIONS
     if(document.getElementById('humidity-label')) document.getElementById('humidity-label').innerText = t.humidityLabel || "Humidity";
-    if(document.getElementById('rain-label')) document.getElementById('rain-label').innerText = t.rainLabel || "Rainfall";
-    if(document.getElementById('wind-label')) document.getElementById('wind-label').innerText = t.windLabel || "Wind Speed";
-    if(document.getElementById('precip-label')) document.getElementById('precip-label').innerText = t.precipLabel || "Rain %";
+    if(document.getElementById('rain-label')) document.getElementById('rain-label').innerText = t.rainLabel || "Rain Vol.";
+    if(document.getElementById('wind-label')) document.getElementById('wind-label').innerText = t.windLabel || "Wind";
 
-    // 🌟 Option 1 SMS Labels
+    if(document.getElementById('ui-ask-ai-title')) document.getElementById('ui-ask-ai-title').innerText = t.askAiTitle || "Ask AI Agronomist";
+    if(document.getElementById('ai-search-input')) document.getElementById('ai-search-input').placeholder = t.askPlaceholder || "Type or speak...";
+    if(document.getElementById('ai-search-btn')) document.getElementById('ai-search-btn').innerText = t.askBtn || "Ask";
+    
+    if(document.getElementById('ui-pill-fertilizer')) document.getElementById('ui-pill-fertilizer').innerHTML = `<i class="fa-solid fa-flask text-purple-400"></i> ${t.pillFertilizer || "Fertilizer"}`;
+    if(document.getElementById('ui-pill-pest')) document.getElementById('ui-pill-pest').innerHTML = `<i class="fa-solid fa-bug text-purple-400"></i> ${t.pillPest || "Pest Control"}`;
+    if(document.getElementById('ui-pill-irrigation')) document.getElementById('ui-pill-irrigation').innerHTML = `<i class="fa-solid fa-droplet text-purple-400"></i> ${t.pillIrrigation || "Irrigation"}`;
+
+    if(document.getElementById('ui-setup-title')) document.getElementById('ui-setup-title').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> ${t.setupTitle || "Setup Parameters"}`;
+    if(document.getElementById('location-search')) document.getElementById('location-search').placeholder = t.searchVillagePlaceholder || "Search village...";
+    if(document.getElementById('crop-selector')) document.getElementById('crop-selector').placeholder = t.searchCropPlaceholder || "Search crop...";
+    
+    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-solid fa-chart-area text-emerald-500"></i> ${t.forecastTitle || "7-Day Forecast"}`;
+
+    if(document.getElementById('ui-doc-title')) document.getElementById('ui-doc-title').innerHTML = `<i class="fa-solid fa-camera text-emerald-400 shrink-0"></i> ${t.docTitle || "AI Plant Doctor"}`;
+    if(document.getElementById('ui-doc-badge')) document.getElementById('ui-doc-badge').innerText = t.docBadge || "Computer Vision";
+    if(document.getElementById('ui-doc-desc')) document.getElementById('ui-doc-desc').innerText = t.docDesc || "Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.";
+    if(document.getElementById('ui-doc-btn')) document.getElementById('ui-doc-btn').innerHTML = `<i class="fa-solid fa-camera text-lg"></i> ${t.docBtn || "Scan Leaf Now"}`;
+    if(document.getElementById('ui-realtime-badge')) document.getElementById('ui-realtime-badge').innerText = t.realtimeBadge || "Real-Time";
+    if(document.getElementById('ui-read-aloud')) document.getElementById('ui-read-aloud').innerText = t.readAloudBtn || "Read Aloud";
+
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
-    // 🌟 Option 1 Dynamic Alerts
     if (currentWeatherData && !cropSelector.value) {
         const alertBox = document.getElementById('alert-box');
         const alertTitle = document.getElementById('alert-title');
