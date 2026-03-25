@@ -108,7 +108,7 @@
 
     <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
         
-        <div class="flex items-center gap-3 mb-6">
+        <div class="flex items-center gap-3 mb-4">
             <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-600">
                 <i class="fa-solid fa-newspaper text-2xl"></i>
             </div>
@@ -118,11 +118,24 @@
             </div>
         </div>
 
+        <div class="flex flex-wrap gap-2 mb-6" id="category-filters">
+            <button onclick="filterNews('All')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm filter-btn" data-cat="All">All News</button>
+            <button onclick="filterNews('Weather')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn" data-cat="Weather"><i class="fa-solid fa-cloud-sun-rain mr-1"></i> Weather</button>
+            <button onclick="filterNews('Market')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn" data-cat="Market"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Market Prices</button>
+            <button onclick="filterNews('Subsidies')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn" data-cat="Subsidies"><i class="fa-solid fa-tractor mr-1"></i> Subsidies & Tech</button>
+        </div>
+
         <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
             <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
             <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
             <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
             <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton hidden md:block"></div>
+        </div>
+
+        <div class="mt-8 flex justify-center hidden" id="load-more-container">
+            <button id="load-more-btn" onclick="loadMoreNews()" class="bg-white border border-gray-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 font-extrabold py-3 px-8 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
+                <i class="fa-solid fa-rotate-right"></i> Load More News
+            </button>
         </div>
 
     </main>
@@ -173,21 +186,29 @@
         closeMenuBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
 
-        // 3. AI News Fetching Logic
+        // 3. AI News Fetching & Upgraded Logic
         const newsContainer = document.getElementById('news-container');
+        const loadMoreContainer = document.getElementById('load-more-container');
         const langSelector = document.getElementById('language-selector');
+        
+        // Global variables to store news for filtering
+        let allFetchedNews = [];
+        let currentCategory = 'All';
 
-        async function fetchLiveNews(language) {
-            // Show loading skeletons
-            newsContainer.innerHTML = `
-                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton hidden md:block"></div>
-            `;
+        async function fetchLiveNews(language, isAppend = false) {
+            if (!isAppend) {
+                // If not appending, clear the list and show skeletons
+                allFetchedNews = [];
+                loadMoreContainer.classList.add('hidden');
+                newsContainer.innerHTML = `
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton hidden md:block"></div>
+                `;
+            }
 
             try {
-                // Ensure this URL matches your Vercel backend deployment!
                 const response = await fetch('https://weather-backend-mocha.vercel.app/api/news', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -197,57 +218,143 @@
                 const data = await response.json();
 
                 if (data.success && data.news.length > 0) {
-                    newsContainer.innerHTML = ''; // Clear skeletons
-                    
-                    data.news.forEach(article => {
-                        // Pick an icon based on category
-                        let icon = "fa-newspaper";
-                        let iconColor = "text-emerald-500";
-                        let bgTag = "bg-emerald-50 text-emerald-700 border-emerald-100";
-                        
-                        const cat = article.category.toLowerCase();
-                        if(cat.includes("weather") || cat.includes("rain")) { icon = "fa-cloud-sun-rain"; iconColor = "text-blue-500"; bgTag = "bg-blue-50 text-blue-700 border-blue-100"; }
-                        else if(cat.includes("market") || cat.includes("price")) { icon = "fa-arrow-trend-up"; iconColor = "text-amber-500"; bgTag = "bg-amber-50 text-amber-700 border-amber-100"; }
-                        else if(cat.includes("tech") || cat.includes("subsidy")) { icon = "fa-tractor"; iconColor = "text-purple-500"; bgTag = "bg-purple-50 text-purple-700 border-purple-100"; }
-
-                        const cardHTML = `
-                            <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full flex flex-col justify-between">
-                                <div>
-                                    <div class="flex justify-between items-start mb-3 gap-2">
-                                        <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border ${bgTag}">
-                                            <i class="fa-solid ${icon} mr-1"></i> ${article.category}
-                                        </span>
-                                        <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1 shrink-0">
-                                            <i class="fa-regular fa-clock"></i> ${article.time}
-                                        </span>
-                                    </div>
-                                    <h3 class="text-base sm:text-lg font-extrabold text-gray-900 mb-2 leading-snug">${article.title}</h3>
-                                    <p class="text-sm text-gray-600 font-medium leading-relaxed">${article.summary}</p>
-                                </div>
-                            </div>
-                        `;
-                        newsContainer.insertAdjacentHTML('beforeend', cardHTML);
-                    });
+                    // Add new articles to the master list
+                    allFetchedNews = [...allFetchedNews, ...data.news];
+                    renderNewsList(); // Draw them!
+                    loadMoreContainer.classList.remove('hidden'); // Show the Load More button
                 } else {
                     throw new Error("News format failed.");
                 }
             } catch (error) {
                 console.error(error);
-                newsContainer.innerHTML = `
-                    <div class="col-span-1 md:col-span-2 bg-red-50 rounded-2xl p-6 border border-red-100 text-center">
-                        <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
-                        <h3 class="font-extrabold text-red-800 text-lg">Unable to load live news</h3>
-                        <p class="text-red-600 text-sm font-medium">Please check your internet connection or try again later.</p>
-                    </div>
-                `;
+                if(!isAppend) {
+                    newsContainer.innerHTML = `
+                        <div class="col-span-1 md:col-span-2 bg-red-50 rounded-2xl p-6 border border-red-100 text-center">
+                            <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
+                            <h3 class="font-extrabold text-red-800 text-lg">Unable to load live news</h3>
+                            <p class="text-red-600 text-sm font-medium">Please check your internet connection or try again later.</p>
+                        </div>
+                    `;
+                }
             }
         }
 
-        // Fetch news initially on page load
+        // 🌟 UPGRADE 3 LOGIC: Filter the News
+        function filterNews(category) {
+            currentCategory = category;
+            
+            // Update button styles visually
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.cat === category) {
+                    btn.className = "px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm filter-btn";
+                } else {
+                    btn.className = "px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn";
+                }
+            });
+            
+            renderNewsList(); // Redraw with filter applied
+        }
+
+        // Draws the news array onto the screen
+        function renderNewsList() {
+            newsContainer.innerHTML = '';
+            
+            // Apply the active category filter
+            const filteredNews = allFetchedNews.filter(article => {
+                if(currentCategory === 'All') return true;
+                const cat = article.category.toLowerCase();
+                if(currentCategory === 'Weather' && (cat.includes('weather') || cat.includes('rain') || cat.includes('climate'))) return true;
+                if(currentCategory === 'Market' && (cat.includes('market') || cat.includes('price') || cat.includes('trade'))) return true;
+                if(currentCategory === 'Subsidies' && (cat.includes('subsidy') || cat.includes('tech') || cat.includes('government') || cat.includes('scheme'))) return true;
+                return false;
+            });
+
+            if(filteredNews.length === 0) {
+                 newsContainer.innerHTML = '<div class="col-span-1 md:col-span-2 text-center py-10 text-gray-400 font-bold"><i class="fa-solid fa-folder-open text-2xl mb-2"></i><br>No news currently loaded in this category. Try clicking "Load More News".</div>';
+                 return;
+            }
+
+            filteredNews.forEach(article => {
+                let icon = "fa-newspaper";
+                let bgTag = "bg-emerald-50 text-emerald-700 border-emerald-100";
+                
+                const cat = article.category.toLowerCase();
+                if(cat.includes("weather") || cat.includes("rain")) { icon = "fa-cloud-sun-rain"; bgTag = "bg-blue-50 text-blue-700 border-blue-100"; }
+                else if(cat.includes("market") || cat.includes("price")) { icon = "fa-arrow-trend-up"; bgTag = "bg-amber-50 text-amber-700 border-amber-100"; }
+                else if(cat.includes("tech") || cat.includes("subsidy")) { icon = "fa-tractor"; bgTag = "bg-purple-50 text-purple-700 border-purple-100"; }
+
+                // Safe strings for buttons
+                const safeTitle = article.title.replace(/['"]/g, '');
+                const safeSummary = article.summary.replace(/['"]/g, '');
+                const fullText = safeTitle + ". " + safeSummary;
+                const waText = encodeURIComponent("Kisan News: " + safeTitle + "\n\n" + safeSummary);
+
+                const cardHTML = `
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3 gap-2">
+                                <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border ${bgTag}">
+                                    <i class="fa-solid ${icon} mr-1"></i> ${article.category}
+                                </span>
+                                <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1 shrink-0">
+                                    <i class="fa-regular fa-clock"></i> ${article.time}
+                                </span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-extrabold text-gray-900 mb-2 leading-snug">${article.title}</h3>
+                            <p class="text-sm text-gray-600 font-medium leading-relaxed">${article.summary}</p>
+                        </div>
+                        
+                        <div class="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center">
+                            <button onclick="readAloudNews('${fullText}')" class="text-gray-400 hover:text-indigo-500 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-gray-50 hover:bg-indigo-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                                <i class="fa-solid fa-volume-high text-sm"></i> Listen
+                            </button>
+                            <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="text-emerald-500 hover:text-emerald-600 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-100">
+                                <i class="fa-brands fa-whatsapp text-sm"></i> Share
+                            </a>
+                        </div>
+                    </div>
+                `;
+                newsContainer.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        }
+
+        // 🌟 UPGRADE 1 LOGIC: Voice Synthesizer
+        function readAloudNews(text) {
+            window.speechSynthesis.cancel(); 
+            const speech = new SpeechSynthesisUtterance(text);
+            const currentLang = document.getElementById('language-selector').value; 
+            
+            const voiceMap = {
+                'en': 'en-IN', 'hi': 'hi-IN', 'bn': 'bn-IN', 
+                'te': 'te-IN', 'mr': 'mr-IN', 'ta': 'ta-IN',
+                'gu': 'gu-IN', 'kn': 'kn-IN', 'or': 'or-IN',
+                'ml': 'ml-IN', 'pa': 'pa-IN', 'as': 'as-IN',
+                'ur': 'ur-IN', 'bho': 'hi-IN' 
+            };
+            speech.lang = voiceMap[currentLang] || 'en-IN';
+            speech.rate = 0.9;     
+            window.speechSynthesis.speak(speech);
+        }
+
+        // 🌟 UPGRADE 4 LOGIC: Load More Button
+        async function loadMoreNews() {
+            const btn = document.getElementById('load-more-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Generating News...';
+            btn.disabled = true;
+
+            const selectedLangName = langSelector.options[langSelector.selectedIndex].text;
+            await fetchLiveNews(selectedLangName, true); // True means "append new ones"
+
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+
+        // Initial Load
         let currentLangName = langSelector.options[langSelector.selectedIndex].text;
         fetchLiveNews(currentLangName);
 
-        // When language dropdown changes, fetch news in the NEW language!
+        // When language changes, fetch fresh news in the new language!
         langSelector.addEventListener('change', (e) => {
             const selectedLangName = e.target.options[e.target.selectedIndex].text;
             fetchLiveNews(selectedLangName);
