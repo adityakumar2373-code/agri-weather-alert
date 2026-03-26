@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Precipitation Map - Kisan Alert Pro</title>
+    <title>Precipitation Map - Pro Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,54 +61,67 @@
             </a>
         </nav>
     </div>
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
+    
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full" data-aos="fade-down" data-aos-duration="500">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0">
+                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0 transform active:scale-90">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
 
-                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0">
+                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0 hover:rotate-12 transition-transform cursor-pointer">
                     <i class="fa-solid fa-leaf text-white text-sm"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h1 class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
+                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
                         Kisan Alert <span class="text-emerald-500">Pro</span>
                     </h1>
                     <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1 truncate"></p>
                 </div>
             </div>
             
-            <select class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px]">
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors hover:border-emerald-300 focus:ring-2 focus:ring-emerald-200">
                 <option value="en">English</option>
                 <option value="hi">हिंदी</option>
                 <option value="bn">বাংলা</option>
                 <option value="te">తెలుగు</option>
                 <option value="mr">मराठी</option>
                 <option value="ta">தமிழ்</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="kn">కನ್ನಡ</option>
                 <option value="or">ଓଡ଼ିଆ</option>
+                <option value="ml">മലയാളം</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="as">অসমীয়া</option>
+                <option value="ur">اردو</option>
+                <option value="bho">भोजपुरी</option>
             </select>
         </div>
     </header>
 
     <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
         
-        <div class="flex items-center gap-3 mb-6">
-            <div class="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 text-blue-500">
-                <i class="fa-solid fa-cloud-showers-water text-2xl"></i>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 text-blue-500">
+                    <i class="fa-solid fa-cloud-showers-water text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Live Precipitation Radar</h2>
+                    <p class="text-sm font-medium text-gray-500">Track incoming rain and storms across India in real-time.</p>
+                </div>
             </div>
-            <div>
-                <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Live Precipitation Radar</h2>
-                <p class="text-sm font-medium text-gray-500">Track incoming rain and storms across India in real-time.</p>
-            </div>
+            
+            <button id="locate-btn" class="bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm active:scale-95 shrink-0 w-full sm:w-auto justify-center">
+                <i class="fa-solid fa-location-crosshairs text-lg"></i> Zoom to My Farm
+            </button>
         </div>
 
-        <div class="bento-card bg-white rounded-[2rem] p-3 sm:p-5 shadow-sm border border-gray-100 w-full flex-grow min-h-[60vh] relative overflow-hidden">
+        <div class="bento-card bg-white rounded-[2rem] p-4 sm:p-5 shadow-sm border border-gray-100 w-full h-[65vh] min-h-[500px]" data-aos="fade-up" data-aos-delay="100">
             <iframe 
-                width="100%" 
-                height="100%" 
-                class="rounded-xl border border-gray-200 w-full h-[60vh] sm:h-[70vh]" 
-                src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=%C2%B0C&metricWind=km%2Fh&zoom=5&overlay=rain&product=ecmwf&level=surface&lat=22.593&lon=79.962" 
+                id="windy-iframe" 
+                class="w-full h-full rounded-xl border border-gray-200 shadow-inner" 
+                src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=5&overlay=rain&product=ecmwf&level=surface&lat=22.5937&lon=78.9629" 
                 frameborder="0">
             </iframe>
         </div>
@@ -122,8 +137,11 @@
         </div>
     </footer>
 
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // 1. Live Time Logic (Copied from Dashboard)
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        // 1. Live Time Logic
         function updateLiveTime() {
             const timeDisplay = document.getElementById('live-time');
             if (!timeDisplay) return;
@@ -158,6 +176,56 @@
         menuBtn.addEventListener('click', openSidebar);
         closeMenuBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
+
+        // 3. 🌟 UPGRADE 2 LOGIC: GPS "Zoom to My Farm"
+        const locateBtn = document.getElementById('locate-btn');
+        const windyIframe = document.getElementById('windy-iframe');
+
+        locateBtn.addEventListener('click', () => {
+            const originalHTML = locateBtn.innerHTML;
+            
+            // Show loading state
+            locateBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-lg"></i> Locating...';
+            locateBtn.classList.add('opacity-80', 'pointer-events-none');
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+                        
+                        // Construct the NEW Windy URL with the user's exact coordinates and a closer zoom (zoom=11)
+                        const newSrc = `https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=11&overlay=rain&product=ecmwf&level=surface&lat=${lat}&lon=${lon}`;
+                        
+                        // Update the iframe to fly to the farm
+                        windyIframe.src = newSrc;
+
+                        // Show Success State
+                        locateBtn.innerHTML = '<i class="fa-solid fa-check text-lg"></i> Farm Located!';
+                        locateBtn.classList.remove('opacity-80', 'pointer-events-none');
+                        locateBtn.classList.replace('text-emerald-600', 'text-white');
+                        locateBtn.classList.replace('border-emerald-200', 'border-transparent');
+                        locateBtn.classList.replace('hover:bg-emerald-50', 'bg-emerald-500');
+
+                        // Reset button after 4 seconds
+                        setTimeout(() => {
+                            locateBtn.innerHTML = originalHTML;
+                            locateBtn.className = "bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm active:scale-95 shrink-0 w-full sm:w-auto justify-center";
+                        }, 4000);
+                    },
+                    (error) => {
+                        alert("Unable to retrieve location. Please make sure location permissions are allowed in your browser.");
+                        locateBtn.innerHTML = originalHTML;
+                        locateBtn.classList.remove('opacity-80', 'pointer-events-none');
+                    },
+                    { enableHighAccuracy: true } // Request the most precise GPS location
+                );
+            } else {
+                alert("Geolocation is not supported by your browser.");
+                locateBtn.innerHTML = originalHTML;
+                locateBtn.classList.remove('opacity-80', 'pointer-events-none');
+            }
+        });
     </script>
 </body>
 </html>
