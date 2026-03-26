@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="overflow-x-hidden">
+<html lang="en" class="overflow-x-hidden transition-colors duration-300">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Precipitation Map - Pro Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -21,10 +27,17 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 🌟 Dark Mode Custom Grid Background */
+        html.dark body {
+            background-color: #030712;
+            background-image: radial-gradient(#1f2937 1px, transparent 1px);
         }
         
         .bento-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
         .bento-card:hover {
             transform: translateY(-2px);
@@ -32,40 +45,40 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
+<body class="min-h-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-x-hidden">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 dark:bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
 
-    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100">
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-            <h2 class="font-extrabold text-gray-900 text-lg flex items-center gap-2">
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white dark:bg-gray-900 shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100 dark:border-gray-800">
+        <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
+            <h2 class="font-extrabold text-gray-900 dark:text-white text-lg flex items-center gap-2">
                 <i class="fa-solid fa-leaf text-emerald-500"></i> Menu
             </h2>
-            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 transition-colors p-1">
+            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
         </div>
         
         <nav class="flex-1 overflow-y-auto p-4 space-y-1.5">
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-house w-5 text-center text-lg"></i> Dashboard
             </a>
-            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm transition-colors">
+            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold text-sm transition-colors">
                 <i class="fa-solid fa-cloud-showers-water w-5 text-center text-lg"></i> Precipitation Map
             </a>
-            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-newspaper w-5 text-center text-lg"></i> Kisan News
             </a>
-            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Kisan Chat
             </a>
         </nav>
     </div>
     
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full" data-aos="fade-down" data-aos-duration="500">
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm w-full transition-colors duration-300" data-aos="fade-down" data-aos-duration="500">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0 transform active:scale-90">
+                <button id="menu-btn" class="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 focus:outline-none transition-colors shrink-0 transform active:scale-90">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
 
@@ -73,29 +86,35 @@
                     <i class="fa-solid fa-leaf text-white text-sm"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
+                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-none truncate">
                         Kisan Alert <span class="text-emerald-500">Pro</span>
                     </h1>
-                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1 truncate"></p>
+                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-wider uppercase mt-1 truncate"></p>
                 </div>
             </div>
             
-            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors hover:border-emerald-300 focus:ring-2 focus:ring-emerald-200">
-                <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-                <option value="bn">বাংলা</option>
-                <option value="te">తెలుగు</option>
-                <option value="mr">मराठी</option>
-                <option value="ta">தமிழ்</option>
-                <option value="gu">ગુજરાતી</option>
-                <option value="kn">కನ್ನಡ</option>
-                <option value="or">ଓଡ଼ିଆ</option>
-                <option value="ml">മലയാളം</option>
-                <option value="pa">ਪੰਜਾਬੀ</option>
-                <option value="as">অসমীয়া</option>
-                <option value="ur">اردو</option>
-                <option value="bho">भोजपुरी</option>
-            </select>
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="theme-toggle" class="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-emerald-500 dark:hover:text-yellow-400 font-bold text-sm rounded-lg w-8 h-8 sm:w-[38px] sm:h-[38px] border border-gray-200 dark:border-gray-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+
+                <select id="language-selector" class="shrink-0 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 dark:border-gray-800 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors hover:border-emerald-300 dark:hover:border-emerald-700 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="mr">मराठी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="kn">కನ್ನಡ</option>
+                    <option value="or">ଓଡ଼ିଆ</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="as">অসমীয়া</option>
+                    <option value="ur">اردو</option>
+                    <option value="bho">भोजपुरी</option>
+                </select>
+            </div>
         </div>
     </header>
 
@@ -103,24 +122,24 @@
         
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div class="flex items-center gap-3">
-                <div class="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 text-blue-500">
+                <div class="bg-blue-500/10 p-3 rounded-xl border border-blue-500/20 text-blue-500 dark:text-blue-400">
                     <i class="fa-solid fa-cloud-showers-water text-2xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Live Precipitation Radar</h2>
-                    <p class="text-sm font-medium text-gray-500">Track incoming rain and storms across India in real-time.</p>
+                    <h2 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">Live Precipitation Radar</h2>
+                    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Track incoming rain and storms across India in real-time.</p>
                 </div>
             </div>
             
-            <button id="locate-btn" class="bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm active:scale-95 shrink-0 w-full sm:w-auto justify-center">
+            <button id="locate-btn" class="bg-white dark:bg-gray-900 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-gray-800 hover:border-emerald-300 dark:hover:border-emerald-600 font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm active:scale-95 shrink-0 w-full sm:w-auto justify-center">
                 <i class="fa-solid fa-location-crosshairs text-lg"></i> Zoom to My Farm
             </button>
         </div>
 
-        <div class="bento-card bg-white rounded-[2rem] p-4 sm:p-5 shadow-sm border border-gray-100 w-full h-[65vh] min-h-[500px]" data-aos="fade-up" data-aos-delay="100">
+        <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-4 sm:p-5 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-[65vh] min-h-[500px]" data-aos="fade-up" data-aos-delay="100">
             <iframe 
                 id="windy-iframe" 
-                class="w-full h-full rounded-xl border border-gray-200 shadow-inner" 
+                class="w-full h-full rounded-xl border border-gray-200 dark:border-gray-700 shadow-inner" 
                 src="https://embed.windy.com/embed.html?type=map&location=coordinates&metricRain=mm&metricTemp=°C&metricWind=km/h&zoom=5&overlay=rain&product=ecmwf&level=surface&lat=22.5937&lon=78.9629" 
                 frameborder="0">
             </iframe>
@@ -128,11 +147,11 @@
 
     </main>
 
-    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white">
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-            <p class="text-xs text-gray-500 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
-            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shrink-0 max-w-full truncate">
-                Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-100 dark:border-gray-800 shrink-0 max-w-full truncate">
+                Designed & Developed by <span class="font-bold text-emerald-600 dark:text-emerald-500">Aditya</span> & <span class="font-bold text-emerald-600 dark:text-emerald-500">Nistha</span>
             </p>
         </div>
     </footer>
@@ -177,7 +196,7 @@
         closeMenuBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
 
-        // 3. 🌟 UPGRADE 2 LOGIC: GPS "Zoom to My Farm"
+        // 3. GPS "Zoom to My Farm"
         const locateBtn = document.getElementById('locate-btn');
         const windyIframe = document.getElementById('windy-iframe');
 
@@ -204,13 +223,16 @@
                         locateBtn.innerHTML = '<i class="fa-solid fa-check text-lg"></i> Farm Located!';
                         locateBtn.classList.remove('opacity-80', 'pointer-events-none');
                         locateBtn.classList.replace('text-emerald-600', 'text-white');
+                        locateBtn.classList.replace('dark:text-emerald-400', 'dark:text-white');
                         locateBtn.classList.replace('border-emerald-200', 'border-transparent');
+                        locateBtn.classList.replace('dark:border-emerald-800', 'dark:border-transparent');
                         locateBtn.classList.replace('hover:bg-emerald-50', 'bg-emerald-500');
+                        locateBtn.classList.replace('dark:hover:bg-gray-800', 'dark:bg-emerald-600');
 
                         // Reset button after 4 seconds
                         setTimeout(() => {
                             locateBtn.innerHTML = originalHTML;
-                            locateBtn.className = "bg-white border border-emerald-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-300 font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm active:scale-95 shrink-0 w-full sm:w-auto justify-center";
+                            locateBtn.className = "bg-white dark:bg-gray-900 border border-emerald-200 dark:border-emerald-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-gray-800 hover:border-emerald-300 dark:hover:border-emerald-600 font-extrabold py-2.5 px-5 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm active:scale-95 shrink-0 w-full sm:w-auto justify-center";
                         }, 4000);
                     },
                     (error) => {
@@ -224,6 +246,35 @@
                 alert("Geolocation is not supported by your browser.");
                 locateBtn.innerHTML = originalHTML;
                 locateBtn.classList.remove('opacity-80', 'pointer-events-none');
+            }
+        });
+
+        // --- 🌟 UPGRADE: Dark Mode Memory & Toggle Logic ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
+
+        // Check Local Storage on Load (This makes it sync with the dashboard!)
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+            themeIcon.classList.add('text-yellow-400');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        // Toggle Click Event
+        themeToggleBtn.addEventListener('click', function() {
+            htmlElement.classList.toggle('dark');
+            
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark'); // Save to memory
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                themeIcon.classList.add('text-yellow-400');
+            } else {
+                localStorage.setItem('theme', 'light'); // Save to memory
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                themeIcon.classList.remove('text-yellow-400');
             }
         });
     </script>
