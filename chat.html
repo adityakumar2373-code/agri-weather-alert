@@ -1,17 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" class="overflow-x-hidden transition-colors duration-300">
+<html lang="en" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kisan Chat - Pro Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,32 +19,20 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* 🌟 Dark Mode Custom Grid Background */
-        html.dark body {
-            background-color: #030712;
-            background-image: radial-gradient(#1f2937 1px, transparent 1px);
         }
         
         /* Custom scrollbar for the chat box */
         #chat-box::-webkit-scrollbar { width: 6px; }
         #chat-box::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
-        html.dark #chat-box::-webkit-scrollbar-thumb { background-color: #475569; }
         
         .bento-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        /* 🌟 Premium Animations & Glow */
+        /* 🌟 UPGRADE 4: Premium Animations */
         .glow-effect {
             box-shadow: 0 0 30px -5px rgba(99, 102, 241, 0.3);
             border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-        html.dark .glow-effect {
-            box-shadow: 0 0 40px -10px rgba(99, 102, 241, 0.4);
-            border: 1px solid rgba(99, 102, 241, 0.4);
         }
         .icon-float { animation: float-icon 3s ease-in-out infinite; }
         @keyframes float-icon { 
@@ -59,40 +41,40 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-x-hidden">
+<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 dark:bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
 
-    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white dark:bg-gray-900 shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100 dark:border-gray-800">
-        <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
-            <h2 class="font-extrabold text-gray-900 dark:text-white text-lg flex items-center gap-2">
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100">
+        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h2 class="font-extrabold text-gray-900 text-lg flex items-center gap-2">
                 <i class="fa-solid fa-leaf text-emerald-500"></i> Menu
             </h2>
-            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1">
+            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 transition-colors p-1">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
         </div>
         
         <nav class="flex-1 overflow-y-auto p-4 space-y-1.5">
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-house w-5 text-center text-lg"></i> Dashboard
             </a>
-            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
+            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-cloud-showers-water w-5 text-center text-lg"></i> Precipitation Map
             </a>
-            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
+            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-newspaper w-5 text-center text-lg"></i> Kisan News
             </a>
-            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold text-sm transition-colors">
+            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm transition-colors">
                 <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Kisan Chat
             </a>
         </nav>
     </div>
     
-    <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm w-full transition-colors duration-300">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                <button id="menu-btn" class="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 focus:outline-none transition-colors shrink-0">
+                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
 
@@ -100,65 +82,59 @@
                     <i class="fa-solid fa-leaf text-white text-sm"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-none truncate">
+                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
                         Kisan Alert <span class="text-emerald-500">Pro</span>
                     </h1>
-                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-wider uppercase mt-1 truncate"></p>
+                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1 truncate"></p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 shrink-0">
-                <button id="theme-toggle" class="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-emerald-500 dark:hover:text-yellow-400 font-bold text-sm rounded-lg w-8 h-8 sm:w-[38px] sm:h-[38px] border border-gray-200 dark:border-gray-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                </button>
-
-                <select id="language-selector" class="shrink-0 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 dark:border-gray-800 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors hover:border-emerald-300 dark:hover:border-emerald-700 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900">
-                    <option value="en">English</option>
-                    <option value="hi">हिंदी</option>
-                    <option value="bn">বাংলা</option>
-                    <option value="te">తెలుగు</option>
-                    <option value="mr">मराठी</option>
-                    <option value="ta">தமிழ்</option>
-                    <option value="gu">ગુજરાતી</option>
-                    <option value="kn">ಕನ್ನಡ</option>
-                    <option value="or">ଓଡ଼ିଆ</option>
-                    <option value="ml">മലയാളം</option>
-                    <option value="pa">ਪੰਜਾਬੀ</option>
-                    <option value="as">অসমীয়া</option>
-                    <option value="ur">اردو</option>
-                    <option value="bho">भोजपुरी</option>
-                </select>
-            </div>
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px]">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="bn">বাংলা</option>
+                <option value="te">తెలుగు</option>
+                <option value="mr">मराठी</option>
+                <option value="ta">தமிழ்</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="ml">മലയാളം</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="as">অসমীয়া</option>
+                <option value="ur">اردو</option>
+                <option value="bho">भोजपुरी</option>
+            </select>
         </div>
     </header>
 
-    <div id="login-gateway" class="absolute inset-0 z-40 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md flex items-center justify-center transition-opacity duration-500">
-        <div class="bg-white dark:bg-gray-900 rounded-[2rem] p-6 sm:p-10 shadow-2xl max-w-lg w-full mx-4 text-center transform transition-transform duration-500 scale-100 glow-effect relative overflow-hidden">
+    <div id="login-gateway" class="absolute inset-0 z-40 bg-white/95 backdrop-blur-md flex items-center justify-center transition-opacity duration-500">
+        <div class="bg-white rounded-[2rem] p-6 sm:p-10 shadow-2xl max-w-lg w-full mx-4 text-center transform transition-transform duration-500 scale-100 glow-effect relative overflow-hidden">
             
             <div class="absolute -top-20 -right-20 w-48 h-48 bg-indigo-500/10 rounded-full blur-[40px] pointer-events-none"></div>
 
-            <div class="bg-gradient-to-br from-indigo-100 to-indigo-50 dark:from-indigo-900/50 dark:to-indigo-800/50 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner border border-indigo-200 dark:border-indigo-700 icon-float relative z-10">
-                <i class="fa-solid fa-users text-4xl text-indigo-600 dark:text-indigo-400"></i>
+            <div class="bg-gradient-to-br from-indigo-100 to-indigo-50 w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 shadow-inner border border-indigo-200 icon-float relative z-10">
+                <i class="fa-solid fa-users text-4xl text-indigo-600"></i>
             </div>
-            <h2 class="text-2xl font-black text-gray-900 dark:text-white mb-1 tracking-tight relative z-10">Join Kisan Community</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-400 font-medium mb-6 relative z-10">Set up your profile to connect with farmers across India.</p>
+            <h2 class="text-2xl font-black text-gray-900 mb-1 tracking-tight relative z-10">Join Kisan Community</h2>
+            <p class="text-sm text-gray-500 font-medium mb-6 relative z-10">Set up your profile to connect with farmers across India.</p>
             
             <div class="space-y-5 text-left relative z-10">
                 
                 <div>
                     <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Your Name</label>
                     <div class="relative">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 dark:text-gray-500">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        <input type="text" id="login-name-input" placeholder="e.g. Ramesh Singh" class="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl pl-11 pr-4 py-3 outline-none font-semibold text-gray-800 dark:text-white text-sm focus:border-indigo-400 dark:focus:border-indigo-500 transition-all shadow-sm" autocomplete="off">
+                        <input type="text" id="login-name-input" placeholder="e.g. Ramesh Singh" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-4 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm" autocomplete="off">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">State / Region <span class="text-indigo-400 dark:text-indigo-500 normal-case tracking-normal ml-1">(Private)</span></label>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">State / Region <span class="text-indigo-400 normal-case tracking-normal ml-1">(Private)</span></label>
                     <div class="relative">
-                        <select id="login-state" class="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl pl-11 pr-3 py-3 outline-none font-semibold text-gray-800 dark:text-white text-sm focus:border-indigo-400 dark:focus:border-indigo-500 transition-all shadow-sm cursor-pointer">
+                        <select id="login-state" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-3 py-3 outline-none font-semibold text-gray-800 text-sm focus:border-indigo-400 focus:bg-white transition-all shadow-sm cursor-pointer">
                             <option value="Odisha">Odisha</option>
                             <option value="Punjab">Punjab</option>
                             <option value="Maharashtra">Maharashtra</option>
@@ -168,11 +144,11 @@
                             <option value="West Bengal">Bengal</option>
                             <option value="Andhra Pradesh">AP</option>
                         </select>
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-indigo-400 dark:text-indigo-500">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-indigo-400">
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
                     </div>
-                    <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-1 ml-1 text-center">Your state is kept private and will not be shown in the chat.</p>
+                    <p class="text-[10px] text-gray-400 mt-1 ml-1 text-center">Your state is kept private and will not be shown in the chat.</p>
                 </div>
 
             </div>
@@ -186,43 +162,43 @@
     <main id="chat-interface" class="flex-grow max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex flex-col h-[calc(100vh-140px)] opacity-0 pointer-events-none transition-opacity duration-500">
         
         <div class="flex items-center gap-3 mb-6 shrink-0">
-            <div class="bg-indigo-500/10 p-3 rounded-xl border border-indigo-500/20 text-indigo-500 dark:text-indigo-400">
+            <div class="bg-indigo-500/10 p-3 rounded-xl border border-indigo-500/20 text-indigo-500">
                 <i class="fa-solid fa-comments text-2xl"></i>
             </div>
             <div>
-                <h2 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">Kisan Community <span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ml-2 shadow-sm animate-pulse border dark:border-emerald-800">Online</span></h2>
-                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Ask questions and share updates with farmers across India.</p>
+                <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Kisan Community <span class="bg-emerald-100 text-emerald-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ml-2 shadow-sm animate-pulse">Online</span></h2>
+                <p class="text-sm font-medium text-gray-500">Ask questions and share updates with farmers across India.</p>
             </div>
         </div>
 
-        <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] shadow-sm border border-gray-100 dark:border-gray-800 w-full flex-grow flex flex-col overflow-hidden relative">
+        <div class="bento-card bg-white rounded-[2rem] shadow-sm border border-gray-100 w-full flex-grow flex flex-col overflow-hidden relative">
             
-            <div class="bg-gray-50 dark:bg-gray-900 p-4 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center shrink-0 z-10">
+            <div class="bg-gray-50 p-4 border-b border-gray-100 flex justify-between items-center shrink-0 z-10">
                 <div class="flex items-center gap-3">
-                    <div id="display-logged-in-icon" class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm border-2 border-indigo-200 dark:border-indigo-800">
+                    <div id="display-logged-in-icon" class="bg-indigo-600 text-white w-10 h-10 rounded-full flex items-center justify-center font-bold shadow-sm border-2 border-indigo-200">
                         <i class="fa-solid fa-user-circle text-lg"></i>
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-1">Logged in as</p>
-                        <p id="display-logged-in-name" class="text-sm font-extrabold text-gray-800 dark:text-white leading-none flex items-center gap-2">
+                        <p id="display-logged-in-name" class="text-sm font-extrabold text-gray-800 leading-none flex items-center gap-2">
                             Farmer
                         </p>
                     </div>
                 </div>
-                <button id="logout-btn" class="text-xs font-bold text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-red-100 dark:hover:border-red-800">
+                <button id="logout-btn" class="text-xs font-bold text-red-500 hover:bg-red-50 px-3 py-1.5 rounded-lg transition-colors border border-transparent hover:border-red-100">
                     <i class="fa-solid fa-right-from-bracket mr-1"></i> Exit
                 </button>
             </div>
 
-            <div id="chat-box" class="flex-1 overflow-y-auto p-4 sm:p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-50/30 dark:bg-gray-950/80 flex flex-col gap-4">
-                <div class="flex justify-center my-4 w-full">
-                    <span class="bg-indigo-50 dark:bg-indigo-900/30 text-indigo-500 dark:text-indigo-400 text-[10px] font-bold px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-800 shadow-sm uppercase tracking-widest"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Connecting to server...</span>
+            <div id="chat-box" class="flex-1 overflow-y-auto p-4 sm:p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-gray-50/30 flex flex-col gap-4">
+                <div class="flex justify-center my-4">
+                    <span class="bg-indigo-50 text-indigo-500 text-[10px] font-bold px-3 py-1 rounded-full border border-indigo-100 uppercase tracking-widest"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Connecting to server...</span>
                 </div>
             </div>
 
-            <div class="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shrink-0 z-10">
-                <div class="flex items-center gap-3 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-2xl p-1.5 shadow-inner">
-                    <input type="text" id="chat-input" placeholder="Type your message here..." class="flex-1 bg-transparent px-4 py-2.5 text-sm font-medium text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none w-full" autocomplete="off">
+            <div class="p-4 bg-white border-t border-gray-100 shrink-0 z-10">
+                <div class="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-2xl p-1.5 shadow-inner">
+                    <input type="text" id="chat-input" placeholder="Type your message here..." class="flex-1 bg-transparent px-4 py-2.5 text-sm font-medium text-gray-800 outline-none w-full" autocomplete="off">
                     <button id="send-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl w-12 h-10 sm:w-24 flex items-center justify-center gap-2 font-bold transition-all shadow-md shrink-0">
                         <i class="fa-solid fa-paper-plane"></i> <span class="hidden sm:inline text-sm">Send</span>
                     </button>
@@ -233,11 +209,11 @@
 
     </main>
 
-    <footer class="w-full py-6 mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 shrink-0 relative z-50 transition-colors duration-300">
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white shrink-0 relative z-50">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-100 dark:border-gray-800 shrink-0 max-w-full truncate">
-                Designed & Developed by <span class="font-bold text-emerald-600 dark:text-emerald-500">Aditya</span> & <span class="font-bold text-emerald-600 dark:text-emerald-500">Nistha</span>
+            <p class="text-xs text-gray-500 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
+            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shrink-0 max-w-full truncate">
+                Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span>
             </p>
         </div>
     </footer>
@@ -329,7 +305,7 @@
             localStorage.setItem("kisanChatState", state); // Saved locally but never sent
             
             // Update Header UI
-            displayLoggedInName.innerHTML = `${name} <span class="text-[10px] font-medium text-gray-400 dark:text-gray-500 ml-1.5">${userId}</span>`;
+            displayLoggedInName.innerHTML = `${name} <span class="text-[10px] font-medium text-gray-400 ml-1.5">${userId}</span>`;
             
             // Authentic-feeling Loading Delay
             joinChatBtn.disabled = true;
@@ -437,23 +413,23 @@
                 if (isSystem) {
                     html = `
                         <div class="flex justify-center my-2 w-full">
-                            <span class="bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 text-[10px] font-bold px-3 py-1 rounded-full border border-gray-200 dark:border-gray-700 shadow-sm"><i class="fa-solid fa-robot mr-1"></i> ${msg.text}</span>
+                            <span class="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full border border-gray-200 shadow-sm"><i class="fa-solid fa-robot mr-1"></i> ${msg.text}</span>
                         </div>
                     `;
                 } else {
-                    const bubbleClass = isMe ? "bg-indigo-600 text-white rounded-br-none ml-auto" : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-bl-none border border-gray-100 dark:border-gray-700";
+                    const bubbleClass = isMe ? "bg-indigo-600 text-white rounded-br-none ml-auto" : "bg-white text-gray-800 rounded-bl-none border border-gray-100";
                     const alignClass = isMe ? "items-end" : "items-start";
                     const timeString = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
                     // Build Rich Header with Name and User ID
-                    let richHeader = `<i class="fa-solid fa-user-circle ${isMe ? 'text-indigo-200' : 'text-indigo-400'} text-[10px] mr-1"></i> <span class="text-[11px] ${isMe ? 'text-white' : 'text-gray-800 dark:text-gray-300'} font-extrabold mr-1.5">${msgName}</span>`;
-                    if(msgUserId) richHeader += `<span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-400 dark:text-gray-500'} font-medium mr-2">${msgUserId}</span>`;
+                    let richHeader = `<i class="fa-solid fa-user-circle ${isMe ? 'text-indigo-200' : 'text-indigo-400'} text-[10px] mr-1"></i> <span class="text-[11px] ${isMe ? 'text-white' : 'text-gray-800'} font-extrabold mr-1.5">${msgName}</span>`;
+                    if(msgUserId) richHeader += `<span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-400'} font-medium mr-2">${msgUserId}</span>`;
 
                     html = `
                         <div class="flex flex-col ${alignClass} w-full max-w-[90%] sm:max-w-[75%] ${isMe ? 'ml-auto' : ''}">
                             <div class="flex items-center flex-wrap mb-1.5 px-1">
                                 ${richHeader}
-                                <span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-400 dark:text-gray-500'} font-medium ml-auto pl-2">${timeString}</span>
+                                <span class="text-[9px] ${isMe ? 'text-indigo-200' : 'text-gray-300'} font-medium ml-auto pl-2">${timeString}</span>
                             </div>
                             <div class="px-4 py-2.5 rounded-2xl ${bubbleClass} text-sm font-medium shadow-sm leading-relaxed break-words w-auto">
                                 ${msg.text}
@@ -493,35 +469,6 @@
         sendBtn.addEventListener('click', sendMessage);
         chatInput.addEventListener('keypress', e => { 
             if(e.key === 'Enter') sendMessage(); 
-        });
-
-        // --- 🌟 UPGRADE: Dark Mode Memory & Toggle Logic ---
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const htmlElement = document.documentElement;
-
-        // Check Local Storage on Load
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            htmlElement.classList.add('dark');
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
-            themeIcon.classList.add('text-yellow-400');
-        } else {
-            htmlElement.classList.remove('dark');
-        }
-
-        // Toggle Click Event
-        themeToggleBtn.addEventListener('click', function() {
-            htmlElement.classList.toggle('dark');
-            
-            if (htmlElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-                themeIcon.classList.replace('fa-moon', 'fa-sun');
-                themeIcon.classList.add('text-yellow-400');
-            } else {
-                localStorage.setItem('theme', 'light');
-                themeIcon.classList.replace('fa-sun', 'fa-moon');
-                themeIcon.classList.remove('text-yellow-400');
-            }
         });
 
     </script>
