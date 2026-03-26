@@ -1,11 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="overflow-x-hidden">
+<html lang="en" class="overflow-x-hidden transition-colors duration-300">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kisan News - Pro Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,10 +25,17 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* 🌟 Dark Mode Custom Grid Background */
+        html.dark body {
+            background-color: #030712;
+            background-image: radial-gradient(#1f2937 1px, transparent 1px);
         }
         
         .bento-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
         }
         .bento-card:hover {
             transform: translateY(-2px);
@@ -34,117 +47,127 @@
             background-size: 200% 100%;
             animation: loading 1.5s infinite;
         }
+        html.dark .news-skeleton {
+            background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+        }
         @keyframes loading {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
+<body class="min-h-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-x-hidden">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 dark:bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
 
-    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100">
-        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-            <h2 class="font-extrabold text-gray-900 text-lg flex items-center gap-2">
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white dark:bg-gray-900 shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100 dark:border-gray-800">
+        <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
+            <h2 class="font-extrabold text-gray-900 dark:text-white text-lg flex items-center gap-2">
                 <i class="fa-solid fa-leaf text-emerald-500"></i> Menu
             </h2>
-            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 transition-colors p-1">
+            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
         </div>
         
         <nav class="flex-1 overflow-y-auto p-4 space-y-1.5">
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-house w-5 text-center text-lg"></i> Dashboard
             </a>
-            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-cloud-showers-water w-5 text-center text-lg"></i> Precipitation Map
             </a>
-            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm transition-colors">
+            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold text-sm transition-colors">
                 <i class="fa-solid fa-newspaper w-5 text-center text-lg"></i> Kisan News
             </a>
-            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
+            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Kisan Chat
             </a>
         </nav>
     </div>
-    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
+
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm w-full transition-colors duration-300">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0">
+                <button id="menu-btn" class="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 focus:outline-none transition-colors shrink-0 transform active:scale-90">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
 
-                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0">
+                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0 hover:rotate-12 transition-transform cursor-pointer">
                     <i class="fa-solid fa-leaf text-white text-sm"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
+                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-none truncate">
                         Kisan Alert <span class="text-emerald-500">Pro</span>
                     </h1>
-                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1 truncate"></p>
+                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-wider uppercase mt-1 truncate"></p>
                 </div>
             </div>
             
-            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px]">
-                <option value="en">English</option>
-                <option value="hi">हिंदी</option>
-                <option value="bn">বাংলা</option>
-                <option value="te">తెలుగు</option>
-                <option value="mr">मराठी</option>
-                <option value="ta">தமிழ்</option>
-                <option value="gu">ગુજરાતી</option>
-                <option value="kn">ಕನ್ನಡ</option>
-                <option value="or">ଓଡ଼ିଆ</option>
-                <option value="ml">മലയാളം</option>
-                <option value="pa">ਪੰਜਾਬੀ</option>
-                <option value="as">অসমীয়া</option>
-                <option value="ur">اردو</option>
-                <option value="bho">भोजपुरी</option>
-            </select>
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="theme-toggle" class="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-emerald-500 dark:hover:text-yellow-400 font-bold text-sm rounded-lg w-8 h-8 sm:w-[38px] sm:h-[38px] border border-gray-200 dark:border-gray-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm">
+                    <i id="theme-icon" class="fa-solid fa-moon"></i>
+                </button>
+
+                <select id="language-selector" class="shrink-0 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 dark:border-gray-800 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors hover:border-emerald-300 dark:hover:border-emerald-700 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="te">తెలుగు</option>
+                    <option value="mr">मराठी</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="gu">ગુજરાતી</option>
+                    <option value="kn">కನ್ನಡ</option>
+                    <option value="or">ଓଡ଼ିଆ</option>
+                    <option value="ml">മലയാളം</option>
+                    <option value="pa">ਪੰਜਾਬੀ</option>
+                    <option value="as">অসমীয়া</option>
+                    <option value="ur">اردو</option>
+                    <option value="bho">भोजपुरी</option>
+                </select>
+            </div>
         </div>
     </header>
 
     <main class="flex-grow max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-8 flex flex-col">
         
         <div class="flex items-center gap-3 mb-4">
-            <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-600">
+            <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-600 dark:text-emerald-400">
                 <i class="fa-solid fa-newspaper text-2xl"></i>
             </div>
             <div>
-                <h2 class="text-xl sm:text-2xl font-black text-gray-900 tracking-tight">Kisan News <span class="bg-red-100 text-red-600 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ml-2 shadow-sm animate-pulse">Live</span></h2>
-                <p class="text-sm font-medium text-gray-500">AI-Curated real-time agricultural updates, market trends, and alerts.</p>
+                <h2 class="text-xl sm:text-2xl font-black text-gray-900 dark:text-white tracking-tight">Kisan News <span class="bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider ml-2 shadow-sm animate-pulse border dark:border-red-800">Live</span></h2>
+                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">AI-Curated real-time agricultural updates, market trends, and alerts.</p>
             </div>
         </div>
 
         <div class="flex flex-wrap gap-2 mb-6" id="category-filters">
             <button onclick="filterNews('All')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm filter-btn" data-cat="All">All News</button>
-            <button onclick="filterNews('Weather')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn" data-cat="Weather"><i class="fa-solid fa-cloud-sun-rain mr-1"></i> Weather</button>
-            <button onclick="filterNews('Market')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn" data-cat="Market"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Market Prices</button>
-            <button onclick="filterNews('Subsidies')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn" data-cat="Subsidies"><i class="fa-solid fa-tractor mr-1"></i> Subsidies & Tech</button>
+            <button onclick="filterNews('Weather')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 filter-btn" data-cat="Weather"><i class="fa-solid fa-cloud-sun-rain mr-1"></i> Weather</button>
+            <button onclick="filterNews('Market')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 filter-btn" data-cat="Market"><i class="fa-solid fa-arrow-trend-up mr-1"></i> Market Prices</button>
+            <button onclick="filterNews('Subsidies')" class="px-4 py-2 rounded-full text-xs font-bold transition-all bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 filter-btn" data-cat="Subsidies"><i class="fa-solid fa-tractor mr-1"></i> Subsidies & Tech</button>
         </div>
 
         <div id="news-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
-            <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-            <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-            <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-            <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton hidden md:block"></div>
+            <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton"></div>
+            <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton"></div>
+            <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton"></div>
+            <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton hidden md:block"></div>
         </div>
 
         <div class="mt-8 flex justify-center hidden" id="load-more-container">
-            <button id="load-more-btn" onclick="loadMoreNews()" class="bg-white border border-gray-200 text-emerald-600 hover:bg-emerald-50 hover:border-emerald-200 font-extrabold py-3 px-8 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
+            <button id="load-more-btn" onclick="loadMoreNews()" class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-gray-800 hover:border-emerald-200 dark:hover:border-emerald-600 font-extrabold py-3 px-8 rounded-xl shadow-sm transition-all flex items-center gap-2 text-sm">
                 <i class="fa-solid fa-rotate-right"></i> Load More News
             </button>
         </div>
 
     </main>
 
-    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white">
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-            <p class="text-xs text-gray-500 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
-            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shrink-0 max-w-full truncate">
-                Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-100 dark:border-gray-800 shrink-0 max-w-full truncate">
+                Designed & Developed by <span class="font-bold text-emerald-600 dark:text-emerald-500">Aditya</span> & <span class="font-bold text-emerald-600 dark:text-emerald-500">Nistha</span>
             </p>
         </div>
     </footer>
@@ -191,20 +214,19 @@
         const loadMoreContainer = document.getElementById('load-more-container');
         const langSelector = document.getElementById('language-selector');
         
-        // Global variables to store news for filtering
         let allFetchedNews = [];
         let currentCategory = 'All';
 
         async function fetchLiveNews(language, isAppend = false) {
             if (!isAppend) {
-                // If not appending, clear the list and show skeletons
                 allFetchedNews = [];
                 loadMoreContainer.classList.add('hidden');
+                // Added dark mode classes to skeletons
                 newsContainer.innerHTML = `
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton"></div>
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full h-48 news-skeleton hidden md:block"></div>
+                    <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton"></div>
+                    <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton"></div>
+                    <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton"></div>
+                    <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full h-48 news-skeleton hidden md:block"></div>
                 `;
             }
 
@@ -218,10 +240,9 @@
                 const data = await response.json();
 
                 if (data.success && data.news.length > 0) {
-                    // Add new articles to the master list
                     allFetchedNews = [...allFetchedNews, ...data.news];
-                    renderNewsList(); // Draw them!
-                    loadMoreContainer.classList.remove('hidden'); // Show the Load More button
+                    renderNewsList(); 
+                    loadMoreContainer.classList.remove('hidden'); 
                 } else {
                     throw new Error("News format failed.");
                 }
@@ -229,37 +250,34 @@
                 console.error(error);
                 if(!isAppend) {
                     newsContainer.innerHTML = `
-                        <div class="col-span-1 md:col-span-2 bg-red-50 rounded-2xl p-6 border border-red-100 text-center">
+                        <div class="col-span-1 md:col-span-2 bg-red-50 dark:bg-red-900/20 rounded-2xl p-6 border border-red-100 dark:border-red-800/50 text-center">
                             <i class="fa-solid fa-triangle-exclamation text-red-400 text-3xl mb-3"></i>
-                            <h3 class="font-extrabold text-red-800 text-lg">Unable to load live news</h3>
-                            <p class="text-red-600 text-sm font-medium">Please check your internet connection or try again later.</p>
+                            <h3 class="font-extrabold text-red-800 dark:text-red-400 text-lg">Unable to load live news</h3>
+                            <p class="text-red-600 dark:text-red-300/80 text-sm font-medium">Please check your internet connection or try again later.</p>
                         </div>
                     `;
                 }
             }
         }
 
-        // 🌟 UPGRADE 3 LOGIC: Filter the News
         function filterNews(category) {
             currentCategory = category;
             
-            // Update button styles visually
+            // Updated to handle dark mode classes for filter buttons
             document.querySelectorAll('.filter-btn').forEach(btn => {
                 if(btn.dataset.cat === category) {
                     btn.className = "px-4 py-2 rounded-full text-xs font-bold transition-all bg-emerald-500 text-white shadow-sm filter-btn";
                 } else {
-                    btn.className = "px-4 py-2 rounded-full text-xs font-bold transition-all bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 filter-btn";
+                    btn.className = "px-4 py-2 rounded-full text-xs font-bold transition-all bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 filter-btn";
                 }
             });
             
-            renderNewsList(); // Redraw with filter applied
+            renderNewsList(); 
         }
 
-        // Draws the news array onto the screen
         function renderNewsList() {
             newsContainer.innerHTML = '';
             
-            // Apply the active category filter
             const filteredNews = allFetchedNews.filter(article => {
                 if(currentCategory === 'All') return true;
                 const cat = article.category.toLowerCase();
@@ -270,45 +288,45 @@
             });
 
             if(filteredNews.length === 0) {
-                 newsContainer.innerHTML = '<div class="col-span-1 md:col-span-2 text-center py-10 text-gray-400 font-bold"><i class="fa-solid fa-folder-open text-2xl mb-2"></i><br>No news currently loaded in this category. Try clicking "Load More News".</div>';
+                 newsContainer.innerHTML = '<div class="col-span-1 md:col-span-2 text-center py-10 text-gray-400 dark:text-gray-500 font-bold"><i class="fa-solid fa-folder-open text-2xl mb-2"></i><br>No news currently loaded in this category. Try clicking "Load More News".</div>';
                  return;
             }
 
             filteredNews.forEach(article => {
                 let icon = "fa-newspaper";
-                let bgTag = "bg-emerald-50 text-emerald-700 border-emerald-100";
+                let bgTag = "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border-emerald-100 dark:border-emerald-800";
                 
                 const cat = article.category.toLowerCase();
-                if(cat.includes("weather") || cat.includes("rain")) { icon = "fa-cloud-sun-rain"; bgTag = "bg-blue-50 text-blue-700 border-blue-100"; }
-                else if(cat.includes("market") || cat.includes("price")) { icon = "fa-arrow-trend-up"; bgTag = "bg-amber-50 text-amber-700 border-amber-100"; }
-                else if(cat.includes("tech") || cat.includes("subsidy")) { icon = "fa-tractor"; bgTag = "bg-purple-50 text-purple-700 border-purple-100"; }
+                if(cat.includes("weather") || cat.includes("rain")) { icon = "fa-cloud-sun-rain"; bgTag = "bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border-blue-100 dark:border-blue-800"; }
+                else if(cat.includes("market") || cat.includes("price")) { icon = "fa-arrow-trend-up"; bgTag = "bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-100 dark:border-amber-800"; }
+                else if(cat.includes("tech") || cat.includes("subsidy")) { icon = "fa-tractor"; bgTag = "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-100 dark:border-purple-800"; }
 
-                // Safe strings for buttons
                 const safeTitle = article.title.replace(/['"]/g, '');
                 const safeSummary = article.summary.replace(/['"]/g, '');
                 const fullText = safeTitle + ". " + safeSummary;
                 const waText = encodeURIComponent("Kisan News: " + safeTitle + "\n\n" + safeSummary);
 
+                // Added extensive dark mode classes to the generated card!
                 const cardHTML = `
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full flex flex-col justify-between">
+                    <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full flex flex-col justify-between">
                         <div>
                             <div class="flex justify-between items-start mb-3 gap-2">
                                 <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border ${bgTag}">
                                     <i class="fa-solid ${icon} mr-1"></i> ${article.category}
                                 </span>
-                                <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1 shrink-0">
+                                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 flex items-center gap-1 shrink-0">
                                     <i class="fa-regular fa-clock"></i> ${article.time}
                                 </span>
                             </div>
-                            <h3 class="text-base sm:text-lg font-extrabold text-gray-900 mb-2 leading-snug">${article.title}</h3>
-                            <p class="text-sm text-gray-600 font-medium leading-relaxed">${article.summary}</p>
+                            <h3 class="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white mb-2 leading-snug">${article.title}</h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 font-medium leading-relaxed">${article.summary}</p>
                         </div>
                         
-                        <div class="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center">
-                            <button onclick="readAloudNews('${fullText}')" class="text-gray-400 hover:text-indigo-500 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-gray-50 hover:bg-indigo-50 px-3 py-1.5 rounded-lg border border-gray-200">
+                        <div class="mt-5 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+                            <button onclick="readAloudNews('${fullText}')" class="text-gray-400 dark:text-gray-500 hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-gray-50 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700">
                                 <i class="fa-solid fa-volume-high text-sm"></i> Listen
                             </button>
-                            <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="text-emerald-500 hover:text-emerald-600 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-100">
+                            <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="text-emerald-500 dark:text-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-300 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 px-3 py-1.5 rounded-lg border border-emerald-100 dark:border-emerald-800">
                                 <i class="fa-brands fa-whatsapp text-sm"></i> Share
                             </a>
                         </div>
@@ -318,7 +336,6 @@
             });
         }
 
-        // 🌟 UPGRADE 1 LOGIC: Voice Synthesizer
         function readAloudNews(text) {
             window.speechSynthesis.cancel(); 
             const speech = new SpeechSynthesisUtterance(text);
@@ -336,7 +353,6 @@
             window.speechSynthesis.speak(speech);
         }
 
-        // 🌟 UPGRADE 4 LOGIC: Load More Button
         async function loadMoreNews() {
             const btn = document.getElementById('load-more-btn');
             const originalText = btn.innerHTML;
@@ -344,22 +360,48 @@
             btn.disabled = true;
 
             const selectedLangName = langSelector.options[langSelector.selectedIndex].text;
-            await fetchLiveNews(selectedLangName, true); // True means "append new ones"
+            await fetchLiveNews(selectedLangName, true); 
 
             btn.innerHTML = originalText;
             btn.disabled = false;
         }
 
-        // Initial Load
         let currentLangName = langSelector.options[langSelector.selectedIndex].text;
         fetchLiveNews(currentLangName);
 
-        // When language changes, fetch fresh news in the new language!
         langSelector.addEventListener('change', (e) => {
             const selectedLangName = e.target.options[e.target.selectedIndex].text;
             fetchLiveNews(selectedLangName);
         });
 
+        // --- 🌟 UPGRADE: Dark Mode Memory & Toggle Logic ---
+        const themeToggleBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
+
+        // Check Local Storage on Load
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            htmlElement.classList.add('dark');
+            themeIcon.classList.replace('fa-moon', 'fa-sun');
+            themeIcon.classList.add('text-yellow-400');
+        } else {
+            htmlElement.classList.remove('dark');
+        }
+
+        // Toggle Click Event
+        themeToggleBtn.addEventListener('click', function() {
+            htmlElement.classList.toggle('dark');
+            
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.setItem('theme', 'dark');
+                themeIcon.classList.replace('fa-moon', 'fa-sun');
+                themeIcon.classList.add('text-yellow-400');
+            } else {
+                localStorage.setItem('theme', 'light');
+                themeIcon.classList.replace('fa-sun', 'fa-moon');
+                themeIcon.classList.remove('text-yellow-400');
+            }
+        });
     </script>
 </body>
 </html>
