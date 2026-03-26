@@ -58,6 +58,54 @@
             transform: translateY(-4px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
+
+        /* ==========================================
+           🌟 EMERGENCY CSS FIXES FOR APP.JS BUGS 🌟 
+           ========================================== */
+        
+        /* 1. Stop the Purple and Green cards from stretching vertically */
+        .bento-card {
+            height: max-content !important;
+        }
+
+        /* 2. Force Dark Mode onto the dynamic Alert Box to override app.js */
+        html.dark #alert-box {
+            background-color: #111827 !important; /* Deep dark slate */
+            border-color: #1f2937 !important;
+        }
+        html.dark #alert-title {
+            color: #f9fafb !important; /* Bright white text */
+        }
+        html.dark #alert-message {
+            color: #9ca3af !important; /* Soft gray text */
+        }
+
+        /* 3. Fix the dynamic alert icon background colors */
+        html.dark #alert-box .bg-emerald-50, 
+        html.dark #alert-box .bg-green-50 {
+            background-color: rgba(16, 185, 129, 0.15) !important;
+            color: #34d399 !important;
+        }
+        html.dark #alert-box .bg-red-50 {
+            background-color: rgba(239, 68, 68, 0.15) !important;
+            color: #f87171 !important;
+        }
+        html.dark #alert-box .bg-yellow-50, 
+        html.dark #alert-box .bg-amber-50 {
+            background-color: rgba(245, 158, 11, 0.15) !important;
+            color: #fbbf24 !important;
+        }
+
+        /* 4. Fix the 'Read Aloud' button in dark mode */
+        html.dark #read-aloud-btn {
+            background-color: #1f2937 !important;
+            color: #9ca3af !important;
+            border: 1px solid #374151 !important;
+        }
+        html.dark #read-aloud-btn:hover {
+            background-color: #374151 !important;
+            color: #f9fafb !important;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-x-hidden">
@@ -121,7 +169,7 @@
                     <option value="mr">मराठी</option>
                     <option value="ta">தமிழ்</option>
                     <option value="gu">ગુજરાતી</option>
-                    <option value="kn">కನ್ನಡ</option>
+                    <option value="kn">ಕನ್ನಡ</option>
                     <option value="or">ଓଡ଼ିଆ</option>
                     <option value="ml">മലയാളം</option>
                     <option value="pa">ਪੰਜਾਬੀ</option>
