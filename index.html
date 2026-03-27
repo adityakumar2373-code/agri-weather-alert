@@ -1,21 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" class="overflow-x-hidden transition-colors duration-300">
+<html lang="en" class="overflow-x-hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kisan Alert - Pro Dashboard</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-        }
-    </script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,13 +22,6 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        /* 🌟 Dark Mode Custom Grid Background */
-        html.dark body {
-            background-color: #030712; /* Tailwind gray-950 */
-            background-image: radial-gradient(#1f2937 1px, transparent 1px);
         }
         
         #search-results::-webkit-scrollbar { width: 6px; }
@@ -52,171 +37,77 @@
         }
 
         .bento-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .bento-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        /* ==========================================
-           ⛅ APPLE WEATHER-STYLE ANIMATIONS 🌧️
-           ========================================== */
-        
-        /* The container needs to hide the weather effects spilling out */
-        #weather-content {
-            position: relative;
-            overflow: hidden;
-            color: white !important; /* Make text white for contrast */
-            border: none !important;
-            transition: background 1s ease;
-        }
-
-        /* Weather Background Layers */
-        .weather-bg {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* 🌧️ RAIN ANIMATION */
-        .weather-bg.rain {
-            background: linear-gradient(to bottom, #1e293b, #334155, #0f172a);
-        }
-        .drop {
-            position: absolute;
-            width: 2px;
-            height: 40px;
-            background: linear-gradient(transparent, rgba(255,255,255,0.6));
-            bottom: 100%;
-            animation: fall linear infinite;
-        }
-        @keyframes fall {
-            to { transform: translateY(100vh); }
-        }
-
-        /* ☁️ CLOUD ANIMATION */
-        .weather-bg.cloudy {
-            background: linear-gradient(to bottom, #64748b, #94a3b8, #475569);
-        }
-        .cloud {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            filter: blur(20px);
-            animation: float-cloud linear infinite;
-        }
-        @keyframes float-cloud {
-            from { transform: translateX(-100px); }
-            to { transform: translateX(100%); }
-        }
-
-        /* ☀️ CLEAR SUN ANIMATION */
-        .weather-bg.clear {
-            background: linear-gradient(to bottom, #38bdf8, #0ea5e9, #0284c7);
-        }
-        .sun-flare {
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
-            border-radius: 50%;
-            animation: pulse-sun 4s ease-in-out infinite alternate;
-        }
-        @keyframes pulse-sun {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.2); opacity: 1; }
-        }
-
-        /* Make sure the text stays above the animations! */
-        #weather-content > div {
-            position: relative;
-            z-index: 10;
-        }
-        /* Override text for this specific card so it stays readable */
-        #weather-content h2, #weather-content h1, #weather-content p {
-            color: white !important;
-        }
-        #weather-content .bg-gray-50 {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(8px);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-gray-800 dark:text-gray-200 overflow-x-hidden">
+<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
 
-    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 dark:bg-black/60 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
+    <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
 
-    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white dark:bg-gray-900 shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100 dark:border-gray-800">
-        <div class="p-5 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-900/50">
-            <h2 class="font-extrabold text-gray-900 dark:text-white text-lg flex items-center gap-2">
+    <div id="sidebar-menu" class="fixed top-0 left-0 h-full w-64 sm:w-72 bg-white shadow-2xl z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-gray-100">
+        <div class="p-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h2 class="font-extrabold text-gray-900 text-lg flex items-center gap-2">
                 <i class="fa-solid fa-leaf text-emerald-500"></i> Menu
             </h2>
-            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors p-1">
+            <button id="close-menu-btn" class="text-gray-400 hover:text-red-500 transition-colors p-1">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
         </div>
         
         <nav class="flex-1 overflow-y-auto p-4 space-y-1.5">
-            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 rounded-xl font-bold text-sm transition-colors">
+            <a href="index.html" class="flex items-center gap-3 px-4 py-3.5 bg-emerald-50 text-emerald-700 rounded-xl font-bold text-sm transition-colors">
                 <i class="fa-solid fa-house w-5 text-center text-lg"></i> Dashboard
             </a>
-            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
+            <a href="map.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-cloud-showers-water w-5 text-center text-lg"></i> Precipitation Map
             </a>
-            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
+            <a href="news.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-newspaper w-5 text-center text-lg"></i> Kisan News
             </a>
-            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-xl font-semibold text-sm transition-colors">
+            <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Kisan Chat
             </a>
         </nav>
     </div>
-    
-    <header class="sticky top-0 z-50 bg-white/90 dark:bg-gray-950/90 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm w-full transition-colors duration-300" data-aos="fade-down" data-aos-duration="500">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
-                <button id="menu-btn" class="text-gray-500 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 focus:outline-none transition-colors shrink-0 transform active:scale-90">
+                <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0">
                     <i class="fa-solid fa-bars text-xl"></i>
                 </button>
 
-                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0 hover:rotate-12 transition-transform cursor-pointer">
+                <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-8 h-8 rounded-lg flex items-center justify-center shadow-inner shrink-0">
                     <i class="fa-solid fa-leaf text-white text-sm"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-none truncate">
+                    <h1 id="app-title" class="text-base sm:text-xl font-extrabold tracking-tight text-gray-900 leading-none truncate">
                         Kisan Alert <span class="text-emerald-500">Pro</span>
                     </h1>
-                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-gray-400 tracking-wider uppercase mt-1 truncate"></p>
+                    <p id="live-time" class="text-[9px] sm:text-[10px] font-bold text-gray-500 tracking-wider uppercase mt-1 truncate"></p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2 shrink-0">
-                <button id="theme-toggle" class="bg-gray-50 dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:text-emerald-500 dark:hover:text-yellow-400 font-bold text-sm rounded-lg w-8 h-8 sm:w-[38px] sm:h-[38px] border border-gray-200 dark:border-gray-800 flex items-center justify-center transition-all hover:scale-105 active:scale-95 shadow-sm">
-                    <i id="theme-icon" class="fa-solid fa-moon"></i>
-                </button>
-
-                <select id="language-selector" class="shrink-0 bg-gray-50 dark:bg-gray-900 text-gray-700 dark:text-gray-200 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 dark:border-gray-800 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors hover:border-emerald-300 dark:hover:border-emerald-700 focus:ring-2 focus:ring-emerald-200 dark:focus:ring-emerald-900">
-                    <option value="en">English</option>
-                    <option value="hi">हिंदी</option>
-                    <option value="bn">বাংলা</option>
-                    <option value="te">తెలుగు</option>
-                    <option value="mr">मराठी</option>
-                    <option value="ta">தமிழ்</option>
-                    <option value="gu">ગુજરાતી</option>
-                    <option value="kn">ಕನ್ನಡ</option>
-                    <option value="or">ଓଡ଼ିଆ</option>
-                    <option value="ml">മലയാളം</option>
-                    <option value="pa">ਪੰਜਾਬੀ</option>
-                    <option value="as">অসমীয়া</option>
-                    <option value="ur">اردو</option>
-                    <option value="bho">भोजपुरी</option>
-                </select>
-            </div>
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px]">
+                <option value="en">English</option>
+                <option value="hi">हिंदी</option>
+                <option value="bn">বাংলা</option>
+                <option value="te">తెలుగు</option>
+                <option value="mr">मराठी</option>
+                <option value="ta">தமிழ்</option>
+                <option value="gu">ગુજરાતી</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="ml">മലയാളം</option>
+                <option value="pa">ਪੰਜਾਬੀ</option>
+                <option value="as">অসমীয়া</option>
+                <option value="ur">اردو</option>
+                <option value="bho">भोजपुरी</option>
+            </select>
         </div>
     </header>
 
@@ -226,90 +117,90 @@
             
             <div class="lg:col-span-5 flex flex-col gap-6">
                 
-                <div class="bento-card bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-purple-800/50 relative overflow-hidden w-full" data-aos="fade-up" data-aos-delay="100">
+                <div class="bento-card bg-gradient-to-br from-indigo-950 via-purple-900 to-indigo-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-purple-800/50 relative overflow-hidden w-full">
                     <div class="absolute -top-20 -right-20 w-48 h-48 bg-purple-500/30 rounded-full blur-[50px] pointer-events-none"></div>
                     
                     <div class="flex items-center gap-3 mb-5 relative z-10">
-                        <div class="bg-white/10 p-2 rounded-xl border border-white/10 backdrop-blur-sm shadow-inner">
-                            <i class="fa-solid fa-robot text-purple-300 text-lg animate-pulse"></i>
+                        <div class="bg-white/10 p-2 rounded-xl border border-white/10 backdrop-blur-sm">
+                            <i class="fa-solid fa-robot text-purple-300 text-lg"></i>
                         </div>
                         <h3 id="ui-ask-ai-title" class="font-extrabold text-base text-white tracking-wide">Ask AI Agronomist</h3>
                     </div>
                     
                     <div class="flex gap-2 relative z-10 w-full">
-                        <div class="relative flex-1 min-w-0 group">
+                        <div class="relative flex-1 min-w-0">
                             <input type="text" id="ai-search-input" placeholder="Type or speak..." class="w-full bg-white/10 border border-white/20 placeholder-white/50 text-white p-3.5 pr-10 rounded-xl text-sm outline-none focus:border-purple-300 focus:bg-white/20 transition-all font-medium backdrop-blur-md">
-                            <button id="mic-btn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-white hover:scale-110 transition-all">
+                            <button id="mic-btn" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-300 hover:text-white transition-all">
                                 <i class="fa-solid fa-microphone text-lg"></i>
                             </button>
                         </div>
-                        <button id="ai-search-btn" class="bg-white text-purple-900 hover:bg-purple-50 px-4 sm:px-5 py-3.5 rounded-xl text-sm font-extrabold shadow-[0_0_15px_rgba(255,255,255,0.3)] transform active:scale-95 transition-all shrink-0 hover:-translate-y-1">
+                        <button id="ai-search-btn" class="bg-white text-purple-900 hover:bg-purple-50 px-4 sm:px-5 py-3.5 rounded-xl text-sm font-extrabold shadow-md transform active:scale-95 transition-all shrink-0">
                             Ask
                         </button>
                     </div>
 
                     <div class="mt-4 relative z-10 flex flex-wrap gap-2">
-                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the best fertilizer to use right now?'" id="ui-pill-fertilizer" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer hover:-translate-y-0.5">
+                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the best fertilizer to use right now?'" id="ui-pill-fertilizer" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-flask text-purple-400"></i> Fertilizer
                         </button>
-                        <button type="button" onclick="document.getElementById('ai-search-input').value='How to identify and stop pest infections?'" id="ui-pill-pest" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer hover:-translate-y-0.5">
+                        <button type="button" onclick="document.getElementById('ai-search-input').value='How to identify and stop pest infections?'" id="ui-pill-pest" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-bug text-purple-400"></i> Pest Control
                         </button>
-                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the optimal watering schedule?'" id="ui-pill-irrigation" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer hover:-translate-y-0.5">
+                        <button type="button" onclick="document.getElementById('ai-search-input').value='What is the optimal watering schedule?'" id="ui-pill-irrigation" class="bg-white/5 hover:bg-white/15 text-purple-100 border border-white/10 text-[10px] sm:text-xs font-semibold px-3 py-1.5 rounded-full transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-droplet text-purple-400"></i> Irrigation
                         </button>
                     </div>
                     
-                    <div id="ai-search-result-box" class="mt-5 hidden bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-inner relative z-10 w-full border border-purple-100 dark:border-purple-900/50 transition-all duration-500 transform translate-y-4 opacity-0">
-                        <div class="flex items-center gap-2 mb-3 border-b border-gray-100 dark:border-gray-800 pb-2">
-                            <i class="fa-solid fa-sparkles text-purple-500 animate-spin-slow"></i>
-                            <h4 class="text-[10px] font-extrabold text-purple-800 dark:text-purple-400 uppercase tracking-widest">AI Analysis</h4>
+                    <div id="ai-search-result-box" class="mt-5 hidden bg-white rounded-2xl p-5 shadow-inner relative z-10 w-full border border-purple-100">
+                        <div class="flex items-center gap-2 mb-3 border-b border-gray-100 pb-2">
+                            <i class="fa-solid fa-sparkles text-purple-500"></i>
+                            <h4 class="text-[10px] font-extrabold text-purple-800 uppercase tracking-widest">AI Analysis</h4>
                         </div>
-                        <p id="ai-search-result" class="text-sm text-gray-800 dark:text-gray-200 leading-relaxed font-medium w-full break-words whitespace-pre-line"></p>
+                        <p id="ai-search-result" class="text-sm text-gray-800 leading-relaxed font-medium w-full break-words whitespace-pre-line"></p>
                     </div>
                 </div>
 
-                <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 w-full" data-aos="fade-up" data-aos-delay="200">
-                    <h3 id="ui-setup-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-4 flex items-center gap-2">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full">
+                    <h3 id="ui-setup-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-map-location-dot"></i> Setup Parameters
                     </h3>
                     
                     <div class="relative w-full z-50 mb-4 group">
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400 group-focus-within:text-emerald-500 transition-colors">
+                        <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
-                        <input type="text" id="location-search" class="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl pl-11 pr-12 p-3.5 outline-none font-semibold text-gray-800 dark:text-white text-sm focus:border-emerald-300 dark:focus:border-emerald-700 transition-all shadow-sm placeholder-gray-400 dark:placeholder-gray-600" placeholder="Search village..." autocomplete="off">
-                        <button id="gps-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 hover:bg-emerald-100 dark:hover:bg-emerald-800/50 p-2 rounded-lg transition-colors hover:scale-105 active:scale-95">
+                        <input type="text" id="location-search" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-12 p-3.5 outline-none font-semibold text-gray-800 text-sm" placeholder="Search village..." autocomplete="off">
+                        <button id="gps-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-500 bg-emerald-50 p-2 rounded-lg">
                             <i class="fa-solid fa-location-crosshairs text-md"></i>
                         </button>
-                        <div id="search-results" class="absolute w-full bg-white dark:bg-gray-900 mt-2 rounded-xl shadow-xl hidden max-h-56 overflow-y-auto border border-gray-100 dark:border-gray-800 z-50 text-sm"></div>
+                        <div id="search-results" class="absolute w-full bg-white mt-2 rounded-xl shadow-xl hidden max-h-56 overflow-y-auto border border-gray-100 z-50 text-sm"></div>
                     </div>
 
                     <div class="relative w-full group">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-emerald-500">
                             <i class="fa-solid fa-seedling"></i>
                         </div>
-                        <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-xl pl-11 pr-14 p-3.5 outline-none font-semibold text-gray-800 dark:text-white text-sm focus:border-emerald-300 dark:focus:border-emerald-700 transition-all shadow-sm placeholder-gray-400 dark:placeholder-gray-600" placeholder="Search crop..." autocomplete="off">
+                        <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-14 p-3.5 outline-none font-semibold text-gray-800 text-sm" placeholder="Search crop..." autocomplete="off">
                         <datalist id="crop-suggestions">
                             <option value="Rice (Paddy)"><option value="Wheat"><option value="Cotton"><option value="Sugarcane"><option value="Maize"><option value="Potato"><option value="Soybean"><option value="Tomato"><option value="Onion">
                         </datalist>
-                        <button type="button" onclick="let el = document.getElementById('crop-selector'); el.blur(); el.dispatchEvent(new Event('change'));" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white bg-emerald-500 hover:bg-emerald-600 p-2 w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer z-10 transition-all hover:scale-105 active:scale-95 shadow-md">
+                        <button type="button" onclick="let el = document.getElementById('crop-selector'); el.blur(); el.dispatchEvent(new Event('change'));" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-white bg-emerald-500 p-2 w-9 h-9 rounded-lg flex items-center justify-center cursor-pointer z-10">
                             <i class="fa-solid fa-magnifying-glass text-sm"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 hidden w-full" id="sms-section" data-aos="fade-up">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full" id="sms-section">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="bg-gray-100 dark:bg-gray-800 p-2 rounded-lg text-gray-600 dark:text-gray-300"><i class="fa-solid fa-mobile-screen animate-bounce"></i></div>
-                        <h3 id="sms-heading" class="text-base font-extrabold text-gray-800 dark:text-white">Automated Alerts</h3>
+                        <div class="bg-gray-100 p-2 rounded-lg text-gray-600"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <h3 id="sms-heading" class="text-base font-extrabold text-gray-800">Automated Alerts</h3>
                     </div>
-                    <p id="sms-help" class="text-xs text-gray-500 dark:text-gray-400 mb-4 font-medium">Receive this advisory via SMS directly to your phone.</p>
+                    <p id="sms-help" class="text-xs text-gray-500 mb-4 font-medium">Receive this advisory via SMS directly to your phone.</p>
                     
-                    <div class="bg-gray-50 dark:bg-gray-950 rounded-xl p-1.5 flex border border-gray-200 dark:border-gray-800 focus-within:border-gray-400 dark:focus-within:border-gray-600 transition-all shadow-sm">
-                        <div class="flex items-center pl-3 text-gray-500 dark:text-gray-400 font-bold text-sm">+91 <span class="mx-2 text-gray-300 dark:text-gray-700">|</span></div>
-                        <input type="tel" id="farmer-phone" class="w-full bg-transparent outline-none text-sm font-bold text-gray-800 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 min-w-0" placeholder="Mobile Number" autocomplete="off">
-                        <button id="send-sms-btn" class="bg-gray-800 hover:bg-black dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white rounded-lg w-12 h-10 flex items-center justify-center shrink-0 transition-all transform active:scale-90 shadow-md">
+                    <div class="bg-gray-50 rounded-xl p-1.5 flex border border-gray-200">
+                        <div class="flex items-center pl-3 text-gray-500 font-bold text-sm">+91 <span class="mx-2 text-gray-300">|</span></div>
+                        <input type="tel" id="farmer-phone" class="w-full bg-transparent outline-none text-sm font-bold text-gray-800 placeholder-gray-400 min-w-0" placeholder="Mobile Number" autocomplete="off">
+                        <button id="send-sms-btn" class="bg-gray-800 text-white rounded-lg w-12 h-10 flex items-center justify-center shrink-0">
                             <i class="fa-solid fa-paper-plane"></i>
                         </button>
                     </div>
@@ -319,84 +210,80 @@
 
             <div class="lg:col-span-7 flex flex-col gap-6 w-full min-w-0">
                 
-                <div id="loader" class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-12 text-center text-emerald-500 font-bold hidden shadow-sm border border-gray-100 dark:border-gray-800 flex-col items-center justify-center min-h-[300px] w-full">
-                    <i class="fa-solid fa-circle-notch fa-spin text-5xl mb-4 text-emerald-400"></i>
-                    <p class="text-base text-gray-600 dark:text-gray-400 animate-pulse">AI is analyzing location data...</p>
+                <div id="loader" class="bento-card bg-white rounded-[2rem] p-12 text-center text-emerald-500 font-bold hidden shadow-sm border border-gray-100 flex flex-col items-center justify-center min-h-[300px] w-full">
+                    <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-400"></i>
+                    <p class="text-base text-gray-600">AI is analyzing location data...</p>
                 </div>
 
-                <div id="weather-content" class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 hidden w-full" data-aos="zoom-in" data-aos-delay="300">
-                    <div id="weather-bg-layer" class="weather-bg clear"></div>
+                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full">
                     <div class="flex justify-between items-center mb-6">
-                        <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 dark:text-white flex items-center gap-2">
+                        <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
                             <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
                         </h2>
-                        <span id="ui-realtime-badge" class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider relative overflow-hidden group">
-                            <span class="absolute w-full h-full bg-emerald-100 dark:bg-emerald-800/50 top-0 left-0 -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-                            <span class="relative z-10">Real-Time</span>
-                        </span>
+                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
                         <div class="flex items-center gap-4 sm:gap-6 animate-float-slow shrink-0 sm:pl-6">
-                            <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md hover:scale-110 transition-transform"></i>
-                            <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black text-gray-800 dark:text-white tracking-tighter">--°</h1>
+                            <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md"></i>
+                            <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black text-gray-800 tracking-tighter">--°</h1>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 w-full min-w-0">
-                            <div class="bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-gray-700 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 dark:border-gray-700 transition-colors group cursor-default min-w-0">
-                                <div class="text-blue-500 text-xl w-6 sm:w-8 text-center shrink-0 group-hover:scale-125 transition-transform"><i class="fa-solid fa-droplet"></i></div>
-                                <div class="min-w-0"><p id="rain-val" class="text-base font-extrabold text-gray-800 dark:text-white truncate">-- mm</p><p id="rain-label" class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest truncate">Rain Vol.</p></div>
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                                <div class="text-blue-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-droplet"></i></div>
+                                <div class="min-w-0"><p id="rain-val" class="text-base font-extrabold text-gray-800 truncate">-- mm</p><p id="rain-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain Vol.</p></div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-800 hover:bg-cyan-50 dark:hover:bg-gray-700 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 dark:border-gray-700 transition-colors group cursor-default min-w-0">
-                                <div class="text-cyan-500 text-xl w-6 sm:w-8 text-center shrink-0 group-hover:scale-125 transition-transform"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
-                                <div class="min-w-0"><p id="precip-prob-val" class="text-base font-extrabold text-gray-800 dark:text-white truncate">-- %</p><p id="precip-label" class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest truncate">Rain %</p></div>
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                                <div class="text-cyan-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+                                <div class="min-w-0"><p id="precip-prob-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="precip-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain %</p></div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-800 hover:bg-teal-50 dark:hover:bg-gray-700 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 dark:border-gray-700 transition-colors group cursor-default min-w-0">
-                                <div class="text-teal-500 text-xl w-6 sm:w-8 text-center shrink-0 group-hover:rotate-180 transition-transform duration-500"><i class="fa-solid fa-wind"></i></div>
-                                <div class="min-w-0"><p id="wind-val" class="text-base font-extrabold text-gray-800 dark:text-white truncate">-- km/h</p><p id="wind-label" class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest truncate">Wind</p></div>
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                                <div class="text-teal-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-wind"></i></div>
+                                <div class="min-w-0"><p id="wind-val" class="text-base font-extrabold text-gray-800 truncate">-- km/h</p><p id="wind-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Wind</p></div>
                             </div>
-                            <div class="bg-gray-50 dark:bg-gray-800 hover:bg-indigo-50 dark:hover:bg-gray-700 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 dark:border-gray-700 transition-colors group cursor-default min-w-0">
-                                <div class="text-indigo-500 text-xl w-6 sm:w-8 text-center shrink-0 group-hover:scale-125 transition-transform"><i class="fa-solid fa-water"></i></div>
-                                <div class="min-w-0"><p id="humidity-val" class="text-base font-extrabold text-gray-800 dark:text-white truncate">-- %</p><p id="humidity-label" class="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest truncate">Humidity</p></div>
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                                <div class="text-indigo-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-water"></i></div>
+                                <div class="min-w-0"><p id="humidity-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="humidity-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Humidity</p></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div id="alert-box" class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 hidden relative overflow-hidden w-full" data-aos="fade-up">
+                <div id="alert-box" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden relative overflow-hidden w-full">
                     <div class="relative z-10 w-full min-w-0">
-                        <div class="flex justify-between items-center w-full mb-4 border-b border-gray-100 dark:border-gray-800 pb-4 gap-2">
+                        <div class="flex justify-between items-center w-full mb-4 border-b border-gray-100 pb-4 gap-2">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="bg-emerald-50 dark:bg-emerald-900/30 text-emerald-500 dark:text-emerald-400 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-800 shadow-sm animate-pulse">
+                                <div class="bg-emerald-50 text-emerald-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
                                     <i id="alert-icon" class="fa-solid fa-triangle-exclamation text-2xl"></i>
                                 </div>
-                                <h3 id="alert-title" class="font-extrabold text-base sm:text-lg text-gray-900 dark:text-white truncate">Agri Alert</h3>
+                                <h3 id="alert-title" class="font-extrabold text-base sm:text-lg text-gray-900 truncate">Agri Alert</h3>
                             </div>
                             
-                            <button id="read-aloud-btn" class="bg-emerald-50 dark:bg-gray-800 hover:bg-emerald-100 dark:hover:bg-gray-700 text-emerald-700 dark:text-emerald-400 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0 transition-colors active:scale-95">
+                            <button id="read-aloud-btn" class="bg-emerald-50 text-emerald-700 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
                                 <i class="fa-solid fa-volume-high" id="audio-icon"></i>
                                 <span id="ui-read-aloud" class="hidden sm:inline">Read Aloud</span>
                             </button>
                         </div>
                         
-                        <p id="alert-message" class="text-sm leading-relaxed text-gray-800 dark:text-gray-300 font-medium w-full break-words whitespace-pre-line"></p>
+                        <p id="alert-message" class="text-sm leading-relaxed text-gray-800 font-medium w-full break-words whitespace-pre-line"></p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
-                    <div class="bento-card bg-white dark:bg-gray-900 rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-800 hidden w-full overflow-hidden" id="forecast-section" data-aos="fade-up">
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full overflow-hidden" id="forecast-section">
                         <div class="flex items-center justify-between mb-5">
-                            <h3 id="ui-forecast-title" class="text-base font-extrabold text-gray-800 dark:text-white flex items-center gap-2 truncate">
+                            <h3 id="ui-forecast-title" class="text-base font-extrabold text-gray-800 flex items-center gap-2 truncate">
                                 <i class="fa-solid fa-chart-area text-emerald-500"></i> 7-Day Forecast
                             </h3>
                         </div>
-                        <div class="relative w-full h-[250px] bg-gray-50 dark:bg-gray-800 rounded-xl p-3 border border-gray-100 dark:border-gray-700">
+                        <div class="relative w-full h-[250px] bg-gray-50 rounded-xl p-3 border border-gray-100">
                             <canvas id="forecastChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
 
-                    <div class="bento-card bg-emerald-900 dark:bg-[#064e3b] rounded-[2rem] p-5 sm:p-6 shadow-[0_10px_30px_-10px_rgba(16,185,129,0.5)] dark:shadow-[0_10px_30px_-10px_rgba(4,120,87,0.5)] border border-emerald-800 dark:border-emerald-700 relative overflow-hidden w-full hover:-translate-y-2 transition-transform duration-300" id="doctor-section" data-aos="fade-up">
+                    <div class="bento-card bg-emerald-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-emerald-800 relative overflow-hidden w-full" id="doctor-section">
                         <div class="absolute right-0 bottom-0 opacity-10 pointer-events-none transform translate-x-1/4 translate-y-1/4">
                             <i class="fa-solid fa-microscope text-[15rem] text-emerald-300"></i>
                         </div>
@@ -405,18 +292,18 @@
                             <h3 id="ui-doc-title" class="text-base font-extrabold text-white flex items-center gap-2 min-w-0 truncate">
                                 <i class="fa-solid fa-camera text-emerald-400 shrink-0"></i> AI Plant Doctor
                             </h3>
-                            <span id="ui-doc-badge" class="bg-emerald-800 dark:bg-emerald-900 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-700 shrink-0 hidden sm:inline-block">Computer Vision</span>
+                            <span id="ui-doc-badge" class="bg-emerald-800 text-emerald-300 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider border border-emerald-700 shrink-0 hidden sm:inline-block">Computer Vision</span>
                         </div>
                         
                         <div class="relative z-10 w-full min-w-0">
                             <p id="ui-doc-desc" class="text-sm text-emerald-100/80 mb-5 font-medium leading-relaxed">Snap a photo of a diseased leaf. Our AI will instantly identify the issue and recommend a cure.</p>
                             
                             <input type="file" id="camera-input" accept="image/*" class="hidden">
-                            <button onclick="document.getElementById('camera-input').click()" id="ui-doc-btn" class="w-full sm:w-auto bg-emerald-400 hover:bg-emerald-300 text-emerald-950 font-extrabold py-3.5 px-6 rounded-xl shadow-[0_0_15px_rgba(52,211,153,0.4)] flex items-center justify-center gap-2 text-sm transition-all transform active:scale-95">
+                            <button onclick="document.getElementById('camera-input').click()" id="ui-doc-btn" class="w-full sm:w-auto bg-emerald-400 text-emerald-950 font-extrabold py-3.5 px-6 rounded-xl shadow-md flex items-center justify-center gap-2 text-sm">
                                 <i class="fa-solid fa-camera text-lg"></i> Scan Leaf Now
                             </button>
 
-                            <div id="doctor-result" class="mt-6 hidden bg-white/10 backdrop-blur-md rounded-xl p-5 border border-emerald-700 w-full transition-all duration-500 transform translate-y-4 opacity-0">
+                            <div id="doctor-result" class="mt-6 hidden bg-white/10 backdrop-blur-md rounded-xl p-5 border border-emerald-700 w-full">
                                 <div class="flex items-center gap-3 mb-4 border-b border-emerald-700/50 pb-3 min-w-0">
                                     <div class="bg-emerald-500/20 p-2 rounded-lg border border-emerald-500/30 shrink-0">
                                         <i class="fa-solid fa-microscope text-emerald-300 animate-pulse text-lg" id="doc-icon"></i>
@@ -434,11 +321,11 @@
         </div>
     </main>
 
-    <footer class="w-full py-6 mt-auto border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 transition-colors duration-300">
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 font-medium bg-gray-50 dark:bg-gray-900 px-4 py-2 rounded-full border border-gray-100 dark:border-gray-800 shrink-0 max-w-full truncate">
-                Designed & Developed by <span class="font-bold text-emerald-600 dark:text-emerald-500">Aditya</span> & <span class="font-bold text-emerald-600 dark:text-emerald-500">Nistha</span>
+            <p class="text-xs text-gray-500 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
+            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shrink-0 max-w-full truncate">
+                Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span>
             </p>
         </div>
     </footer>
@@ -453,16 +340,10 @@
         </div>
     </div>
 
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-    <script>
-        AOS.init({ duration: 800, once: true, offset: 50 });
-    </script>
-
     <script src="js/translations.js"></script>
     <script src="js/app.js"></script>
 
     <script>
-        // --- Sidebar Logic ---
         const menuBtn = document.getElementById('menu-btn');
         const closeMenuBtn = document.getElementById('close-menu-btn');
         const sidebarMenu = document.getElementById('sidebar-menu');
@@ -483,76 +364,6 @@
         menuBtn.addEventListener('click', openSidebar);
         closeMenuBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
-
-        // --- 🌟 UPGRADE: Dark Mode Toggle Logic ---
-        const themeToggleBtn = document.getElementById('theme-toggle');
-        const themeIcon = document.getElementById('theme-icon');
-        const htmlElement = document.documentElement;
-
-        // Check Local Storage on Load
-        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            htmlElement.classList.add('dark');
-            themeIcon.classList.replace('fa-moon', 'fa-sun');
-            themeIcon.classList.add('text-yellow-400'); // Make sun yellow
-        } else {
-            htmlElement.classList.remove('dark');
-        }
-
-        // Toggle Click Event
-        themeToggleBtn.addEventListener('click', function() {
-            htmlElement.classList.toggle('dark');
-            
-            if (htmlElement.classList.contains('dark')) {
-                localStorage.setItem('theme', 'dark');
-                themeIcon.classList.replace('fa-moon', 'fa-sun');
-                themeIcon.classList.add('text-yellow-400');
-            } else {
-                localStorage.setItem('theme', 'light');
-                themeIcon.classList.replace('fa-sun', 'fa-moon');
-                themeIcon.classList.remove('text-yellow-400');
-            }
-        });
-
-        // --- 🌦️ APPLE WEATHER ANIMATION GENERATOR ---
-        function setAppleWeatherEffect(condition) {
-            const bgLayer = document.getElementById('weather-bg-layer');
-            if(!bgLayer) return;
-
-            bgLayer.innerHTML = '';
-            bgLayer.className = `weather-bg ${condition}`;
-
-            if (condition === 'rain') {
-                for (let i = 0; i < 30; i++) {
-                    let drop = document.createElement('div');
-                    drop.className = 'drop';
-                    drop.style.left = `${Math.random() * 100}%`;
-                    drop.style.animationDuration = `${Math.random() * 1 + 0.5}s`;
-                    drop.style.animationDelay = `${Math.random() * 2}s`;
-                    drop.style.opacity = Math.random();
-                    bgLayer.appendChild(drop);
-                }
-            } else if (condition === 'cloudy') {
-                for (let i = 0; i < 5; i++) {
-                    let cloud = document.createElement('div');
-                    cloud.className = 'cloud';
-                    cloud.style.width = `${Math.random() * 200 + 100}px`;
-                    cloud.style.height = `${Math.random() * 100 + 50}px`;
-                    cloud.style.top = `${Math.random() * 100}%`;
-                    cloud.style.animationDuration = `${Math.random() * 20 + 15}s`;
-                    cloud.style.animationDelay = `-${Math.random() * 10}s`;
-                    bgLayer.appendChild(cloud);
-                }
-            } else if (condition === 'clear') {
-                let sun = document.createElement('div');
-                sun.className = 'sun-flare';
-                bgLayer.appendChild(sun);
-            }
-        }
-
-        // Test it out immediately! (You can link this into app.js later)
-        setTimeout(() => {
-            setAppleWeatherEffect('rain'); 
-        }, 1000);
     </script>
 </body>
 </html>
