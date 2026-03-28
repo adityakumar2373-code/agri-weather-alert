@@ -45,73 +45,61 @@
         }
 
         /* ==========================================
-           ⛅ APPLE WEATHER-STYLE ANIMATIONS 🌧️
-           (Bulletproofed to prevent app.js conflicts)
+           🌟 UPGRADED APPLE WEATHER ANIMATIONS 🌩️
            ========================================== */
-        
         #weather-content {
-            position: relative !important;
-            overflow: hidden !important;
-            background-color: transparent !important; 
-            background-image: none !important;
-            border: none !important;
-        }
-        
-        /* Force text and icons to be white over the animations */
-        #weather-content * {
+            position: relative;
+            overflow: hidden;
             color: white !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
+            border: none !important;
+            transition: background 1s ease;
         }
-        
-        /* Give the inner grids a glassy look */
+        #weather-content > div { position: relative; z-index: 10; }
+        #weather-content h2, #weather-content h1, #weather-content p, #weather-content i { color: white !important; }
         #weather-content .bg-gray-50 {
-            background-color: rgba(255, 255, 255, 0.1) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.25) !important;
+            backdrop-filter: blur(10px);
         }
 
-        /* Make sure UI stays in front of the background */
-        #weather-content > div:not(#weather-bg-layer) {
-            position: relative !important;
-            z-index: 10 !important;
+        .weather-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        
+        /* ☀️ Clear */
+        .weather-bg.clear { background: linear-gradient(to bottom, #38bdf8, #0ea5e9, #0284c7); }
+        .sun-flare {
+            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
+            border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
         }
+        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; } }
 
-        /* Weather Background Layers */
-        .weather-bg { 
-            position: absolute !important; 
-            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; 
-            z-index: 0 !important; 
-            pointer-events: none !important; 
-            transition: all 1s ease;
+        /* ☁️ Cloudy */
+        .weather-bg.cloudy { background: linear-gradient(to bottom, #64748b, #94a3b8, #475569); }
+        .cloud {
+            position: absolute; background: rgba(255, 255, 255, 0.4);
+            border-radius: 200px; filter: blur(18px); animation: float-cloud linear infinite;
         }
+        @keyframes float-cloud { from { transform: translateX(-150px); } to { transform: translateX(120vw); } }
 
-        /* 🌧️ RAIN ANIMATION */
-        .weather-bg.rain { background: linear-gradient(to bottom, #1e293b, #334155, #0f172a) !important; }
+        /* 🌧️ Rain */
+        .weather-bg.rain, .weather-bg.lightning { background: linear-gradient(to bottom, #1e293b, #334155, #0f172a); }
         .drop {
-            position: absolute; width: 2px; height: 40px;
-            background: linear-gradient(transparent, rgba(255,255,255,0.7));
+            position: absolute; width: 2px; height: 60px;
+            background: linear-gradient(transparent, rgba(255,255,255,0.8));
             bottom: 100%; animation: fall linear infinite;
         }
-        @keyframes fall { to { transform: translateY(100vh); } }
+        @keyframes fall { to { transform: translate(-30px, 100vh); } }
 
-        /* ☁️ CLOUD ANIMATION */
-        .weather-bg.cloudy { background: linear-gradient(to bottom, #64748b, #94a3b8, #475569) !important; }
-        .cloud {
-            position: absolute; background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%; filter: blur(25px); animation: float-cloud linear infinite;
+        /* 🌩️ Lightning Flash */
+        .flash {
+            position: absolute; inset: 0; background: white; opacity: 0; z-index: 5;
+            animation: lightning-flash 7s infinite;
         }
-        @keyframes float-cloud { from { transform: translateX(-150px); } to { transform: translateX(120%); } }
-
-        /* ☀️ CLEAR SUN ANIMATION */
-        .weather-bg.clear { background: linear-gradient(to bottom, #38bdf8, #0ea5e9, #0284c7) !important; }
-        .sun-flare {
-            position: absolute; top: -50px; right: -50px; width: 250px; height: 250px;
-            background: radial-gradient(circle, rgba(253, 224, 71, 0.6) 0%, rgba(253, 224, 71, 0) 70%);
-            border-radius: 50%; animation: pulse-sun 4s ease-in-out infinite alternate;
+        @keyframes lightning-flash {
+            0%, 91%, 96%, 100% { opacity: 0; }
+            92%, 94% { opacity: 0.8; }
+            93%, 95% { opacity: 0.2; }
         }
-        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.1); opacity: 1; } }
-
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -438,7 +426,7 @@
         sidebarOverlay.addEventListener('click', closeSidebar);
 
         // ==========================================
-        // 🌦️ APPLE WEATHER ANIMATION GENERATOR 
+        // 🌦️ ADVANCED APPLE WEATHER ANIMATIONS 🌩️
         // ==========================================
         function setAppleWeatherEffect(condition) {
             const bgLayer = document.getElementById('weather-bg-layer');
@@ -447,27 +435,43 @@
             bgLayer.innerHTML = '';
             bgLayer.className = `weather-bg ${condition}`;
 
-            if (condition === 'rain') {
-                for (let i = 0; i < 40; i++) {
+            const createRain = (dropCount) => {
+                for (let i = 0; i < dropCount; i++) {
                     let drop = document.createElement('div');
                     drop.className = 'drop';
-                    drop.style.left = `${Math.random() * 100}%`;
-                    drop.style.animationDuration = `${Math.random() * 0.5 + 0.5}s`;
+                    drop.style.left = `${Math.random() * 120}%`; 
+                    drop.style.animationDuration = `${Math.random() * 0.4 + 0.4}s`; 
                     drop.style.animationDelay = `${Math.random() * 2}s`;
-                    drop.style.opacity = Math.random() * 0.5 + 0.2;
+                    drop.style.opacity = Math.random() * 0.6 + 0.2;
                     bgLayer.appendChild(drop);
                 }
-            } else if (condition === 'cloudy') {
-                for (let i = 0; i < 6; i++) {
+            };
+
+            const createClouds = (cloudCount, opacity) => {
+                for (let i = 0; i < cloudCount; i++) {
                     let cloud = document.createElement('div');
                     cloud.className = 'cloud';
-                    cloud.style.width = `${Math.random() * 200 + 150}px`;
-                    cloud.style.height = `${Math.random() * 100 + 80}px`;
-                    cloud.style.top = `${Math.random() * 80}%`;
-                    cloud.style.animationDuration = `${Math.random() * 20 + 20}s`;
-                    cloud.style.animationDelay = `-${Math.random() * 15}s`;
+                    cloud.style.width = `${Math.random() * 250 + 150}px`;
+                    cloud.style.height = `${Math.random() * 100 + 60}px`;
+                    cloud.style.top = `${Math.random() * 60}%`; 
+                    cloud.style.opacity = opacity;
+                    cloud.style.animationDuration = `${Math.random() * 30 + 20}s`;
+                    cloud.style.animationDelay = `-${Math.random() * 20}s`;
                     bgLayer.appendChild(cloud);
                 }
+            };
+
+            if (condition === 'rain') {
+                createClouds(3, 0.2); 
+                createRain(50);
+            } else if (condition === 'lightning') {
+                let flash = document.createElement('div');
+                flash.className = 'flash';
+                bgLayer.appendChild(flash);
+                createClouds(4, 0.3);
+                createRain(70); 
+            } else if (condition === 'cloudy') {
+                createClouds(8, Math.random() * 0.3 + 0.4);
             } else if (condition === 'clear') {
                 let sun = document.createElement('div');
                 sun.className = 'sun-flare';
@@ -475,7 +479,7 @@
             }
         }
 
-        // Auto-detect weather from app.js updates
+        // 🧠 Smart Detector: Watches app.js for real weather changes!
         setInterval(() => {
             const iconElement = document.getElementById('weather-icon');
             const bgLayer = document.getElementById('weather-bg-layer');
@@ -484,15 +488,24 @@
             const iconClass = iconElement.className || "";
             let condition = 'clear'; 
             
-            if (iconClass.includes('rain') || iconClass.includes('showers') || iconClass.includes('droplet') || iconClass.includes('storm')) {
+            // Check for lightning/storm first
+            if (iconClass.includes('bolt') || iconClass.includes('thunder') || iconClass.includes('lightning') || iconClass.includes('storm')) {
+                condition = 'lightning';
+            } 
+            // Check for rain
+            else if (iconClass.includes('rain') || iconClass.includes('showers') || iconClass.includes('droplet')) {
                 condition = 'rain';
-            } else if (iconClass.includes('cloud')) {
+            } 
+            // Check for clouds
+            else if (iconClass.includes('cloud')) {
                 condition = 'cloudy';
-            } else {
+            } 
+            // Otherwise, keep it clear
+            else {
                 condition = 'clear';
             }
 
-            // Only redraw if the condition changed
+            // Only redraw if the weather actually changed
             if (!bgLayer.classList.contains(condition)) {
                 setAppleWeatherEffect(condition);
             }
