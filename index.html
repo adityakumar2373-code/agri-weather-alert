@@ -44,49 +44,74 @@
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
 
-        /* 🌦️ APPLE WEATHER ANIMATIONS */
+        /* ==========================================
+           ⛅ APPLE WEATHER-STYLE ANIMATIONS 🌧️
+           (Bulletproofed to prevent app.js conflicts)
+           ========================================== */
+        
         #weather-content {
-            position: relative;
-            overflow: hidden;
-            color: white !important;
+            position: relative !important;
+            overflow: hidden !important;
+            background-color: transparent !important; 
+            background-image: none !important;
             border: none !important;
-            transition: background 1s ease;
         }
-        #weather-content > div { position: relative; z-index: 10; }
-        #weather-content h2, #weather-content h1, #weather-content p, #weather-content i { color: white !important; }
+        
+        /* Force text and icons to be white over the animations */
+        #weather-content * {
+            color: white !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+        }
+        
+        /* Give the inner grids a glassy look */
         #weather-content .bg-gray-50 {
             background-color: rgba(255, 255, 255, 0.1) !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
         }
 
-        .weather-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
-        
-        /* Rain */
-        .weather-bg.rain { background: linear-gradient(to bottom, #1e293b, #334155, #0f172a); }
+        /* Make sure UI stays in front of the background */
+        #weather-content > div:not(#weather-bg-layer) {
+            position: relative !important;
+            z-index: 10 !important;
+        }
+
+        /* Weather Background Layers */
+        .weather-bg { 
+            position: absolute !important; 
+            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; 
+            z-index: 0 !important; 
+            pointer-events: none !important; 
+            transition: all 1s ease;
+        }
+
+        /* 🌧️ RAIN ANIMATION */
+        .weather-bg.rain { background: linear-gradient(to bottom, #1e293b, #334155, #0f172a) !important; }
         .drop {
             position: absolute; width: 2px; height: 40px;
-            background: linear-gradient(transparent, rgba(255,255,255,0.6));
+            background: linear-gradient(transparent, rgba(255,255,255,0.7));
             bottom: 100%; animation: fall linear infinite;
         }
         @keyframes fall { to { transform: translateY(100vh); } }
 
-        /* Clouds */
-        .weather-bg.cloudy { background: linear-gradient(to bottom, #64748b, #94a3b8, #475569); }
+        /* ☁️ CLOUD ANIMATION */
+        .weather-bg.cloudy { background: linear-gradient(to bottom, #64748b, #94a3b8, #475569) !important; }
         .cloud {
-            position: absolute; background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%; filter: blur(20px); animation: float-cloud linear infinite;
+            position: absolute; background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%; filter: blur(25px); animation: float-cloud linear infinite;
         }
-        @keyframes float-cloud { from { transform: translateX(-100px); } to { transform: translateX(100%); } }
+        @keyframes float-cloud { from { transform: translateX(-150px); } to { transform: translateX(120%); } }
 
-        /* Sun */
-        .weather-bg.clear { background: linear-gradient(to bottom, #38bdf8, #0ea5e9, #0284c7); }
+        /* ☀️ CLEAR SUN ANIMATION */
+        .weather-bg.clear { background: linear-gradient(to bottom, #38bdf8, #0ea5e9, #0284c7) !important; }
         .sun-flare {
-            position: absolute; top: -20px; right: -20px; width: 150px; height: 150px;
-            background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
+            position: absolute; top: -50px; right: -50px; width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(253, 224, 71, 0.6) 0%, rgba(253, 224, 71, 0) 70%);
             border-radius: 50%; animation: pulse-sun 4s ease-in-out infinite alternate;
         }
-        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; } }
+        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.1); opacity: 1; } }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -260,36 +285,38 @@
                 </div>
 
                 <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full">
+                    
                     <div id="weather-bg-layer" class="weather-bg clear"></div>
+
                     <div class="flex justify-between items-center mb-6">
-                        <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
-                            <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
+                        <h2 id="current-weather-title" class="text-sm font-extrabold flex items-center gap-2">
+                            <i class="fa-solid fa-tower-observation text-emerald-300"></i> Live Conditions
                         </h2>
-                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
+                        <span id="ui-realtime-badge" class="bg-white/20 text-white text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider backdrop-blur-sm border border-white/30">Real-Time</span>
                     </div>
                     
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
                         <div class="flex items-center gap-4 sm:gap-6 animate-float-slow shrink-0 sm:pl-6">
-                            <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md"></i>
-                            <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black text-gray-800 tracking-tighter">--°</h1>
+                            <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-200 drop-shadow-md"></i>
+                            <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black tracking-tighter">--°</h1>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 w-full min-w-0">
                             <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
-                                <div class="text-blue-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-droplet"></i></div>
-                                <div class="min-w-0"><p id="rain-val" class="text-base font-extrabold text-gray-800 truncate">-- mm</p><p id="rain-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain Vol.</p></div>
+                                <div class="text-white text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-droplet"></i></div>
+                                <div class="min-w-0"><p id="rain-val" class="text-base font-extrabold truncate">-- mm</p><p id="rain-label" class="text-[9px] font-bold text-white/70 uppercase tracking-widest truncate">Rain Vol.</p></div>
                             </div>
                             <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
-                                <div class="text-cyan-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
-                                <div class="min-w-0"><p id="precip-prob-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="precip-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain %</p></div>
+                                <div class="text-white text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
+                                <div class="min-w-0"><p id="precip-prob-val" class="text-base font-extrabold truncate">-- %</p><p id="precip-label" class="text-[9px] font-bold text-white/70 uppercase tracking-widest truncate">Rain %</p></div>
                             </div>
                             <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
-                                <div class="text-teal-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-wind"></i></div>
-                                <div class="min-w-0"><p id="wind-val" class="text-base font-extrabold text-gray-800 truncate">-- km/h</p><p id="wind-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Wind</p></div>
+                                <div class="text-white text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-wind"></i></div>
+                                <div class="min-w-0"><p id="wind-val" class="text-base font-extrabold truncate">-- km/h</p><p id="wind-label" class="text-[9px] font-bold text-white/70 uppercase tracking-widest truncate">Wind</p></div>
                             </div>
                             <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
-                                <div class="text-indigo-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-water"></i></div>
-                                <div class="min-w-0"><p id="humidity-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="humidity-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Humidity</p></div>
+                                <div class="text-white text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-water"></i></div>
+                                <div class="min-w-0"><p id="humidity-val" class="text-base font-extrabold truncate">-- %</p><p id="humidity-label" class="text-[9px] font-bold text-white/70 uppercase tracking-widest truncate">Humidity</p></div>
                             </div>
                         </div>
                     </div>
@@ -410,7 +437,9 @@
         closeMenuBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
 
-        // 🌦️ APPLE WEATHER ANIMATION GENERATOR
+        // ==========================================
+        // 🌦️ APPLE WEATHER ANIMATION GENERATOR 
+        // ==========================================
         function setAppleWeatherEffect(condition) {
             const bgLayer = document.getElementById('weather-bg-layer');
             if(!bgLayer) return;
@@ -419,24 +448,24 @@
             bgLayer.className = `weather-bg ${condition}`;
 
             if (condition === 'rain') {
-                for (let i = 0; i < 30; i++) {
+                for (let i = 0; i < 40; i++) {
                     let drop = document.createElement('div');
                     drop.className = 'drop';
                     drop.style.left = `${Math.random() * 100}%`;
-                    drop.style.animationDuration = `${Math.random() * 1 + 0.5}s`;
+                    drop.style.animationDuration = `${Math.random() * 0.5 + 0.5}s`;
                     drop.style.animationDelay = `${Math.random() * 2}s`;
-                    drop.style.opacity = Math.random();
+                    drop.style.opacity = Math.random() * 0.5 + 0.2;
                     bgLayer.appendChild(drop);
                 }
             } else if (condition === 'cloudy') {
-                for (let i = 0; i < 5; i++) {
+                for (let i = 0; i < 6; i++) {
                     let cloud = document.createElement('div');
                     cloud.className = 'cloud';
-                    cloud.style.width = `${Math.random() * 200 + 100}px`;
-                    cloud.style.height = `${Math.random() * 100 + 50}px`;
-                    cloud.style.top = `${Math.random() * 100}%`;
-                    cloud.style.animationDuration = `${Math.random() * 20 + 15}s`;
-                    cloud.style.animationDelay = `-${Math.random() * 10}s`;
+                    cloud.style.width = `${Math.random() * 200 + 150}px`;
+                    cloud.style.height = `${Math.random() * 100 + 80}px`;
+                    cloud.style.top = `${Math.random() * 80}%`;
+                    cloud.style.animationDuration = `${Math.random() * 20 + 20}s`;
+                    cloud.style.animationDelay = `-${Math.random() * 15}s`;
                     bgLayer.appendChild(cloud);
                 }
             } else if (condition === 'clear') {
@@ -446,8 +475,29 @@
             }
         }
 
-        // Starts the rain animation automatically!
-        setTimeout(() => { setAppleWeatherEffect('rain'); }, 500);
+        // Auto-detect weather from app.js updates
+        setInterval(() => {
+            const iconElement = document.getElementById('weather-icon');
+            const bgLayer = document.getElementById('weather-bg-layer');
+            if (!iconElement || !bgLayer) return;
+
+            const iconClass = iconElement.className || "";
+            let condition = 'clear'; 
+            
+            if (iconClass.includes('rain') || iconClass.includes('showers') || iconClass.includes('droplet') || iconClass.includes('storm')) {
+                condition = 'rain';
+            } else if (iconClass.includes('cloud')) {
+                condition = 'cloudy';
+            } else {
+                condition = 'clear';
+            }
+
+            // Only redraw if the condition changed
+            if (!bgLayer.classList.contains(condition)) {
+                setAppleWeatherEffect(condition);
+            }
+        }, 1000);
+
     </script>
 </body>
 </html>
