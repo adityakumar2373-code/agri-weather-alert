@@ -1,4 +1,5 @@
 let currentWeatherData = null;
+let currentDailyData = null; // 🌟 ADD THIS LINE
 let currentCoords = null; 
 let currentVillageName = ""; 
 let weatherChart = null; 
@@ -22,9 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const langSelector = document.getElementById('language-selector');
     langSelector.addEventListener('change', (e) => {
         updateLanguage(e.target.value);
+        // 🌟 ADD THESE 3 LINES: Re-draw the weather card in the new language
+        if (currentWeatherData && currentDailyData) {
+            updateUI(currentWeatherData, currentDailyData); 
+        }
         triggerAIIfReady(); 
     });
-
     cropSelector.addEventListener('change', triggerAIIfReady);
 
     document.getElementById('weather-content').classList.add('hidden');
@@ -229,6 +233,8 @@ async function fetchWeather(coords) {
         const data = await response.json();
         
         currentWeatherData = data.current;
+        currentDailyData = data.daily; // 🌟 ADD THIS LINE
+        
         updateUI(currentWeatherData, data.daily); 
         drawChart(data.daily); 
         triggerAIIfReady(); 
