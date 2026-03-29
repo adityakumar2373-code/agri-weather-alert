@@ -583,8 +583,14 @@ function updateLanguage(langCode) {
 
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
-}
 
+    // 🌟 NEW HELPLINES TRANSLATIONS 🌟
+    if(document.getElementById('ui-helplines-title')) document.getElementById('ui-helplines-title').innerHTML = `<i class="fa-solid fa-phone-volume"></i> ${t.helplinesTitle || "Important Helplines"}`;
+    if(document.getElementById('ui-helpline-1-name')) document.getElementById('ui-helpline-1-name').innerText = t.kisanCallCenter || "Kisan Call Center";
+    if(document.getElementById('ui-helpline-1-desc')) document.getElementById('ui-helpline-1-desc').innerText = `1551 • ${t.kccDesc || "Available 6AM - 10PM"}`;
+    if(document.getElementById('ui-helpline-2-name')) document.getElementById('ui-helpline-2-name').innerText = t.agriEmergency || "Agri Emergency";
+    if(document.getElementById('ui-helpline-2-desc')) document.getElementById('ui-helpline-2-desc').innerText = `108 • ${t.aeDesc || "24/7 Toll-Free"}`;
+}
 function updateLiveTime() {
     const timeDisplay = document.getElementById('live-time');
     if (!timeDisplay) return;
