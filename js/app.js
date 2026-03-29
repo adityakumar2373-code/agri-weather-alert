@@ -204,7 +204,7 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // 🌟 API URL FIXED: We now specifically ask the API for 'cloud_cover' data so it knows when it's cloudy!
+    // API URL checking for cloud_cover data!
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
@@ -413,7 +413,14 @@ function applyAppleWeather(condition) {
             cloud.style.animationDelay = `-${Math.random() * 20}s`;
             bgLayer.appendChild(cloud);
         }
+    } else if (condition === 'night') {
+        // 🌟 ADDED NIGHT GRADIENT WITH GLOWING MOON 🌟
+        bgLayer.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)';
+        let moon = document.createElement('div');
+        moon.className = 'apple-moon';
+        bgLayer.appendChild(moon);
     } else {
+        // Clear Day
         bgLayer.style.background = 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
         let sun = document.createElement('div');
         sun.className = 'apple-sun';
@@ -445,7 +452,9 @@ function updateUI(weather, daily) {
     const isNight = currentHour < 6 || currentHour >= 18; 
     let activeCondition = 'clear';
 
-    // 🌟 THE MISSING LOGIC IS FIXED: It now correctly checks cloud cover!
+    // 🌟 FIXED CLOUD THRESHOLD & ADDED NIGHT CHECK 🌟
+    const cloudCover = weather.cloud_cover !== undefined ? weather.cloud_cover : 0;
+
     if (weather.wind_speed_10m > 30 && weather.rain > 5) {
         icon.className = "fa-solid fa-cloud-bolt text-6xl drop-shadow-md text-white";
         conditionText.innerText = "Thunderstorms";
@@ -454,7 +463,7 @@ function updateUI(weather, daily) {
         icon.className = "fa-solid fa-cloud-showers-heavy text-6xl drop-shadow-md text-white";
         conditionText.innerText = "Rain / Showers";
         activeCondition = 'rain';
-    } else if (weather.cloud_cover > 50) { 
+    } else if (cloudCover > 20) { // Much more sensitive to clouds now!
         icon.className = "fa-solid fa-cloud text-6xl drop-shadow-md text-white";
         conditionText.innerText = "Mostly Cloudy";
         activeCondition = 'cloudy';
@@ -465,7 +474,7 @@ function updateUI(weather, daily) {
     } else if (isNight) {
         icon.className = "fa-solid fa-moon text-6xl drop-shadow-md text-white";
         conditionText.innerText = "Clear Night";
-        activeCondition = 'clear'; 
+        activeCondition = 'night'; // Triggers new dark indigo background!
     } else {
         icon.className = "fa-solid fa-sun text-6xl drop-shadow-md text-white";
         conditionText.innerText = "Mostly Sunny";
