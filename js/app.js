@@ -200,12 +200,12 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
+// 🌟 FIXED API URL: Now fetches the official WMO 'weather_code' and 'cloud_cover'
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // API URL checking for cloud_cover data!
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -381,10 +381,17 @@ function drawChart(dailyData) {
 }
 
 function applyAppleWeather(condition) {
-    const bgLayer = document.getElementById('apple-weather-bg');
-    if(!bgLayer) return;
+    let bgLayer = document.getElementById('apple-weather-bg');
+    if(!bgLayer) {
+        bgLayer = document.createElement('div');
+        bgLayer.id = 'apple-weather-bg';
+        bgLayer.className = 'weather-bg';
+        const card = document.getElementById('weather-content');
+        card.insertBefore(bgLayer, card.firstChild);
+    }
     
     bgLayer.innerHTML = ''; 
+    bgLayer.className = 'weather-bg'; // reset classes
 
     if (condition === 'rain' || condition === 'storm') {
         bgLayer.style.background = 'linear-gradient(180deg, #5A6B7C 0%, #2F3C4D 100%)';
@@ -406,10 +413,11 @@ function applyAppleWeather(condition) {
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
             cloud.className = 'apple-cloud';
-            cloud.style.width = `${Math.random() * 250 + 150}px`;
-            cloud.style.height = `${Math.random() * 100 + 60}px`;
-            cloud.style.top = `${Math.random() * 60}%`;
-            cloud.style.animationDuration = `${Math.random() * 30 + 20}s`;
+            cloud.style.width = `${Math.random() * 300 + 150}px`;
+            cloud.style.height = `${Math.random() * 80 + 50}px`;
+            // Keeps clouds neat and out of the way of the text
+            cloud.style.top = i % 2 === 0 ? `${Math.random() * 20}%` : `${Math.random() * 20 + 70}%`;
+            cloud.style.animationDuration = `${Math.random() * 40 + 30}s`;
             cloud.style.animationDelay = `-${Math.random() * 20}s`;
             bgLayer.appendChild(cloud);
         }
@@ -428,6 +436,7 @@ function applyAppleWeather(condition) {
     }
 }
 
+// 🌟 UPDATED UI LOGIC TO INJECT DATA SAFELY USING WMO CODES
 function updateUI(weather, daily) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
@@ -435,6 +444,7 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
+    // Inject Basic Data
     document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
@@ -442,50 +452,64 @@ function updateUI(weather, daily) {
     if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
     if(document.getElementById('precip-prob-val')) document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
 
-    if (daily && daily.temperature_2m_max && daily.temperature_2m_min) {
-        document.getElementById('weather-hilo').innerText = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
+    // Inject High & Low Temps Safely
+    const hiloElement = document.getElementById('weather-hilo');
+    if (hiloElement && daily && daily.temperature_2m_max && daily.temperature_2m_min) {
+        hiloElement.innerText = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
     }
 
     const icon = document.getElementById('weather-icon');
     const conditionText = document.getElementById('weather-condition');
     const currentHour = new Date().getHours();
     const isNight = currentHour < 6 || currentHour >= 18; 
+    
     let activeCondition = 'clear';
+    let condString = 'Mostly Sunny';
+    let iconClass = 'fa-solid fa-sun';
+    
+    // 🌟 PERFECTED LOGIC: Using official WMO Weather Codes for exact accuracy
+    const wmoCode = weather.weather_code || 0;
+    const cloudCover = weather.cloud_cover || 0;
 
-    // 🌟 FIXED CLOUD THRESHOLD & ADDED NIGHT CHECK 🌟
-    const cloudCover = weather.cloud_cover !== undefined ? weather.cloud_cover : 0;
-
-    if (weather.wind_speed_10m > 30 && weather.rain > 5) {
-        icon.className = "fa-solid fa-cloud-bolt text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Thunderstorms";
+    if ([95, 96, 99].includes(wmoCode)) {
+        // Thunderstorm
         activeCondition = 'storm';
-    } else if (weather.rain > 0) {
-        icon.className = "fa-solid fa-cloud-showers-heavy text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Rain / Showers";
+        condString = 'Thunderstorms';
+        iconClass = 'fa-solid fa-cloud-bolt';
+    } else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode) || weather.rain > 0) {
+        // Rain/Drizzle
         activeCondition = 'rain';
-    } else if (cloudCover > 20) { // Much more sensitive to clouds now!
-        icon.className = "fa-solid fa-cloud text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Mostly Cloudy";
+        condString = 'Rain / Showers';
+        iconClass = 'fa-solid fa-cloud-showers-heavy';
+    } else if ([3, 45, 48].includes(wmoCode) || cloudCover > 40) { 
+        // Overcast / Mostly Cloudy (Threshold raised to 40% to prevent false positives)
         activeCondition = 'cloudy';
-    } else if (weather.wind_speed_10m > 20) { 
-        icon.className = "fa-solid fa-wind text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Windy";
-        activeCondition = 'cloudy';
-    } else if (isNight) {
-        icon.className = "fa-solid fa-moon text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Clear Night";
-        activeCondition = 'night'; // Triggers new dark indigo background!
+        condString = 'Mostly Cloudy';
+        iconClass = 'fa-solid fa-cloud';
+    } else if ([1, 2].includes(wmoCode) || cloudCover > 15) {
+        // Partly Cloudy
+        activeCondition = isNight ? 'night' : 'clear'; // Keep the sky clear-ish for partly cloudy
+        condString = 'Partly Cloudy';
+        iconClass = isNight ? 'fa-solid fa-cloud-moon' : 'fa-solid fa-cloud-sun';
     } else {
-        icon.className = "fa-solid fa-sun text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Mostly Sunny";
-        activeCondition = 'clear';
+        // Clear Sky (Code 0 or clouds under 15%)
+        activeCondition = isNight ? 'night' : 'clear';
+        condString = isNight ? 'Clear Night' : 'Mostly Sunny';
+        iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
     }
 
+    if(icon) icon.className = `${iconClass} text-6xl drop-shadow-md text-white`;
+
+    // Safely write text to HTML
+    if(conditionText) conditionText.innerText = condString;
+
+    // Trigger the Animation Function
     weatherCard.classList.add('apple-active');
     applyAppleWeather(activeCondition);
 
     updateLanguage(document.getElementById('language-selector').value);
 
+    // Alert Box Logic
     if (currentWeatherData && !cropSelector.value) {
         const alertBox = document.getElementById('alert-box');
         const alertTitle = document.getElementById('alert-title');
