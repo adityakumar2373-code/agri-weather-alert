@@ -331,6 +331,11 @@ function drawChart(dailyData) {
 
     if (weatherChart) weatherChart.destroy();
 
+    // Create a beautiful fade gradient for the heat line
+    const gradientLine = ctx.createLinearGradient(0, 0, 0, 250);
+    gradientLine.addColorStop(0, 'rgba(245, 158, 11, 0.25)'); // Amber fade top
+    gradientLine.addColorStop(1, 'rgba(245, 158, 11, 0)');    // Transparent bottom
+
     weatherChart = new Chart(ctx, {
         type: 'bar', 
         data: {
@@ -341,19 +346,25 @@ function drawChart(dailyData) {
                     label: 'Heat (°C)', 
                     data: dailyData.temperature_2m_max,
                     borderColor: '#f59e0b', 
+                    backgroundColor: gradientLine,
+                    fill: true, // Turns on the gradient fill
                     borderWidth: 3, 
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#f59e0b', 
+                    pointBorderWidth: 2,
                     pointRadius: 4, 
-                    tension: 0.4,
+                    pointHoverRadius: 6,
+                    tension: 0.4, // Smooths the curve
                     yAxisID: 'yTemp'
                 },
                 {
                     type: 'bar', 
                     label: 'Water in Soil (%)', 
                     data: moistureData,
-                    backgroundColor: 'rgba(59, 130, 246, 0.7)', 
-                    borderRadius: 4, 
+                    backgroundColor: 'rgba(16, 185, 129, 0.85)', // Upgraded to Emerald Green
+                    borderRadius: 6, // Rounds the tops of the bars
+                    borderSkipped: false,
+                    barPercentage: 0.5, // Makes bars slightly sleeker
                     yAxisID: 'yMoist'
                 }
             ]
@@ -361,26 +372,41 @@ function drawChart(dailyData) {
         options: {
             responsive: true, 
             maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
             plugins: { 
                 legend: { 
                     display: true, 
                     position: 'top',
-                    labels: { font: { family: "'Outfit', sans-serif", size: 11 }, usePointStyle: true }
+                    labels: { font: { family: "'Outfit', sans-serif", size: 12, weight: '600' }, usePointStyle: true, boxWidth: 8 }
                 }, 
-                tooltip: { mode: 'index', intersect: false } 
+                tooltip: { 
+                    backgroundColor: 'rgba(17, 24, 39, 0.9)', // Premium dark tooltip
+                    titleFont: { family: "'Outfit', sans-serif", size: 13 },
+                    bodyFont: { family: "'Outfit', sans-serif", size: 12 },
+                    padding: 10,
+                    cornerRadius: 8,
+                } 
             },
             scales: { 
-                x: { grid: { display: false }, ticks: { font: { family: "'Outfit', sans-serif" } } }, 
+                x: { 
+                    grid: { display: false }, 
+                    ticks: { font: { family: "'Outfit', sans-serif", color: '#6b7280' } } 
+                }, 
                 yTemp: { 
                     type: 'linear', display: true, position: 'left',
-                    title: { display: true, text: 'Heat °C', color: '#f59e0b', font: { size: 10, weight: 'bold' } },
-                    grid: { display: false } 
+                    title: { display: true, text: 'Heat °C', color: '#f59e0b', font: { size: 11, weight: 'bold', family: "'Outfit', sans-serif" } },
+                    grid: { display: true, color: 'rgba(0,0,0,0.04)', drawBorder: false }, // Subtle background grid
+                    ticks: { font: { family: "'Outfit', sans-serif" } }
                 },
                 yMoist: {
                     type: 'linear', display: true, position: 'right',
-                    title: { display: true, text: 'Water %', color: '#3b82f6', font: { size: 10, weight: 'bold' } },
+                    title: { display: true, text: 'Water %', color: '#10b981', font: { size: 11, weight: 'bold', family: "'Outfit', sans-serif" } },
                     min: 0, max: 100,
-                    grid: { display: true, color: 'rgba(0,0,0,0.05)' } 
+                    grid: { display: false }, 
+                    ticks: { font: { family: "'Outfit', sans-serif" } }
                 }
             }
         }
