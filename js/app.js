@@ -204,8 +204,7 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // UPDATED URL: Fetches Rain %, Humidity, and 7-day data
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability&daily=temperature_2m_max,precipitation_sum,wind_speed_10m_max&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -229,7 +228,7 @@ async function fetchWeather(coords) {
         const data = await response.json();
         
         currentWeatherData = data.current;
-        updateUI(currentWeatherData);
+        updateUI(currentWeatherData, data.daily); 
         drawChart(data.daily); 
         triggerAIIfReady(); 
         
@@ -296,14 +295,13 @@ async function fetchAIAdvisory(temp, rain, wind) {
 
 function calculateSoilMoisturePrediction(dailyData) {
     let moistureLevels = [];
-    let currentMoisture = 60; // Base soil moisture assumption
+    let currentMoisture = 60; 
 
     for(let i = 0; i < dailyData.time.length; i++) {
         let temp = dailyData.temperature_2m_max[i] || 30;
         let rain = dailyData.precipitation_sum[i] || 0;
         let wind = dailyData.wind_speed_10m_max[i] || 10;
 
-        // Custom Algorithm: Rain adds water. Heat and Wind dry it up.
         currentMoisture = currentMoisture + (rain * 5) - (temp * 0.8) - (wind * 0.2);
         
         if(currentMoisture > 100) currentMoisture = 100;
@@ -381,7 +379,101 @@ function drawChart(dailyData) {
     });
 }
 
-function updateUI(weather) {
+// 🌟 APPLE WEATHER LOGIC INTEGRATED HERE 🌟
+function applyAppleWeatherEffects(condition) {
+    const card = document.getElementById('weather-content');
+    let animContainer = document.getElementById('apple-weather-container');
+    
+    // Create container if it doesn't exist
+    if (!animContainer) {
+        animContainer = document.createElement('div');
+        animContainer.id = 'apple-weather-container';
+        card.insertBefore(animContainer, card.firstChild);
+    }
+
+    // Reset everything
+    animContainer.innerHTML = '';
+    animContainer.className = '';
+    card.classList.remove('has-apple-fx');
+
+    // Remove old styles from the 4 stat boxes inside the card
+    const statBoxes = card.querySelectorAll('.stat-box');
+    const icons = card.querySelectorAll('i:not(#weather-icon)');
+    const textElements = card.querySelectorAll('p, h2, span:not(#ui-realtime-badge)');
+
+    // Helper function to create rain
+    const createRain = (dropCount) => {
+        for(let i = 0; i < dropCount; i++) {
+            let drop = document.createElement('div');
+            drop.className = 'apple-drop';
+            drop.style.left = `${Math.random() * 150 - 20}%`; 
+            drop.style.animationDuration = `${Math.random() * 0.3 + 0.4}s`;
+            drop.style.animationDelay = `-${Math.random() * 2}s`;
+            animContainer.appendChild(drop);
+        }
+    };
+
+    // Helper function to create clouds
+    const createClouds = (cloudCount) => {
+        for (let i = 0; i < cloudCount; i++) {
+            let cloud = document.createElement('div');
+            cloud.className = 'apple-cloud';
+            cloud.style.width = `${Math.random() * 250 + 150}px`;
+            cloud.style.height = `${Math.random() * 100 + 60}px`;
+            cloud.style.top = `${Math.random() * 60}%`; 
+            cloud.style.animationDuration = `${Math.random() * 30 + 20}s`;
+            cloud.style.animationDelay = `-${Math.random() * 20}s`;
+            animContainer.appendChild(cloud);
+        }
+    };
+
+    // Apply the specific effect
+    if (condition === 'storm') {
+        animContainer.classList.add('rain-bg');
+        let flash = document.createElement('div');
+        flash.className = 'flash';
+        animContainer.appendChild(flash);
+        createClouds(4);
+        createRain(70);
+        card.classList.add('has-apple-fx', 'bg-slate-900'); 
+    } else if (condition === 'rain') {
+        animContainer.classList.add('rain-bg');
+        createClouds(3);
+        createRain(50);
+        card.classList.add('has-apple-fx', 'bg-slate-800');
+    } else if (condition === 'cloudy') {
+        animContainer.classList.add('cloudy-bg');
+        createClouds(8);
+        card.classList.add('has-apple-fx', 'bg-slate-600');
+    } else {
+        animContainer.classList.add('clear-bg');
+        let sun = document.createElement('div');
+        sun.className = 'apple-sun';
+        animContainer.appendChild(sun);
+        card.classList.add('has-apple-fx', 'bg-sky-500');
+    }
+
+    // Force the text and icons to be white over the animations
+    if (card.classList.contains('has-apple-fx')) {
+        document.getElementById('weather-icon').classList.remove('text-transparent', 'bg-clip-text', 'bg-gradient-to-br', 'from-blue-400', 'to-yellow-400');
+        document.getElementById('weather-icon').classList.add('text-white');
+        
+        statBoxes.forEach(box => {
+            box.classList.remove('bg-gray-50', 'border-gray-100');
+            box.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+            box.style.borderColor = 'rgba(255, 255, 255, 0.2)';
+            box.style.backdropFilter = 'blur(10px)';
+        });
+        icons.forEach(i => i.classList.replace('text-gray-400', 'text-white'));
+        textElements.forEach(t => t.style.color = 'white');
+        
+        document.getElementById('temperature').style.color = 'white';
+        document.getElementById('weather-condition').style.color = 'white';
+        document.getElementById('weather-hilo').style.color = 'white';
+    }
+}
+
+function updateUI(weather, daily) {
     loader.classList.add('hidden');
     document.getElementById('weather-content').classList.remove('hidden');
     document.getElementById('forecast-section').classList.remove('hidden');
@@ -398,27 +490,78 @@ function updateUI(weather) {
         document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
     }
 
-    const icon = document.getElementById('weather-icon');
-    const currentHour = new Date().getHours();
-    const isNight = currentHour < 6 || currentHour >= 18; 
-
-    if (weather.rain > 0) {
-        icon.className = "fa-solid fa-cloud-rain text-6xl text-blue-500 drop-shadow-md";
-    } else if (weather.wind_speed_10m > 15) { 
-        icon.className = "fa-solid fa-wind text-6xl text-teal-400 drop-shadow-md";
-    } else if (isNight) {
-        icon.className = "fa-solid fa-moon text-6xl text-indigo-400 drop-shadow-md";
-    } else {
-        icon.className = "fa-solid fa-sun text-6xl text-amber-400 drop-shadow-md";
+    // Update Live H/L values
+    if (daily && daily.temperature_2m_max && daily.temperature_2m_min) {
+        document.getElementById('weather-hilo').innerText = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
     }
 
+    const icon = document.getElementById('weather-icon');
+    const conditionText = document.getElementById('weather-condition');
+    const currentHour = new Date().getHours();
+    const isNight = currentHour < 6 || currentHour >= 18; 
+    let activeCondition = 'clear';
+
+    // 🌟 Set Apple Weather Logic Based on Data
+    if (weather.wind_speed_10m > 30 && weather.rain > 5) {
+        icon.className = "fa-solid fa-cloud-bolt text-6xl drop-shadow-md text-white";
+        conditionText.innerText = "Thunderstorms";
+        activeCondition = 'storm';
+    } else if (weather.rain > 0) {
+        icon.className = "fa-solid fa-cloud-showers-heavy text-6xl drop-shadow-md text-white";
+        conditionText.innerText = "Rain / Showers";
+        activeCondition = 'rain';
+    } else if (weather.wind_speed_10m > 15) { 
+        icon.className = "fa-solid fa-wind text-6xl drop-shadow-md text-white";
+        conditionText.innerText = "Windy / Overcast";
+        activeCondition = 'cloudy';
+    } else if (isNight) {
+        icon.className = "fa-solid fa-moon text-6xl drop-shadow-md text-white";
+        conditionText.innerText = "Clear Night";
+        activeCondition = 'clear'; // Night doesn't have a specific animation yet, so clear
+    } else {
+        icon.className = "fa-solid fa-sun text-6xl drop-shadow-md text-white";
+        conditionText.innerText = "Mostly Sunny";
+        activeCondition = 'clear';
+    }
+
+    applyAppleWeatherEffects(activeCondition);
+
     updateLanguage(document.getElementById('language-selector').value);
+
+    // Alert Box Logic
+    if (currentWeatherData && !cropSelector.value) {
+        const alertBox = document.getElementById('alert-box');
+        const alertTitle = document.getElementById('alert-title');
+        const alertMsg = document.getElementById('alert-message');
+        const alertIcon = document.getElementById('alert-icon');
+        const audioIcon = document.getElementById('audio-icon');
+        
+        alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-sm transition-all duration-300"; 
+        audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
+        alertBox.classList.remove('hidden');
+
+        if (currentWeatherData.rain > 2) {
+            alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
+            alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
+            alertTitle.innerText = "Heavy Rain Alert";
+            alertMsg.innerText = "High rainfall detected.";
+        } else if (currentWeatherData.wind_speed_10m > 20) { 
+            alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
+            alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
+            alertTitle.innerText = "High Wind Warning";
+            alertMsg.innerText = "Strong winds detected.";
+        } else {
+            alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
+            alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
+            alertTitle.innerText = "Conditions Safe";
+            alertMsg.innerText = "Current weather is optimal.";
+        }
+    }
 }
 
 function updateLanguage(langCode) {
     const t = translations[langCode] || translations['en']; 
 
-    // 🌟 FIXED 1 & 2: No more double leaf, and strict rule for the English name!
     if (langCode === 'en') {
         document.getElementById('app-title').innerHTML = 'Kisan Alert <span class="text-emerald-500">Pro</span>';
     } else {
@@ -429,7 +572,6 @@ function updateLanguage(langCode) {
 
     document.getElementById('current-weather-title').innerHTML = `<i class="fa-solid fa-tower-observation text-emerald-500"></i> ${t.currentConditions || "Live Conditions"}`;
     
-    // NEW FULL UI TRANSLATIONS
     if(document.getElementById('humidity-label')) document.getElementById('humidity-label').innerText = t.humidityLabel || "Humidity";
     if(document.getElementById('rain-label')) document.getElementById('rain-label').innerText = t.rainLabel || "Rain Vol.";
     if(document.getElementById('wind-label')) document.getElementById('wind-label').innerText = t.windLabel || "Wind";
@@ -457,50 +599,7 @@ function updateLanguage(langCode) {
 
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
-
-    if (currentWeatherData && !cropSelector.value) {
-        const alertBox = document.getElementById('alert-box');
-        const alertTitle = document.getElementById('alert-title');
-        const alertMsg = document.getElementById('alert-message');
-        const alertIcon = document.getElementById('alert-icon');
-        const audioIcon = document.getElementById('audio-icon');
-        
-        alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-sm transition-all duration-300"; 
-        audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
-        alertBox.classList.remove('hidden');
-
-        if (currentWeatherData.rain > 2) {
-            alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
-            alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
-            alertTitle.innerText = t.alertRainTitle || "Heavy Rain Alert";
-            alertMsg.innerText = t.alertRainMsg || "High rainfall detected.";
-        } else if (currentWeatherData.wind_speed_10m > 20) { 
-            alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
-            alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
-            alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
-            alertMsg.innerText = t.alertWindMsg || "Strong winds detected.";
-        } else {
-            alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
-            alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
-            alertTitle.innerText = t.alertSafeTitle || "Conditions Safe";
-            alertMsg.innerText = t.alertSafeMsg || "Current weather is optimal.";
-        }
-    }
 }
-
-function updateLiveTime() {
-    const timeDisplay = document.getElementById('live-time');
-    if (!timeDisplay) return;
-    const now = new Date();
-    const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
-    const dateString = now.toLocaleDateString('en-US', dateOptions);
-    const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
-    const timeString = now.toLocaleTimeString('en-US', timeOptions);
-    timeDisplay.innerHTML = `<i class="fa-regular fa-clock mr-1 text-emerald-400"></i> ${dateString} • ${timeString}`;
-}
-
-setInterval(updateLiveTime, 1000);
-updateLiveTime();
 
 // ==========================================
 // PWA SERVICE WORKER REGISTRATION
@@ -540,7 +639,6 @@ if(aiSearchBtn) {
             let fullText = "";
             const contentType = response.headers.get("content-type");
 
-            // Catch the text securely from Vercel
             if (contentType && contentType.includes("application/json")) {
                 const data = await response.json();
                 if (data.success) fullText = data.answer;
@@ -549,10 +647,9 @@ if(aiSearchBtn) {
                 fullText = await response.text(); 
             }
 
-            // 🎨 THE BULLETPROOF TYPEWRITER LOGIC 🎨
             aiResultText.innerHTML = '<i class="fa-solid fa-sparkles text-purple-500 mr-1"></i> ';
             let i = 0;
-            const typingSpeed = 15; // Change this number to make it type faster/slower
+            const typingSpeed = 15; 
 
             function typeWriter() {
                 if (i < fullText.length) {
@@ -564,13 +661,12 @@ if(aiSearchBtn) {
                     i++;
                     setTimeout(typeWriter, typingSpeed);
                 } else {
-                    // Turn the Ask button back on when finished
                     aiSearchBtn.innerHTML = 'Ask';
                     aiSearchBtn.disabled = false;
                 }
             }
 
-            typeWriter(); // Start the typing effect!
+            typeWriter(); 
 
         } catch (error) {
             console.error(error);
