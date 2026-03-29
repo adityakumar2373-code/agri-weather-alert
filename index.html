@@ -405,13 +405,20 @@
 
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full overflow-hidden" id="forecast-section">
-                        <div class="flex items-center justify-between mb-5">
-                            <h3 id="ui-forecast-title" class="text-base font-extrabold text-gray-800 flex items-center gap-2 truncate">
-                                <i class="fa-solid fa-chart-area text-emerald-500"></i> 7-Day Forecast
+                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-lg shadow-emerald-900/5 border border-emerald-100/50 hidden w-full overflow-hidden relative" id="forecast-section">
+                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-400/10 rounded-full blur-[60px] z-0 pointer-events-none"></div>
+
+                        <div class="flex items-center justify-between mb-5 relative z-10">
+                            <h3 id="ui-forecast-title" class="text-base font-extrabold text-gray-800 flex items-center gap-3 truncate">
+                                <div class="bg-emerald-50 border border-emerald-100 text-emerald-500 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
+                                    <i class="fa-solid fa-chart-line"></i>
+                                </div>
+                                7-Day Forecast
                             </h3>
+                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-md uppercase tracking-widest shadow-sm">AI Predicted</span>
                         </div>
-                        <div class="relative w-full h-[250px] bg-gray-50 rounded-xl p-3 border border-gray-100">
+                        
+                        <div class="relative w-full h-[260px] bg-gradient-to-b from-gray-50/50 to-white rounded-2xl p-4 border border-gray-100 shadow-inner z-10">
                             <canvas id="forecastChart" class="w-full h-full"></canvas>
                         </div>
                     </div>
