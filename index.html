@@ -45,56 +45,72 @@
         }
 
         /* ==========================================
-           🍎 APPLE WEATHER ANIMATIONS (STRICT SCOPE) 
+           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
            ========================================== */
         
-        /* The container that holds the animations */
-        #apple-weather-container {
-            position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; border-radius: inherit;
+        /* When active, makes the card transparent to show the background */
+        #weather-content.apple-active {
+            background-color: transparent !important;
+            border-color: transparent !important;
+        }
+        
+        /* Forces text and icons white over the animation */
+        #weather-content.apple-active * {
+            color: #ffffff !important;
+        }
+        
+        /* Overrides the gradient sun icon to pure white */
+        #weather-content.apple-active i.text-transparent {
+            background: none !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: 0 0 15px rgba(255,255,255,0.4);
         }
 
-        /* Make sure all the dashboard content sits IN FRONT of the animations */
-        #weather-content > div:not(#apple-weather-container) {
-            position: relative; z-index: 10;
+        /* Makes the inner stat boxes look like glassy Apple widgets */
+        #weather-content.apple-active .bg-gray-50 {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
         }
 
-        /* 🌧️ Apple Raindrops */
-        .apple-drop {
-            position: absolute; width: 1.5px; height: 60px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
-            animation: apple-fall linear infinite;
+        /* Styles the Real-Time badge */
+        #weather-content.apple-active #ui-realtime-badge {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
         }
-        @keyframes apple-fall {
+
+        /* 🌧️ Animations */
+        @keyframes apple-rain-fall {
             0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
             10% { opacity: 1; }
             80% { opacity: 1; }
             100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; }
         }
+        .apple-drop {
+            position: absolute; width: 1.5px; height: 60px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
+            animation: apple-rain-fall linear infinite;
+        }
 
-        /* ☁️ Drifting Clouds */
+        @keyframes apple-cloud-float {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(120vw); }
+        }
         .apple-cloud {
             position: absolute; background: rgba(255, 255, 255, 0.4);
-            border-radius: 200px; filter: blur(18px); animation: float-cloud linear infinite;
+            border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite;
         }
-        @keyframes float-cloud { from { transform: translateX(-150px); } to { transform: translateX(120vw); } }
 
-        /* ☀️ Glowing Sun */
+        @keyframes apple-sun-pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
         .apple-sun {
             position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
             background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
-            border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
-        }
-        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; } }
-
-        /* 🌩️ Lightning Flash */
-        .flash {
-            position: absolute; inset: 0; background: white; opacity: 0; z-index: 5;
-            animation: lightning-flash 7s infinite;
-        }
-        @keyframes lightning-flash {
-            0%, 91%, 96%, 100% { opacity: 0; }
-            92%, 94% { opacity: 0.8; }
-            93%, 95% { opacity: 0.2; }
+            border-radius: 50%; animation: apple-sun-pulse 5s ease-in-out infinite alternate;
         }
     </style>
 </head>
@@ -153,8 +169,8 @@
                 <option value="mr">मराठी</option>
                 <option value="ta">தமிழ்</option>
                 <option value="gu">ગુજરાતી</option>
-                <option value="kn">కನ್ನಡ</option>
-                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="kn">ಕನ್ನಡ</option>
+                <option value="or">ଓଡ଼ia</option>
                 <option value="ml">മലയാളം</option>
                 <option value="pa">ਪੰਜਾਬੀ</option>
                 <option value="as">অসমীয়া</option>
@@ -268,18 +284,18 @@
                     <p class="text-base text-gray-600">AI is analyzing location data...</p>
                 </div>
 
-                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full">
+                <div id="weather-content" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full relative overflow-hidden transition-colors duration-1000">
                     
-                    <div id="apple-weather-container"></div>
+                    <div id="apple-weather-bg" class="absolute inset-0 z-0 pointer-events-none transition-colors duration-1000"></div>
 
-                    <div class="flex justify-between items-center mb-6">
+                    <div class="relative z-10 flex justify-between items-center mb-6">
                         <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
                             <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
                         </h2>
                         <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
                     </div>
                     
-                    <div class="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
+                    <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
                         <div class="flex flex-col items-center shrink-0 sm:pl-6">
                             <div class="flex items-center gap-4 sm:gap-6 animate-float-slow">
                                 <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md"></i>
@@ -292,19 +308,19 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 w-full min-w-0">
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
                                 <div class="text-blue-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-droplet"></i></div>
                                 <div class="min-w-0"><p id="rain-val" class="text-base font-extrabold text-gray-800 truncate">-- mm</p><p id="rain-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain Vol.</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
                                 <div class="text-cyan-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
                                 <div class="min-w-0"><p id="precip-prob-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="precip-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain %</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
                                 <div class="text-teal-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-wind"></i></div>
                                 <div class="min-w-0"><p id="wind-val" class="text-base font-extrabold text-gray-800 truncate">-- km/h</p><p id="wind-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Wind</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
                                 <div class="text-indigo-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-water"></i></div>
                                 <div class="min-w-0"><p id="humidity-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="humidity-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Humidity</p></div>
                             </div>
