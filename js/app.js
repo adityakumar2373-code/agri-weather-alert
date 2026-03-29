@@ -204,6 +204,7 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
+    // 🌟 API URL UPDATED: Fetches High & Low temps (temperature_2m_max, temperature_2m_min)
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
@@ -379,152 +380,93 @@ function drawChart(dailyData) {
     });
 }
 
-// 🌟 APPLE WEATHER LOGIC INTEGRATED HERE 🌟
-function applyAppleWeatherEffects(condition) {
-    const card = document.getElementById('weather-content');
-    let animContainer = document.getElementById('apple-weather-container');
+// 🌟 THE SAFE APPLE WEATHER ANIMATION ENGINE 🌟
+function applyAppleWeather(condition) {
+    const bgLayer = document.getElementById('apple-weather-bg');
+    if(!bgLayer) return;
     
-    // Create container if it doesn't exist
-    if (!animContainer) {
-        animContainer = document.createElement('div');
-        animContainer.id = 'apple-weather-container';
-        card.insertBefore(animContainer, card.firstChild);
-    }
+    bgLayer.innerHTML = ''; // clear old animations
 
-    // Reset everything
-    animContainer.innerHTML = '';
-    animContainer.className = '';
-    card.classList.remove('has-apple-fx');
-
-    // Remove old styles from the 4 stat boxes inside the card
-    const statBoxes = card.querySelectorAll('.stat-box');
-    const icons = card.querySelectorAll('i:not(#weather-icon)');
-    const textElements = card.querySelectorAll('p, h2, span:not(#ui-realtime-badge)');
-
-    // Helper function to create rain
-    const createRain = (dropCount) => {
-        for(let i = 0; i < dropCount; i++) {
+    if (condition === 'rain') {
+        bgLayer.style.background = 'linear-gradient(180deg, #5A6B7C 0%, #2F3C4D 100%)';
+        for(let i=0; i<60; i++) {
             let drop = document.createElement('div');
             drop.className = 'apple-drop';
-            drop.style.left = `${Math.random() * 150 - 20}%`; 
+            drop.style.left = `${Math.random() * 150 - 20}%`;
             drop.style.animationDuration = `${Math.random() * 0.3 + 0.4}s`;
             drop.style.animationDelay = `-${Math.random() * 2}s`;
-            animContainer.appendChild(drop);
+            bgLayer.appendChild(drop);
         }
-    };
-
-    // Helper function to create clouds
-    const createClouds = (cloudCount) => {
-        for (let i = 0; i < cloudCount; i++) {
+    } else if (condition === 'cloudy') {
+        bgLayer.style.background = 'linear-gradient(180deg, #64748b 0%, #334155 100%)';
+        for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
             cloud.className = 'apple-cloud';
             cloud.style.width = `${Math.random() * 250 + 150}px`;
             cloud.style.height = `${Math.random() * 100 + 60}px`;
-            cloud.style.top = `${Math.random() * 60}%`; 
+            cloud.style.top = `${Math.random() * 60}%`;
             cloud.style.animationDuration = `${Math.random() * 30 + 20}s`;
             cloud.style.animationDelay = `-${Math.random() * 20}s`;
-            animContainer.appendChild(cloud);
+            bgLayer.appendChild(cloud);
         }
-    };
-
-    // Apply the specific effect
-    if (condition === 'storm') {
-        animContainer.classList.add('rain-bg');
-        let flash = document.createElement('div');
-        flash.className = 'flash';
-        animContainer.appendChild(flash);
-        createClouds(4);
-        createRain(70);
-        card.classList.add('has-apple-fx', 'bg-slate-900'); 
-    } else if (condition === 'rain') {
-        animContainer.classList.add('rain-bg');
-        createClouds(3);
-        createRain(50);
-        card.classList.add('has-apple-fx', 'bg-slate-800');
-    } else if (condition === 'cloudy') {
-        animContainer.classList.add('cloudy-bg');
-        createClouds(8);
-        card.classList.add('has-apple-fx', 'bg-slate-600');
     } else {
-        animContainer.classList.add('clear-bg');
+        bgLayer.style.background = 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
         let sun = document.createElement('div');
         sun.className = 'apple-sun';
-        animContainer.appendChild(sun);
-        card.classList.add('has-apple-fx', 'bg-sky-500');
-    }
-
-    // Force the text and icons to be white over the animations
-    if (card.classList.contains('has-apple-fx')) {
-        document.getElementById('weather-icon').classList.remove('text-transparent', 'bg-clip-text', 'bg-gradient-to-br', 'from-blue-400', 'to-yellow-400');
-        document.getElementById('weather-icon').classList.add('text-white');
-        
-        statBoxes.forEach(box => {
-            box.classList.remove('bg-gray-50', 'border-gray-100');
-            box.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
-            box.style.borderColor = 'rgba(255, 255, 255, 0.2)';
-            box.style.backdropFilter = 'blur(10px)';
-        });
-        icons.forEach(i => i.classList.replace('text-gray-400', 'text-white'));
-        textElements.forEach(t => t.style.color = 'white');
-        
-        document.getElementById('temperature').style.color = 'white';
-        document.getElementById('weather-condition').style.color = 'white';
-        document.getElementById('weather-hilo').style.color = 'white';
+        bgLayer.appendChild(sun);
     }
 }
 
+// 🌟 UPDATED UI LOGIC TO INJECT DATA & APPLE STYLE
 function updateUI(weather, daily) {
     loader.classList.add('hidden');
-    document.getElementById('weather-content').classList.remove('hidden');
+    const weatherCard = document.getElementById('weather-content');
+    weatherCard.classList.remove('hidden');
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
+    // Inject Basic Data
     document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
     
-    if(document.getElementById('humidity-val')) {
-        document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
-    }
-    if(document.getElementById('precip-prob-val')) {
-        document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
-    }
+    if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
+    if(document.getElementById('precip-prob-val')) document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
 
-    // Update Live H/L values
+    // Inject High & Low Temperatures
     if (daily && daily.temperature_2m_max && daily.temperature_2m_min) {
         document.getElementById('weather-hilo').innerText = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
     }
 
-    const icon = document.getElementById('weather-icon');
-    const conditionText = document.getElementById('weather-condition');
-    const currentHour = new Date().getHours();
-    const isNight = currentHour < 6 || currentHour >= 18; 
-    let activeCondition = 'clear';
-
-    // 🌟 Set Apple Weather Logic Based on Data
-    if (weather.wind_speed_10m > 30 && weather.rain > 5) {
-        icon.className = "fa-solid fa-cloud-bolt text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Thunderstorms";
-        activeCondition = 'storm';
-    } else if (weather.rain > 0) {
-        icon.className = "fa-solid fa-cloud-showers-heavy text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Rain / Showers";
-        activeCondition = 'rain';
-    } else if (weather.wind_speed_10m > 15) { 
-        icon.className = "fa-solid fa-wind text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Windy / Overcast";
-        activeCondition = 'cloudy';
-    } else if (isNight) {
-        icon.className = "fa-solid fa-moon text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Clear Night";
-        activeCondition = 'clear'; // Night doesn't have a specific animation yet, so clear
-    } else {
-        icon.className = "fa-solid fa-sun text-6xl drop-shadow-md text-white";
-        conditionText.innerText = "Mostly Sunny";
-        activeCondition = 'clear';
+    // Determine the Apple Weather Condition
+    let condition = 'clear';
+    let conditionText = 'Mostly Sunny';
+    
+    if (weather.rain > 0) {
+        condition = 'rain';
+        conditionText = 'Rain / Showers';
+    } else if (weather.wind_speed_10m > 15) {
+        condition = 'cloudy';
+        conditionText = 'Mostly Cloudy';
     }
 
-    applyAppleWeatherEffects(activeCondition);
+    // Apply the Text Data
+    document.getElementById('weather-condition').innerText = conditionText;
+
+    // Apply the Icon Data (Using pure white so it fits the Apple dark gradient)
+    const icon = document.getElementById('weather-icon');
+    icon.className = ""; // clear old classes
+    if (condition === 'rain') {
+        icon.className = "fa-solid fa-cloud-showers-heavy text-6xl text-white drop-shadow-md";
+    } else if (condition === 'cloudy') {
+        icon.className = "fa-solid fa-cloud text-6xl text-white drop-shadow-md";
+    } else {
+        icon.className = "fa-solid fa-sun text-6xl text-white drop-shadow-md";
+    }
+
+    // Trigger the actual Apple Animation Function
+    weatherCard.classList.add('apple-active');
+    applyAppleWeather(condition);
 
     updateLanguage(document.getElementById('language-selector').value);
 
@@ -570,7 +512,7 @@ function updateLanguage(langCode) {
         document.getElementById('app-title').innerHTML = translatedTitle;
     }
 
-    document.getElementById('current-weather-title').innerHTML = `<i class="fa-solid fa-tower-observation text-emerald-500"></i> ${t.currentConditions || "Live Conditions"}`;
+    document.getElementById('current-weather-title').innerHTML = `<i class="fa-solid fa-tower-observation"></i> ${t.currentConditions || "Live Conditions"}`;
     
     if(document.getElementById('humidity-label')) document.getElementById('humidity-label').innerText = t.humidityLabel || "Humidity";
     if(document.getElementById('rain-label')) document.getElementById('rain-label').innerText = t.rainLabel || "Rain Vol.";
@@ -600,6 +542,20 @@ function updateLanguage(langCode) {
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 }
+
+function updateLiveTime() {
+    const timeDisplay = document.getElementById('live-time');
+    if (!timeDisplay) return;
+    const now = new Date();
+    const dateOptions = { weekday: 'short', month: 'short', day: 'numeric' };
+    const dateString = now.toLocaleDateString('en-US', dateOptions);
+    const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+    const timeString = now.toLocaleTimeString('en-US', timeOptions);
+    timeDisplay.innerHTML = `<i class="fa-regular fa-clock mr-1 text-emerald-400"></i> ${dateString} • ${timeString}`;
+}
+
+setInterval(updateLiveTime, 1000);
+updateLiveTime();
 
 // ==========================================
 // PWA SERVICE WORKER REGISTRATION
