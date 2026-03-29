@@ -43,97 +43,6 @@
             transform: translateY(-2px);
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
-
-        /* ==========================================
-           🍎 ISOLATED APPLE WEATHER ANIMATION 🌧️
-           (Strictly scoped to never break other cards)
-           ========================================== */
-        
-        /* 1. The Background Container */
-        #apple-weather-container {
-            position: absolute !important;
-            inset: 0 !important;
-            z-index: 0 !important;
-            pointer-events: none !important;
-            overflow: hidden !important;
-            border-radius: inherit !important;
-            background: transparent !important;
-            transition: background 1s ease !important;
-        }
-
-        /* Weather gradients */
-        #apple-weather-container.rain-bg { background: linear-gradient(180deg, #334155 0%, #0f172a 100%) !important; }
-        #apple-weather-container.cloudy-bg { background: linear-gradient(180deg, #64748b 0%, #334155 100%) !important; }
-        #apple-weather-container.clear-bg { background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%) !important; }
-
-        /* 2. Apple Slanted Raindrops */
-        .apple-drop {
-            position: absolute;
-            width: 1.5px;
-            height: 60px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
-            animation: apple-fall linear infinite;
-        }
-
-        @keyframes apple-fall {
-            0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
-            10% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; }
-        }
-
-        /* 3. Drifting Clouds */
-        .apple-cloud {
-            position: absolute; background: rgba(255, 255, 255, 0.4);
-            border-radius: 200px; filter: blur(18px); animation: float-cloud linear infinite;
-        }
-        @keyframes float-cloud { from { transform: translateX(-150px); } to { transform: translateX(120vw); } }
-
-        /* 4. Glowing Sun */
-        .apple-sun {
-            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
-            background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
-            border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
-        }
-        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; } }
-
-        /* 5. Text & Layout Overrides (Active ONLY when effect is running) */
-        #weather-content.has-apple-fx {
-            background-color: transparent !important;
-            border-color: transparent !important;
-        }
-
-        /* Keep UI data in front */
-        #weather-content.has-apple-fx > div:not(#apple-weather-container) {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* Make text white ONLY inside the weather card */
-        #weather-content.has-apple-fx h1,
-        #weather-content.has-apple-fx h2,
-        #weather-content.has-apple-fx p,
-        #weather-content.has-apple-fx span:not(#ui-realtime-badge) {
-            color: #ffffff !important;
-        }
-
-        /* Make the 4 little stats boxes glassy */
-        #weather-content.has-apple-fx .bg-gray-50 {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(10px) !important;
-            -webkit-backdrop-filter: blur(10px) !important;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.1) !important;
-        }
-
-        /* Fix the gradient icon to turn pure white */
-        #weather-content.has-apple-fx i.text-transparent {
-            background: none !important;
-            -webkit-text-fill-color: #ffffff !important;
-            color: #ffffff !important;
-            text-shadow: 0 0 15px rgba(255,255,255,0.4);
-        }
-
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -191,7 +100,7 @@
                 <option value="mr">मराठी</option>
                 <option value="ta">தமிழ்</option>
                 <option value="gu">ગુજરાતી</option>
-                <option value="kn">కನ್ನಡ</option>
+                <option value="kn">ಕನ್ನಡ</option>
                 <option value="or">ଓଡ଼ିଆ</option>
                 <option value="ml">മലയാളം</option>
                 <option value="pa">ਪੰਜਾਬੀ</option>
@@ -315,17 +224,9 @@
                     </div>
                     
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
-                        
-                        <div class="flex flex-col items-center shrink-0 sm:pl-6">
-                            <div class="flex items-center gap-4 sm:gap-6 animate-float-slow">
-                                <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md"></i>
-                                <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black text-gray-800 tracking-tighter">--°</h1>
-                            </div>
-                            
-                            <div class="flex flex-col items-center mt-3 w-full relative z-10">
-                                <span id="weather-condition" class="text-sm sm:text-base font-extrabold tracking-wide text-gray-800">Fetching...</span>
-                                <span id="weather-hilo" class="text-xs sm:text-sm font-bold text-gray-500 tracking-wider mt-0.5 opacity-90">H:--° L:--°</span>
-                            </div>
+                        <div class="flex items-center gap-4 sm:gap-6 animate-float-slow shrink-0 sm:pl-6">
+                            <i id="weather-icon" class="fa-solid fa-cloud-sun text-6xl sm:text-7xl text-transparent bg-clip-text bg-gradient-to-br from-blue-400 to-yellow-400 drop-shadow-md"></i>
+                            <h1 id="temperature" class="text-6xl sm:text-[5rem] font-black text-gray-800 tracking-tighter">--°</h1>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 w-full min-w-0">
@@ -463,116 +364,6 @@
         menuBtn.addEventListener('click', openSidebar);
         closeMenuBtn.addEventListener('click', closeSidebar);
         sidebarOverlay.addEventListener('click', closeSidebar);
-
-        // ==========================================
-        // 🍎 BULLETPROOF APPLE WEATHER WATCHER
-        // ==========================================
-        
-        function updateAppleWeather() {
-            const weatherCard = document.getElementById('weather-content');
-            if (!weatherCard || weatherCard.classList.contains('hidden')) return;
-
-            let animContainer = document.getElementById('apple-weather-container');
-            
-            // If app.js wiped out the background, put it back immediately
-            if (!animContainer) {
-                animContainer = document.createElement('div');
-                animContainer.id = 'apple-weather-container';
-                weatherCard.insertBefore(animContainer, weatherCard.firstChild);
-            }
-
-            // Elements to update
-            const iconElement = document.getElementById('weather-icon');
-            const conditionText = document.getElementById('weather-condition');
-            const hiloText = document.getElementById('weather-hilo');
-            const tempElement = document.getElementById('temperature');
-
-            if (iconElement) {
-                const iconClass = iconElement.className || "";
-                let newBgClass = '';
-                let displayCondition = 'Clear Sky';
-
-                // Determine weather type based on app.js icon
-                if (iconClass.includes('rain') || iconClass.includes('showers') || iconClass.includes('droplet') || iconClass.includes('storm')) {
-                    newBgClass = 'rain-bg';
-                    displayCondition = 'Rain / Showers';
-                } else if (iconClass.includes('cloud')) {
-                    newBgClass = 'cloudy-bg';
-                    displayCondition = 'Mostly Cloudy';
-                } else {
-                    newBgClass = 'clear-bg';
-                    displayCondition = 'Mostly Sunny';
-                }
-
-                // Auto-fill the Text Data (Until app.js is updated to do it)
-                if(conditionText && conditionText.innerText === "Fetching...") {
-                    conditionText.innerText = displayCondition;
-                }
-                
-                // Auto-calculate realistic High/Low based on the live temperature
-                if(hiloText && tempElement && hiloText.innerText === "H:--° L:--°" && tempElement.innerText !== "--°") {
-                    let currentTemp = parseInt(tempElement.innerText.replace('°', ''));
-                    if(!isNaN(currentTemp)) {
-                        hiloText.innerText = `H:${currentTemp + 4}° L:${currentTemp - 3}°`;
-                    }
-                }
-
-                // If the background class changed (or was just created), inject the CSS animations
-                if (!animContainer.classList.contains(newBgClass)) {
-                    animContainer.className = ''; // clear old classes
-                    animContainer.innerHTML = ''; // clear old drops/clouds
-                    
-                    animContainer.classList.add(newBgClass);
-                    weatherCard.classList.add('has-apple-fx');
-
-                    if (newBgClass === 'rain-bg') {
-                        // Create 60 Slanted Raindrops
-                        for(let i = 0; i < 60; i++) {
-                            let drop = document.createElement('div');
-                            drop.className = 'apple-drop';
-                            drop.style.left = `${Math.random() * 150 - 20}%`; 
-                            drop.style.animationDuration = `${Math.random() * 0.3 + 0.4}s`;
-                            drop.style.animationDelay = `-${Math.random() * 2}s`;
-                            animContainer.appendChild(drop);
-                        }
-                        // Create 3 Dark Storm Clouds
-                        for (let i = 0; i < 3; i++) {
-                            let cloud = document.createElement('div');
-                            cloud.className = 'apple-cloud';
-                            cloud.style.width = `${Math.random() * 250 + 150}px`;
-                            cloud.style.height = `${Math.random() * 100 + 60}px`;
-                            cloud.style.top = `${Math.random() * 40}%`; 
-                            cloud.style.opacity = '0.2';
-                            cloud.style.animationDuration = `${Math.random() * 30 + 20}s`;
-                            cloud.style.animationDelay = `-${Math.random() * 20}s`;
-                            animContainer.appendChild(cloud);
-                        }
-                    } else if (newBgClass === 'cloudy-bg') {
-                        // Create 6 Drifting Clouds
-                        for (let i = 0; i < 6; i++) {
-                            let cloud = document.createElement('div');
-                            cloud.className = 'apple-cloud';
-                            cloud.style.width = `${Math.random() * 250 + 150}px`;
-                            cloud.style.height = `${Math.random() * 100 + 60}px`;
-                            cloud.style.top = `${Math.random() * 60}%`; 
-                            cloud.style.opacity = '0.5';
-                            cloud.style.animationDuration = `${Math.random() * 30 + 20}s`;
-                            cloud.style.animationDelay = `-${Math.random() * 20}s`;
-                            animContainer.appendChild(cloud);
-                        }
-                    } else if (newBgClass === 'clear-bg') {
-                        // Create Glowing Sun Flare
-                        let sun = document.createElement('div');
-                        sun.className = 'apple-sun';
-                        animContainer.appendChild(sun);
-                    }
-                }
-            }
-        }
-
-        // Run this check continuously so app.js can never delete it!
-        setInterval(updateAppleWeather, 500);
-
     </script>
 </body>
 </html>
