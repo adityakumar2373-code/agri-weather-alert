@@ -81,6 +81,15 @@
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
         }
 
+        /* Weather Background Layers */
+        .weather-bg { 
+            position: absolute !important; 
+            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; 
+            z-index: 0 !important; 
+            pointer-events: none !important; 
+            transition: all 1s ease;
+        }
+
         /* 🌧️ Animations */
         @keyframes apple-rain-fall {
             0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
@@ -103,15 +112,28 @@
             border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite;
         }
 
-        @keyframes apple-sun-pulse {
+        /* ☀️ Clear Day Sun */
+        @keyframes pulse-sun {
             0% { transform: scale(1); opacity: 0.8; }
             100% { transform: scale(1.2); opacity: 1; }
         }
         .apple-sun {
             position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
             background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
-            border-radius: 50%; animation: apple-sun-pulse 5s ease-in-out infinite alternate;
+            border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
         }
+
+        /* 🌙 Clear Night Moon Glow */
+        @keyframes pulse-moon {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+        .apple-moon {
+            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(165, 180, 252, 0.4) 0%, rgba(165, 180, 252, 0) 70%);
+            border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate;
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -170,7 +192,7 @@
                 <option value="ta">தமிழ்</option>
                 <option value="gu">ગુજરાતી</option>
                 <option value="kn">ಕನ್ನಡ</option>
-                <option value="or">ଓଡ଼ia</option>
+                <option value="or">ଓଡ଼ିଆ</option>
                 <option value="ml">മലയാളം</option>
                 <option value="pa">ਪੰਜਾਬੀ</option>
                 <option value="as">অসমীয়া</option>
@@ -308,19 +330,19 @@
                         </div>
 
                         <div class="grid grid-cols-2 gap-3 w-full min-w-0">
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
                                 <div class="text-blue-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-droplet"></i></div>
                                 <div class="min-w-0"><p id="rain-val" class="text-base font-extrabold text-gray-800 truncate">-- mm</p><p id="rain-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain Vol.</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
                                 <div class="text-cyan-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-cloud-showers-heavy"></i></div>
                                 <div class="min-w-0"><p id="precip-prob-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="precip-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Rain %</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
                                 <div class="text-teal-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-wind"></i></div>
                                 <div class="min-w-0"><p id="wind-val" class="text-base font-extrabold text-gray-800 truncate">-- km/h</p><p id="wind-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Wind</p></div>
                             </div>
-                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0">
+                            <div class="bg-gray-50 rounded-2xl p-4 flex items-center gap-3 border border-gray-100 min-w-0 stat-box">
                                 <div class="text-indigo-500 text-xl w-6 sm:w-8 text-center shrink-0"><i class="fa-solid fa-water"></i></div>
                                 <div class="min-w-0"><p id="humidity-val" class="text-base font-extrabold text-gray-800 truncate">-- %</p><p id="humidity-label" class="text-[9px] font-bold text-gray-400 uppercase tracking-widest truncate">Humidity</p></div>
                             </div>
