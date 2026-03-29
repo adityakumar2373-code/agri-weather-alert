@@ -1,5 +1,5 @@
 let currentWeatherData = null;
-let currentDailyData = null; // 🌟 ADD THIS LINE
+let currentDailyData = null; 
 let currentCoords = null; 
 let currentVillageName = ""; 
 let weatherChart = null; 
@@ -23,12 +23,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const langSelector = document.getElementById('language-selector');
     langSelector.addEventListener('change', (e) => {
         updateLanguage(e.target.value);
-        // 🌟 ADD THESE 3 LINES: Re-draw the weather card in the new language
+        // Force UI redraw on language change
         if (currentWeatherData && currentDailyData) {
             updateUI(currentWeatherData, currentDailyData); 
         }
         triggerAIIfReady(); 
     });
+
     cropSelector.addEventListener('change', triggerAIIfReady);
 
     document.getElementById('weather-content').classList.add('hidden');
@@ -204,12 +205,12 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// 🌟 FIXED API URL: Now fetches the official WMO 'weather_code' and 'cloud_cover'
+// 🌟 BULLETPROOF API URL: Includes 'is_day' and 'weather_code' strictly
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,cloud_cover&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -233,9 +234,9 @@ async function fetchWeather(coords) {
         const data = await response.json();
         
         currentWeatherData = data.current;
-        currentDailyData = data.daily; // 🌟 ADD THIS LINE
+        currentDailyData = data.daily;
         
-        updateUI(currentWeatherData, data.daily); 
+        updateUI(currentWeatherData, currentDailyData); 
         drawChart(data.daily); 
         triggerAIIfReady(); 
         
@@ -397,7 +398,7 @@ function applyAppleWeather(condition) {
     }
     
     bgLayer.innerHTML = ''; 
-    bgLayer.className = 'weather-bg'; // reset classes
+    bgLayer.className = 'weather-bg'; 
 
     if (condition === 'rain' || condition === 'storm') {
         bgLayer.style.background = 'linear-gradient(180deg, #5A6B7C 0%, #2F3C4D 100%)';
@@ -414,14 +415,17 @@ function applyAppleWeather(condition) {
              flash.className = 'flash';
              bgLayer.appendChild(flash);
         }
-    } else if (condition === 'cloudy') {
-        bgLayer.style.background = 'linear-gradient(180deg, #64748b 0%, #334155 100%)';
+    } else if (condition === 'cloudy' || condition === 'cloudy-night') {
+        // 🌟 ADDED CLOUDY NIGHT BACKGROUND 
+        bgLayer.style.background = condition === 'cloudy-night' 
+            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' // Darker Slate for night clouds
+            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; // Lighter Slate for day clouds
+            
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
             cloud.className = 'apple-cloud';
             cloud.style.width = `${Math.random() * 300 + 150}px`;
             cloud.style.height = `${Math.random() * 80 + 50}px`;
-            // Keeps clouds neat and out of the way of the text
             cloud.style.top = i % 2 === 0 ? `${Math.random() * 20}%` : `${Math.random() * 20 + 70}%`;
             cloud.style.animationDuration = `${Math.random() * 40 + 30}s`;
             cloud.style.animationDelay = `-${Math.random() * 20}s`;
@@ -440,7 +444,7 @@ function applyAppleWeather(condition) {
     }
 }
 
-// 🌟 FINALIZED UI LOGIC WITH MULTILINGUAL WEATHER SUPPORT
+// 🌟 STRICT WMO LOGIC (NO GUESSING)
 function updateUI(weather, daily) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
@@ -448,7 +452,6 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
-    // Inject Basic Data
     document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
@@ -456,7 +459,6 @@ function updateUI(weather, daily) {
     if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
     if(document.getElementById('precip-prob-val')) document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
 
-    // Inject High & Low Temps Safely
     const hiloElement = document.getElementById('weather-hilo');
     if (hiloElement && daily && daily.temperature_2m_max && daily.temperature_2m_min) {
         hiloElement.innerText = `H:${Math.round(daily.temperature_2m_max[0])}° L:${Math.round(daily.temperature_2m_min[0])}°`;
@@ -464,60 +466,53 @@ function updateUI(weather, daily) {
 
     const icon = document.getElementById('weather-icon');
     const conditionText = document.getElementById('weather-condition');
-    const currentHour = new Date().getHours();
-    const isNight = currentHour < 6 || currentHour >= 18; 
     
-    // Grab the current language translations
     const langCode = document.getElementById('language-selector').value;
     const t = translations[langCode] || translations['en'];
     
+    // Check if sun is down using real API data (Fallback to hour if API fails)
+    const isNight = weather.is_day !== undefined ? weather.is_day === 0 : (new Date().getHours() < 6 || new Date().getHours() >= 18);
+    
+    // Strict WMO Weather Code
+    const wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
+
     let activeCondition = 'clear';
     let condString = t.condMostlySunny || 'Mostly Sunny';
     let iconClass = 'fa-solid fa-sun';
-    
-    // 🌟 PERFECTED LOGIC: Using official WMO Weather Codes for exact accuracy
-    const wmoCode = weather.weather_code || 0;
-    const cloudCover = weather.cloud_cover || 0;
 
     if ([95, 96, 99].includes(wmoCode)) {
-        // Thunderstorm
         activeCondition = 'storm';
         condString = t.condThunderstorms || 'Thunderstorms';
         iconClass = 'fa-solid fa-cloud-bolt';
-    } else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode) || weather.rain > 0) {
-        // Rain/Drizzle
+    } else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode)) {
         activeCondition = 'rain';
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
-    } else if ([3, 45, 48].includes(wmoCode) || cloudCover > 40) { 
-        // Overcast / Mostly Cloudy
-        activeCondition = 'cloudy';
+    } else if ([3, 45, 48].includes(wmoCode)) { 
+        // 3 = Overcast
+        activeCondition = isNight ? 'cloudy-night' : 'cloudy';
         condString = t.condMostlyCloudy || 'Mostly Cloudy';
         iconClass = 'fa-solid fa-cloud';
-    } else if ([1, 2].includes(wmoCode) || cloudCover > 15) {
-        // Partly Cloudy
+    } else if ([1, 2].includes(wmoCode)) {
+        // 1 = Mainly Clear, 2 = Partly Cloudy
         activeCondition = isNight ? 'night' : 'clear';
         condString = t.condPartlyCloudy || 'Partly Cloudy';
         iconClass = isNight ? 'fa-solid fa-cloud-moon' : 'fa-solid fa-cloud-sun';
     } else {
-        // Clear Sky
+        // 0 = Clear Sky
         activeCondition = isNight ? 'night' : 'clear';
         condString = isNight ? (t.condClearNight || 'Clear Night') : (t.condMostlySunny || 'Mostly Sunny');
         iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
     }
 
     if(icon) icon.className = `${iconClass} text-6xl drop-shadow-md text-white`;
-
-    // Safely write text to HTML
     if(conditionText) conditionText.innerText = condString;
 
-    // Trigger the Animation Function
     weatherCard.classList.add('apple-active');
     applyAppleWeather(activeCondition);
 
     updateLanguage(langCode);
 
-    // Alert Box Logic
     if (currentWeatherData && !cropSelector.value) {
         const alertBox = document.getElementById('alert-box');
         const alertTitle = document.getElementById('alert-title');
