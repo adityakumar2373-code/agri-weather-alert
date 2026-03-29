@@ -36,7 +36,12 @@ const translations = {
         "condPartlyCloudy": "Partly Cloudy",
         "condWindy": "Windy",
         "condClearNight": "Clear Night",
-        "condMostlySunny": "Mostly Sunny"
+        "condMostlySunny": "Mostly Sunny",
+        "helplinesTitle": "Important Helplines",
+        "kisanCallCenter": "Kisan Call Center",
+        "kccDesc": "Available 6AM - 10PM",
+        "agriEmergency": "Agri Emergency",
+        "aeDesc": "24/7 Toll-Free"
     },
     "hi": {
         "appTitle": 'कृषि-अलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -75,7 +80,12 @@ const translations = {
         "condPartlyCloudy": "आंशिक रूप से बादल",
         "condWindy": "हवादार",
         "condClearNight": "साफ रात",
-        "condMostlySunny": "ज्यादातर धूप"
+        "condMostlySunny": "ज्यादातर धूप",
+        "helplinesTitle": "महत्वपूर्ण हेल्पलाइन",
+        "kisanCallCenter": "किसान कॉल सेंटर",
+        "kccDesc": "सुबह 6 बजे से रात 10 बजे तक उपलब्ध",
+        "agriEmergency": "कृषि आपातकाल",
+        "aeDesc": "24/7 टोल-फ्री"
     },
     "or": {
         "appTitle": 'କୃଷି-ଆଲର୍ଟ <span class="text-emerald-500">ପ୍ରୋ</span>',
@@ -114,7 +124,12 @@ const translations = {
         "condPartlyCloudy": "ଆଂଶିକ ମେଘୁଆ",
         "condWindy": "ପବନ",
         "condClearNight": "ପରିଷ୍କାର ରାତି",
-        "condMostlySunny": "ଅଧିକାଂଶ ସମୟ ଖରା"
+        "condMostlySunny": "ଅଧିକାଂଶ ସମୟ ଖରା",
+        "helplinesTitle": "ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ହେଲ୍ପଲାଇନ୍",
+        "kisanCallCenter": "କିସାନ କଲ୍ ସେଣ୍ଟର",
+        "kccDesc": "ସକାଳ 6 ରୁ ରାତି 10 ପର୍ଯ୍ୟନ୍ତ ଉପଲବ୍ଧ",
+        "agriEmergency": "କୃଷି ଜରୁରୀକାଳୀନ",
+        "aeDesc": "24/7 ଟୋଲ୍-ଫ୍ରି"
     },
     "bn": {
         "appTitle": 'এগ্রিঅ্যালার্ট <span class="text-emerald-500">প্রো</span>',
@@ -153,7 +168,12 @@ const translations = {
         "condPartlyCloudy": "আংশিক মেঘলা",
         "condWindy": "ঝোড়ো",
         "condClearNight": "পরিষ্কার রাত",
-        "condMostlySunny": "অধিকাংশ সময় রৌদ্রোজ্জ্বল"
+        "condMostlySunny": "অধিকাংশ সময় রৌদ্রোজ্জ্বল",
+        "helplinesTitle": "গুরুত্বপূর্ণ হেল্পলাইন",
+        "kisanCallCenter": "কিসান কল সেন্টার",
+        "kccDesc": "সকাল ৬টা - রাত ১০টা পর্যন্ত উপলব্ধ",
+        "agriEmergency": "কৃষি জরুরি অবস্থা",
+        "aeDesc": "24/7 টোল-ফ্রি"
     },
     "mr": {
         "appTitle": 'अॅग्रीअलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -192,7 +212,12 @@ const translations = {
         "condPartlyCloudy": "काही प्रमाणात ढगाळ",
         "condWindy": "वादळी",
         "condClearNight": "स्वच्छ रात्र",
-        "condMostlySunny": "बहुतांश सूर्यप्रकाश"
+        "condMostlySunny": "बहुतांश सूर्यप्रकाश",
+        "helplinesTitle": "महत्त्वपूर्ण हेल्पलाइन",
+        "kisanCallCenter": "किसान कॉल सेंटर",
+        "kccDesc": "सकाळी 6 ते रात्री 10 पर्यंत उपलब्ध",
+        "agriEmergency": "कृषी आणीबाणी",
+        "aeDesc": "24/7 टोल-फ्री"
     },
     "te": {
         "appTitle": 'అగ్రిఅలర్ట్ <span class="text-emerald-500">ప్రో</span>',
@@ -231,7 +256,12 @@ const translations = {
         "condPartlyCloudy": "పాక్షికంగా మేఘావృతం",
         "condWindy": "ఈదురు గాలులు",
         "condClearNight": "నిర్మలమైన రాత్రి",
-        "condMostlySunny": "ఎక్కువగా ఎండ"
+        "condMostlySunny": "ఎక్కువగా ఎండ",
+        "helplinesTitle": "ముఖ్యమైన హెల్ప్‌లైన్‌లు",
+        "kisanCallCenter": "కిసాన్ కాల్ సెంటర్",
+        "kccDesc": "ఉదయం 6 నుండి రాత్రి 10 వరకు అందుబాటులో ఉంటుంది",
+        "agriEmergency": "వ్యవసాయ అత్యవసర పరిస్థితి",
+        "aeDesc": "24/7 టోల్-ఫ్రీ"
     },
     "ta": {
         "appTitle": 'அக்ரிஅலர்ட் <span class="text-emerald-500">ப்ரோ</span>',
@@ -270,7 +300,12 @@ const translations = {
         "condPartlyCloudy": "பகுதியளவு மேகமூட்டம்",
         "condWindy": "காற்று",
         "condClearNight": "தெளிவான இரவு",
-        "condMostlySunny": "பெரும்பாலும் வெயில்"
+        "condMostlySunny": "பெரும்பாலும் வெயில்",
+        "helplinesTitle": "முக்கிய உதவி எண்கள்",
+        "kisanCallCenter": "கிசான் கால் சென்டர்",
+        "kccDesc": "காலை 6 மணி முதல் இரவு 10 மணி வரை",
+        "agriEmergency": "வேளாண் அவசரநிலை",
+        "aeDesc": "24/7 கட்டணமில்லா"
     },
     "ml": {
         "appTitle": 'അഗ്രിഅലർട്ട് <span class="text-emerald-500">പ്രോ</span>',
@@ -309,7 +344,12 @@ const translations = {
         "condPartlyCloudy": "ഭാഗികമായി മേഘാവൃതം",
         "condWindy": "കാറ്റുള്ളത്",
         "condClearNight": "വ്യക്തമായ രാത്രി",
-        "condMostlySunny": "കൂടുതലും വെയിൽ"
+        "condMostlySunny": "കൂടുതലും വെയിൽ",
+        "helplinesTitle": "പ്രധാന ഹെൽപ്പ് ലൈനുകൾ",
+        "kisanCallCenter": "കിസാൻ കോൾ സെന്റർ",
+        "kccDesc": "രാവിലെ 6 മുതൽ രാത്രി 10 വരെ",
+        "agriEmergency": "കാർഷിക അടിയന്തരാവസ്ഥ",
+        "aeDesc": "24/7 ടോൾ ഫ്രീ"
     },
     "bho": {
         "appTitle": 'एग्री-अलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -348,7 +388,12 @@ const translations = {
         "condPartlyCloudy": "तनी-मनी बादर",
         "condWindy": "हवादार",
         "condClearNight": "साफ रात",
-        "condMostlySunny": "ज्यादातर घाम"
+        "condMostlySunny": "ज्यादातर घाम",
+        "helplinesTitle": "महत्वपूर्ण हेल्पलाइन",
+        "kisanCallCenter": "किसान कॉल सेंटर",
+        "kccDesc": "विहान 6 बजे से रात 10 बजे तक चालू",
+        "agriEmergency": "कृषि आपातकाल",
+        "aeDesc": "24/7 टोल-फ्री"
     },
     "gu": {
         "appTitle": 'કિસાન એલર્ટ <span class="text-emerald-500">પ્રો</span>',
@@ -387,7 +432,12 @@ const translations = {
         "condPartlyCloudy": "આંશિક વાદળછાયું",
         "condWindy": "પવન",
         "condClearNight": "સ્વચ્છ રાત",
-        "condMostlySunny": "મોટાભાગે સન્ની"
+        "condMostlySunny": "મોટાભાગે સન્ની",
+        "helplinesTitle": "મહત્વપૂર્ણ હેલ્પલાઇન",
+        "kisanCallCenter": "કિસાન કૉલ સેન્ટર",
+        "kccDesc": "સવારે 6 થી રાત્રે 10 સુધી ઉપલબ્ધ",
+        "agriEmergency": "કૃષિ કટોકટી",
+        "aeDesc": "24/7 ટોલ-ફ્રી"
     },
     "kn": {
         "appTitle": 'ಕಿಸಾನ್ ಅಲರ್ಟ್ <span class="text-emerald-500">ಪ್ರೋ</span>',
@@ -426,7 +476,12 @@ const translations = {
         "condPartlyCloudy": "ಭಾಗಶಃ ಮೋಡ",
         "condWindy": "ಗಾಳಿ",
         "condClearNight": "ಸ್ವಚ್ಛ ರಾತ್ರಿ",
-        "condMostlySunny": "ಹೆಚ್ಚಾಗಿ ಬಿಸಿಲು"
+        "condMostlySunny": "ಹೆಚ್ಚಾಗಿ ಬಿಸಿಲು",
+        "helplinesTitle": "ಪ್ರಮುಖ ಸಹಾಯವಾಣಿಗಳು",
+        "kisanCallCenter": "ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್",
+        "kccDesc": "ಬೆಳಿಗ್ಗೆ 6 ರಿಂದ ರಾತ್ರಿ 10 ರವರೆಗೆ ಲಭ್ಯವಿದೆ",
+        "agriEmergency": "ಕೃಷಿ ತುರ್ತುಸ್ಥಿತಿ",
+        "aeDesc": "24/7 ಟೋಲ್-ಫ್ರೀ"
     },
     "pa": {
         "appTitle": 'ਕਿਸਾਨ ਅਲਰਟ <span class="text-emerald-500">ਪ੍ਰੋ</span>',
@@ -465,7 +520,12 @@ const translations = {
         "condPartlyCloudy": "ਅੰਸ਼ਕ ਬੱਦਲ",
         "condWindy": "ਹਵਾਦਾਰ",
         "condClearNight": "ਸਾਫ਼ ਰਾਤ",
-        "condMostlySunny": "ਜ਼ਿਆਦਾਤਰ ਧੁੱਪ"
+        "condMostlySunny": "ਜ਼ਿਆਦਾਤਰ ਧੁੱਪ",
+        "helplinesTitle": "ਮਹੱਤਵਪੂਰਨ ਹੈਲਪਲਾਈਨਾਂ",
+        "kisanCallCenter": "ਕਿਸਾਨ ਕਾਲ ਸੈਂਟਰ",
+        "kccDesc": "ਸਵੇਰੇ 6 ਵਜੇ ਤੋਂ ਰਾਤ 10 ਵਜੇ ਤੱਕ ਉਪਲਬਧ",
+        "agriEmergency": "ਖੇਤੀਬਾੜੀ ਐਮਰਜੈਂਸੀ",
+        "aeDesc": "24/7 ਟੋਲ-ਫ੍ਰੀ"
     },
     "as": {
         "appTitle": 'কৃষি এলাৰ্ট <span class="text-emerald-500">প্ৰো</span>',
@@ -504,7 +564,12 @@ const translations = {
         "condPartlyCloudy": "আংশিক ডাৱৰীয়া",
         "condWindy": "বতাহ",
         "condClearNight": "ফৰকাল ৰাতি",
-        "condMostlySunny": "সাধাৰণতে ৰৌদ্ৰোজ্জ্বল"
+        "condMostlySunny": "সাধাৰণতে ৰৌদ্ৰোজ্জ্বল",
+        "helplinesTitle": "গুৰুত্বপূৰ্ণ হেল্পলাইন",
+        "kisanCallCenter": "কিষাণ কল চেণ্টাৰ",
+        "kccDesc": "ৰাতিপুৱা ৬ বজাৰ পৰা নিশা ১০ বজালৈ উপলব্ধ",
+        "agriEmergency": "কৃষি জৰুৰীকালীন",
+        "aeDesc": "24/7 টোল-ফ্ৰী"
     },
     "ur": {
         "appTitle": 'کسان الرٹ <span class="text-emerald-500">پرو</span>',
@@ -543,6 +608,11 @@ const translations = {
         "condPartlyCloudy": "جزوی طور پر ابر آلود",
         "condWindy": "ہوادار",
         "condClearNight": "صاف رات",
-        "condMostlySunny": "زیادہ تر دھوپ"
+        "condMostlySunny": "زیادہ تر دھوپ",
+        "helplinesTitle": "اہم ہیلپ لائنز",
+        "kisanCallCenter": "کسان کال سینٹر",
+        "kccDesc": "صبح 6 بجے سے رات 10 بجے تک دستیاب ہے",
+        "agriEmergency": "زرعی ایمرجنسی",
+        "aeDesc": "24/7 ٹول فری"
     }
 };
