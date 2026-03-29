@@ -422,13 +422,11 @@ function applyAppleWeather(condition) {
             bgLayer.appendChild(cloud);
         }
     } else if (condition === 'night') {
-        // 🌟 ADDED NIGHT GRADIENT WITH GLOWING MOON 🌟
         bgLayer.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)';
         let moon = document.createElement('div');
         moon.className = 'apple-moon';
         bgLayer.appendChild(moon);
     } else {
-        // Clear Day
         bgLayer.style.background = 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
         let sun = document.createElement('div');
         sun.className = 'apple-sun';
@@ -436,7 +434,7 @@ function applyAppleWeather(condition) {
     }
 }
 
-// 🌟 UPDATED UI LOGIC TO INJECT DATA SAFELY USING WMO CODES
+// 🌟 FINALIZED UI LOGIC WITH MULTILINGUAL WEATHER SUPPORT
 function updateUI(weather, daily) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
@@ -463,8 +461,12 @@ function updateUI(weather, daily) {
     const currentHour = new Date().getHours();
     const isNight = currentHour < 6 || currentHour >= 18; 
     
+    // Grab the current language translations
+    const langCode = document.getElementById('language-selector').value;
+    const t = translations[langCode] || translations['en'];
+    
     let activeCondition = 'clear';
-    let condString = 'Mostly Sunny';
+    let condString = t.condMostlySunny || 'Mostly Sunny';
     let iconClass = 'fa-solid fa-sun';
     
     // 🌟 PERFECTED LOGIC: Using official WMO Weather Codes for exact accuracy
@@ -474,27 +476,27 @@ function updateUI(weather, daily) {
     if ([95, 96, 99].includes(wmoCode)) {
         // Thunderstorm
         activeCondition = 'storm';
-        condString = 'Thunderstorms';
+        condString = t.condThunderstorms || 'Thunderstorms';
         iconClass = 'fa-solid fa-cloud-bolt';
     } else if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode) || weather.rain > 0) {
         // Rain/Drizzle
         activeCondition = 'rain';
-        condString = 'Rain / Showers';
+        condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
     } else if ([3, 45, 48].includes(wmoCode) || cloudCover > 40) { 
-        // Overcast / Mostly Cloudy (Threshold raised to 40% to prevent false positives)
+        // Overcast / Mostly Cloudy
         activeCondition = 'cloudy';
-        condString = 'Mostly Cloudy';
+        condString = t.condMostlyCloudy || 'Mostly Cloudy';
         iconClass = 'fa-solid fa-cloud';
     } else if ([1, 2].includes(wmoCode) || cloudCover > 15) {
         // Partly Cloudy
-        activeCondition = isNight ? 'night' : 'clear'; // Keep the sky clear-ish for partly cloudy
-        condString = 'Partly Cloudy';
+        activeCondition = isNight ? 'night' : 'clear';
+        condString = t.condPartlyCloudy || 'Partly Cloudy';
         iconClass = isNight ? 'fa-solid fa-cloud-moon' : 'fa-solid fa-cloud-sun';
     } else {
-        // Clear Sky (Code 0 or clouds under 15%)
+        // Clear Sky
         activeCondition = isNight ? 'night' : 'clear';
-        condString = isNight ? 'Clear Night' : 'Mostly Sunny';
+        condString = isNight ? (t.condClearNight || 'Clear Night') : (t.condMostlySunny || 'Mostly Sunny');
         iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
     }
 
@@ -507,7 +509,7 @@ function updateUI(weather, daily) {
     weatherCard.classList.add('apple-active');
     applyAppleWeather(activeCondition);
 
-    updateLanguage(document.getElementById('language-selector').value);
+    updateLanguage(langCode);
 
     // Alert Box Logic
     if (currentWeatherData && !cropSelector.value) {
@@ -524,18 +526,18 @@ function updateUI(weather, daily) {
         if (currentWeatherData.rain > 2) {
             alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
-            alertTitle.innerText = "Heavy Rain Alert";
-            alertMsg.innerText = "High rainfall detected.";
+            alertTitle.innerText = t.alertRainTitle || "Heavy Rain Alert";
+            alertMsg.innerText = t.alertRainMsg || "High rainfall detected.";
         } else if (currentWeatherData.wind_speed_10m > 20) { 
             alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
-            alertTitle.innerText = "High Wind Warning";
-            alertMsg.innerText = "Strong winds detected.";
+            alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
+            alertMsg.innerText = t.alertWindMsg || "Strong winds detected.";
         } else {
             alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
             alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
-            alertTitle.innerText = "Conditions Safe";
-            alertMsg.innerText = "Current weather is optimal.";
+            alertTitle.innerText = t.alertSafeTitle || "Conditions Safe";
+            alertMsg.innerText = t.alertSafeMsg || "Current weather is optimal.";
         }
     }
 }
