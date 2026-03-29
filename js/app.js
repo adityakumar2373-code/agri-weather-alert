@@ -550,21 +550,24 @@ function updateUI(weather, daily) {
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
 
-        if (currentWeatherData.rain > 2) {
+        // 🌟 REAL-WORLD ALERT LOGIC (Detects rain even if volume is low)
+        const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
+
+        if (isRainingWMO || currentWeatherData.rain > 0.2) {
             alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
-            alertTitle.innerText = t.alertRainTitle || "Heavy Rain Alert";
-            alertMsg.innerText = t.alertRainMsg || "High rainfall detected.";
+            alertTitle.innerText = t.alertRainTitle || "Rain Alert";
+            alertMsg.innerText = t.alertRainMsg || "Rain detected. Avoid sensitive field work and ensure proper drainage.";
         } else if (currentWeatherData.wind_speed_10m > 20) { 
             alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
             alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
-            alertMsg.innerText = t.alertWindMsg || "Strong winds detected.";
+            alertMsg.innerText = t.alertWindMsg || "Strong winds detected. Secure equipment and avoid spraying pesticides.";
         } else {
             alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
             alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
             alertTitle.innerText = t.alertSafeTitle || "Conditions Safe";
-            alertMsg.innerText = t.alertSafeMsg || "Current weather is optimal.";
+            alertMsg.innerText = t.alertSafeMsg || "Weather is optimal for standard agricultural activities.";
         }
     }
 }
