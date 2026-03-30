@@ -255,7 +255,7 @@
             renderNewsList(); // Redraw with filter applied
         }
 
-        // Draws the news array onto the screen
+        // 🌟 UPGRADED: Draws the colorful gradient news array onto the screen
         function renderNewsList() {
             newsContainer.innerHTML = '';
             
@@ -274,14 +274,23 @@
                  return;
             }
 
-            filteredNews.forEach(article => {
-                let icon = "fa-newspaper";
-                let bgTag = "bg-emerald-50 text-emerald-700 border-emerald-100";
+            // Define the 4 premium gradients
+            const gradients = [
+                { bg: "from-blue-600 to-cyan-500", shadow: "shadow-blue-900/10", text: "text-blue-50" }, // Weather style
+                { bg: "from-amber-500 to-orange-500", shadow: "shadow-orange-900/10", text: "text-amber-50" }, // Market style
+                { bg: "from-emerald-500 to-teal-600", shadow: "shadow-emerald-900/10", text: "text-emerald-50" }, // Subsidy style
+                { bg: "from-purple-600 to-indigo-500", shadow: "shadow-purple-900/10", text: "text-purple-50" } // Tech style
+            ];
+
+            filteredNews.forEach((article, index) => {
+                // Cycle through the gradients based on the index (0, 1, 2, 3, 0, 1, 2...)
+                const theme = gradients[index % 4]; 
                 
+                let icon = "fa-newspaper";
                 const cat = article.category.toLowerCase();
-                if(cat.includes("weather") || cat.includes("rain")) { icon = "fa-cloud-sun-rain"; bgTag = "bg-blue-50 text-blue-700 border-blue-100"; }
-                else if(cat.includes("market") || cat.includes("price")) { icon = "fa-arrow-trend-up"; bgTag = "bg-amber-50 text-amber-700 border-amber-100"; }
-                else if(cat.includes("tech") || cat.includes("subsidy")) { icon = "fa-tractor"; bgTag = "bg-purple-50 text-purple-700 border-purple-100"; }
+                if(cat.includes("weather") || cat.includes("rain")) icon = "fa-cloud-sun-rain"; 
+                else if(cat.includes("market") || cat.includes("price")) icon = "fa-arrow-trend-up"; 
+                else if(cat.includes("tech") || cat.includes("subsidy")) icon = "fa-tractor"; 
 
                 // Safe strings for buttons
                 const safeTitle = article.title.replace(/['"]/g, '');
@@ -290,26 +299,27 @@
                 const waText = encodeURIComponent("Kisan News: " + safeTitle + "\n\n" + safeSummary);
 
                 const cardHTML = `
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full flex flex-col justify-between">
-                        <div>
-                            <div class="flex justify-between items-start mb-3 gap-2">
-                                <span class="text-[10px] font-extrabold px-2.5 py-1 rounded-md uppercase tracking-wider border ${bgTag}">
-                                    <i class="fa-solid ${icon} mr-1"></i> ${article.category}
-                                </span>
-                                <span class="text-[10px] font-bold text-gray-400 flex items-center gap-1 shrink-0">
-                                    <i class="fa-regular fa-clock"></i> ${article.time}
-                                </span>
-                            </div>
-                            <h3 class="text-base sm:text-lg font-extrabold text-gray-900 mb-2 leading-snug">${article.title}</h3>
-                            <p class="text-sm text-gray-600 font-medium leading-relaxed">${article.summary}</p>
+                    <div class="bento-card group bg-gradient-to-br ${theme.bg} rounded-[2rem] p-6 sm:p-8 shadow-lg ${theme.shadow} relative overflow-hidden text-white flex flex-col h-full">
+                        <div class="absolute -top-24 -right-24 w-48 h-48 bg-white/20 rounded-full blur-[40px] pointer-events-none transition-transform group-hover:scale-150 duration-700"></div>
+
+                        <div class="flex justify-between items-start mb-6 relative z-10 gap-2">
+                            <span class="bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-extrabold px-3 py-1.5 rounded-lg uppercase tracking-widest flex items-center gap-1.5 shadow-sm truncate">
+                                <i class="fa-solid ${icon}"></i> ${article.category}
+                            </span>
+                            <span class="text-[11px] font-bold ${theme.text} flex items-center gap-1.5 bg-black/10 px-2.5 py-1 rounded-full shrink-0">
+                                <i class="fa-regular fa-clock"></i> ${article.time}
+                            </span>
                         </div>
-                        
-                        <div class="mt-5 pt-4 border-t border-gray-100 flex justify-between items-center">
-                            <button onclick="readAloudNews('${fullText}')" class="text-gray-400 hover:text-indigo-500 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-gray-50 hover:bg-indigo-50 px-3 py-1.5 rounded-lg border border-gray-200">
-                                <i class="fa-solid fa-volume-high text-sm"></i> Listen
+
+                        <h2 class="text-xl sm:text-2xl font-black mb-3 leading-tight relative z-10 drop-shadow-sm">${article.title}</h2>
+                        <p class="text-sm ${theme.text}/90 font-medium mb-6 line-clamp-4 relative z-10 leading-relaxed">${article.summary}</p>
+
+                        <div class="mt-auto pt-5 border-t border-white/20 flex justify-between items-center relative z-10">
+                            <button onclick="readAloudNews('${fullText}')" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-extrabold py-2.5 px-4 rounded-xl transition-colors flex items-center gap-2 backdrop-blur-sm shadow-sm cursor-pointer">
+                                <i class="fa-solid fa-volume-high"></i> Listen
                             </button>
-                            <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="text-emerald-500 hover:text-emerald-600 transition-colors text-[11px] uppercase tracking-widest font-extrabold flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 px-3 py-1.5 rounded-lg border border-emerald-100">
-                                <i class="fa-brands fa-whatsapp text-sm"></i> Share
+                            <a href="https://api.whatsapp.com/send?text=${waText}" target="_blank" class="bg-white text-gray-900 hover:bg-gray-50 text-xs font-extrabold py-2.5 px-4 rounded-xl transition-colors flex items-center gap-2 shadow-md cursor-pointer">
+                                <i class="fa-brands fa-whatsapp text-emerald-500 text-lg"></i> Share
                             </a>
                         </div>
                     </div>
