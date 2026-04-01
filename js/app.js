@@ -674,10 +674,12 @@ function updateLiveTime() {
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
 
+// 🌟 TEMPORARY FIX: Unregister broken Service Worker until we build it properly
 if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-            .catch(err => console.log('PWA Registration Failed:', err));
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+        }
     });
 }
 
