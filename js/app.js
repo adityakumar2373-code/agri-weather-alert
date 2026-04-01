@@ -240,6 +240,17 @@ async function fetchWeather(coords) {
         drawChart(data.daily); 
         triggerAIIfReady(); 
         
+        // 👇 THIS IS THE NEW SCROLL UPGRADE 👇
+        const weatherScrollTarget = document.getElementById('weather-scroll-target');
+        if (weatherScrollTarget) {
+            setTimeout(() => {
+                weatherScrollTarget.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 100); // 100ms delay allows the DOM to render heights before scrolling
+        }
+        
     } catch (error) {
         alert("Unable to fetch weather. Check your internet.");
         loader.classList.add('hidden');
