@@ -22,6 +22,30 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* 🌟 NEW: High Contrast Sunlight Mode */
+        body.sunlight-mode {
+            background-color: #ffffff !important;
+            background-image: none !important;
+            color: #000000 !important;
+        }
+        body.sunlight-mode .bento-card {
+            background: #ffffff !important;
+            border: 2px solid #000000 !important;
+            box-shadow: none !important;
+        }
+        body.sunlight-mode * {
+            color: #000000 !important;
+            text-shadow: none !important;
+        }
+        body.sunlight-mode .bg-emerald-500, 
+        body.sunlight-mode .bg-purple-900,
+        body.sunlight-mode .bg-gradient-to-br {
+            background: #ffff00 !important; /* High visibility yellow */
+            color: #000000 !important;
+            border: 2px solid #000000 !important;
         }
         
         #search-results::-webkit-scrollbar { width: 6px; }
@@ -45,98 +69,33 @@
         }
 
         /* ==========================================
-           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
+           🍎 APPLE WEATHER CSS
            ========================================== */
+        #weather-content.apple-active { background-color: transparent !important; border-color: transparent !important; }
+        #weather-content.apple-active * { color: #ffffff !important; }
+        #weather-content.apple-active i.text-transparent { background: none !important; -webkit-text-fill-color: #ffffff !important; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
+        #weather-content.apple-active .bg-gray-50 { background-color: rgba(255, 255, 255, 0.15) !important; border-color: rgba(255, 255, 255, 0.2) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; box-shadow: inset 0 0 10px rgba(255,255,255,0.1); }
+        #weather-content.apple-active #ui-realtime-badge { background-color: rgba(255, 255, 255, 0.2) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; }
+
+        .weather-bg { position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 0 !important; pointer-events: none !important; transition: all 1s ease; }
+
+        @keyframes apple-rain-fall { 0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; } }
+        .apple-drop { position: absolute; width: 1.5px; height: 60px; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); animation: apple-rain-fall linear infinite; }
+        @keyframes apple-cloud-float { from { transform: translateX(-150px); } to { transform: translateX(120vw); } }
+        .apple-cloud { position: absolute; background: rgba(255, 255, 255, 0.4); border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite; }
+        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; } }
+        .apple-sun { position: absolute; top: -30px; right: -30px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%); border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate; }
+        @keyframes pulse-moon { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.1); opacity: 1; } }
+        .apple-moon { position: absolute; top: -30px; right: -30px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(165, 180, 252, 0.4) 0%, rgba(165, 180, 252, 0) 70%); border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate; }
         
-        /* When active, makes the card transparent to show the background */
-        #weather-content.apple-active {
-            background-color: transparent !important;
-            border-color: transparent !important;
-        }
-        
-        /* Forces text and icons white over the animation */
-        #weather-content.apple-active * {
-            color: #ffffff !important;
-        }
-        
-        /* Overrides the gradient sun icon to pure white */
-        #weather-content.apple-active i.text-transparent {
-            background: none !important;
-            -webkit-text-fill-color: #ffffff !important;
-            text-shadow: 0 0 15px rgba(255,255,255,0.4);
-        }
-
-        /* Makes the inner stat boxes look like glassy Apple widgets */
-        #weather-content.apple-active .bg-gray-50 {
-            background-color: rgba(255, 255, 255, 0.15) !important;
-            border-color: rgba(255, 255, 255, 0.2) !important;
-            backdrop-filter: blur(12px) !important;
-            -webkit-backdrop-filter: blur(12px) !important;
-            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
-        }
-
-        /* Styles the Real-Time badge */
-        #weather-content.apple-active #ui-realtime-badge {
-            background-color: rgba(255, 255, 255, 0.2) !important;
-            border: 1px solid rgba(255, 255, 255, 0.3) !important;
-        }
-
-        /* Weather Background Layers */
-        .weather-bg { 
-            position: absolute !important; 
-            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; 
-            z-index: 0 !important; 
-            pointer-events: none !important; 
-            transition: all 1s ease;
-        }
-
-        /* 🌧️ Animations */
-        @keyframes apple-rain-fall {
-            0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
-            10% { opacity: 1; }
-            80% { opacity: 1; }
-            100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; }
-        }
-        .apple-drop {
-            position: absolute; width: 1.5px; height: 60px;
-            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
-            animation: apple-rain-fall linear infinite;
-        }
-
-        @keyframes apple-cloud-float {
-            from { transform: translateX(-150px); }
-            to { transform: translateX(120vw); }
-        }
-        .apple-cloud {
-            position: absolute; background: rgba(255, 255, 255, 0.4);
-            border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite;
-        }
-
-        /* ☀️ Clear Day Sun */
-        @keyframes pulse-sun {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.2); opacity: 1; }
-        }
-        .apple-sun {
-            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
-            background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
-            border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
-        }
-
-        /* 🌙 Clear Night Moon Glow */
-        @keyframes pulse-moon {
-            0% { transform: scale(1); opacity: 0.6; }
-            100% { transform: scale(1.1); opacity: 1; }
-        }
-        .apple-moon {
-            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
-            background: radial-gradient(circle, rgba(165, 180, 252, 0.4) 0%, rgba(165, 180, 252, 0) 70%);
-            border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate;
-        }
-
+        /* Modal Transitions */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 300ms, transform 300ms; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
+<body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden text-base" id="app-body">
 
     <div id="sidebar-overlay" class="fixed inset-0 bg-gray-900/40 z-[60] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300"></div>
 
@@ -163,8 +122,15 @@
             <a href="chat.html" class="flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors">
                 <i class="fa-solid fa-comments w-5 text-center text-lg"></i> Kisan Chat
             </a>
+            
+            <div class="my-4 border-t border-gray-100"></div>
+            
+            <button id="open-settings-btn" class="w-full flex items-center gap-3 px-4 py-3.5 text-gray-600 hover:bg-gray-50 hover:text-emerald-600 rounded-xl font-semibold text-sm transition-colors text-left">
+                <i class="fa-solid fa-gear w-5 text-center text-lg"></i> Settings
+            </button>
         </nav>
     </div>
+    
     <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
@@ -256,7 +222,7 @@
                         <i class="fa-solid fa-map-location-dot"></i> Setup Parameters
                     </h3>
                     
-                    <div class="relative w-full z-50 mb-4 group">
+                    <div class="relative w-full z-40 mb-4 group">
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
@@ -477,6 +443,75 @@
         <div class="min-w-0">
             <p class="font-extrabold text-sm tracking-wide text-white truncate">Alert Sent</p>
             <p id="toast-number" class="text-xs text-gray-400 font-medium truncate"></p>
+        </div>
+    </div>
+
+    <div id="settings-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 sm:p-6 modal-enter">
+        <div id="settings-backdrop" class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm cursor-pointer"></div>
+        
+        <div class="bg-white w-full max-w-lg rounded-[2rem] shadow-2xl relative z-10 flex flex-col max-h-[90vh] overflow-hidden border border-gray-100">
+            
+            <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <h2 class="text-xl font-extrabold text-gray-900 flex items-center gap-3">
+                    <div class="bg-emerald-100 text-emerald-600 w-8 h-8 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-sliders"></i>
+                    </div>
+                    Display Settings
+                </h2>
+                <button id="close-settings-btn" class="text-gray-400 hover:text-red-500 transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-50">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto space-y-8 flex-1">
+                
+                <section>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Visual Accessibility</h3>
+                    
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl flex items-center justify-between mb-3">
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm">Sunlight Mode</p>
+                            <p class="text-xs text-gray-500 mt-0.5">High-contrast black & white for bright fields.</p>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-sunlight" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-500"></div>
+                        </label>
+                    </div>
+
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl">
+                        <div class="flex justify-between items-center mb-3">
+                            <p class="font-bold text-gray-800 text-sm">Text Size</p>
+                            <span id="text-size-label" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Medium</span>
+                        </div>
+                        <input type="range" id="text-size-slider" min="1" max="3" value="2" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                        <div class="flex justify-between text-xs text-gray-400 mt-2 font-medium">
+                            <span>Small</span>
+                            <span>Large</span>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Audio Preferences</h3>
+                    
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-2xl">
+                        <div class="flex justify-between items-center mb-3">
+                            <p class="font-bold text-gray-800 text-sm">Voice Assistant Speed</p>
+                            <span id="voice-speed-label" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">Normal (0.9x)</span>
+                        </div>
+                        <input type="range" id="voice-speed-slider" min="0.5" max="1.5" step="0.1" value="0.9" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                    </div>
+                </section>
+                
+                <section>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4">Data Management</h3>
+                    <button id="clear-cache-btn" class="w-full bg-red-50 text-red-600 hover:bg-red-100 border border-red-100 font-bold py-3 rounded-xl transition-colors text-sm flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-trash-can"></i> Clear App Data & Cache
+                    </button>
+                </section>
+
+            </div>
         </div>
     </div>
 
