@@ -265,7 +265,25 @@ function triggerAIIfReady() {
             currentWeatherData.wind_speed_10m
         );
 
-        // 👇 THIS IS THE NEW SCROLL UPGRADE FOR CROP SELECTION 👇
+        // ==============================================================
+        // 🚀 NEW UPGRADE: MOVE CARDS TO THE LEFT COLUMN (DESKTOP ONLY)
+        // ==============================================================
+        if (window.innerWidth >= 1024) { 
+            const leftColumn = document.getElementById('sms-section').parentElement;
+            const forecastSection = document.getElementById('forecast-section');
+            const doctorSection = document.getElementById('doctor-section');
+            
+            if (leftColumn && forecastSection && doctorSection) {
+                leftColumn.appendChild(forecastSection);
+                leftColumn.appendChild(doctorSection);
+                
+                if (currentDailyData) {
+                    drawChart(currentDailyData);
+                }
+            }
+        }
+
+        // 👇 THIS IS THE SCROLL UPGRADE FOR CROP SELECTION 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
         if (weatherScrollTarget) {
             setTimeout(() => {
