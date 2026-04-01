@@ -920,7 +920,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Initialize saved settings on load
     const initSettings = () => {
         const savedSunlight = localStorage.getItem('kisanSunlightMode') === 'true';
-        const savedTextSize = localStorage.getItem('kisanTextSize') || '16';
+        const savedTextSize = localStorage.getItem('kisanTextSize') || '2';
         const savedVoiceSpeed = localStorage.getItem('kisanVoiceSpeed') || '0.9';
 
         sunlightToggle.checked = savedSunlight;
@@ -972,14 +972,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Text Size Logic
     const applyTextSize = (val) => {
-        const rootElement = document.documentElement; 
-        
-        // Apply the slider's exact value as pixels for continuous, smooth scaling
-        rootElement.style.fontSize = `${val}px`; 
-        
-        // Calculate and display the percentage (16px is standard 100%)
-        const percentage = Math.round((val / 16) * 100);
-        textSizeLabel.innerText = `${percentage}%`;
+        appBody.classList.remove('text-sm', 'text-base', 'text-lg');
+        if (val === '1') {
+            appBody.classList.add('text-sm');
+            textSizeLabel.innerText = "Small";
+        } else if (val === '2') {
+            appBody.classList.add('text-base');
+            textSizeLabel.innerText = "Medium";
+        } else if (val === '3') {
+            appBody.classList.add('text-lg');
+            textSizeLabel.innerText = "Large";
+        }
     };
 
     textSizeSlider.addEventListener('input', (e) => {
