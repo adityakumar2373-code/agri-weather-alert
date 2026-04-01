@@ -264,6 +264,17 @@ function triggerAIIfReady() {
             currentWeatherData.rain, 
             currentWeatherData.wind_speed_10m
         );
+
+        // 👇 THIS IS THE NEW SCROLL UPGRADE FOR CROP SELECTION 👇
+        const weatherScrollTarget = document.getElementById('weather-scroll-target');
+        if (weatherScrollTarget) {
+            setTimeout(() => {
+                weatherScrollTarget.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 100);
+        }
     }
 }
 
