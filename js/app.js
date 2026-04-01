@@ -972,15 +972,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. Text Size Logic
     const applyTextSize = (val) => {
-        appBody.classList.remove('text-sm', 'text-base', 'text-lg');
+        // Target the <html> root element to scale all 'rem' units globally
+        const rootElement = document.documentElement; 
+        
         if (val === '1') {
-            appBody.classList.add('text-sm');
+            rootElement.style.fontSize = '14px'; // Shrinks text globally
             textSizeLabel.innerText = "Small";
         } else if (val === '2') {
-            appBody.classList.add('text-base');
+            rootElement.style.fontSize = '16px'; // Default Tailwind base size
             textSizeLabel.innerText = "Medium";
         } else if (val === '3') {
-            appBody.classList.add('text-lg');
+            rootElement.style.fontSize = '18px'; // Enlarges text globally for readability
             textSizeLabel.innerText = "Large";
         }
     };
