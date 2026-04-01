@@ -70,6 +70,7 @@ gpsBtn.addEventListener('click', () => {
     }
 });
 
+// 🌟 UPDATED: Voice Read Aloud respects Settings Speed
 readAloudBtn.addEventListener('click', () => {
     const alertMsg = document.getElementById('alert-message').innerText;
     const currentLang = document.getElementById('language-selector').value; 
@@ -98,7 +99,10 @@ readAloudBtn.addEventListener('click', () => {
         speech.lang = targetLangCode;
     }
     
-    speech.rate = 0.9;     
+    // Grab speed from local storage or default to 0.9
+    const savedSpeed = localStorage.getItem('kisanVoiceSpeed');
+    speech.rate = savedSpeed ? parseFloat(savedSpeed) : 0.9;     
+    
     window.speechSynthesis.speak(speech);
 });
 
@@ -893,3 +897,121 @@ async function analyzeCropImage(base64Data) {
         docDiagnosis.innerText = "Could not connect to the AI server.";
     }
 }
+
+// =========================================================================
+// 🌟 NEW: SETTINGS MODAL & PREFERENCES LOGIC 🌟
+// =========================================================================
+
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsBtn = document.getElementById('open-settings-btn');
+    const closeSettingsBtn = document.getElementById('close-settings-btn');
+    const settingsModal = document.getElementById('settings-modal');
+    const settingsBackdrop = document.getElementById('settings-backdrop');
+    
+    // Inputs
+    const sunlightToggle = document.getElementById('toggle-sunlight');
+    const textSizeSlider = document.getElementById('text-size-slider');
+    const textSizeLabel = document.getElementById('text-size-label');
+    const voiceSpeedSlider = document.getElementById('voice-speed-slider');
+    const voiceSpeedLabel = document.getElementById('voice-speed-label');
+    const clearCacheBtn = document.getElementById('clear-cache-btn');
+    const appBody = document.getElementById('app-body');
+
+    // 1. Initialize saved settings on load
+    const initSettings = () => {
+        const savedSunlight = localStorage.getItem('kisanSunlightMode') === 'true';
+        const savedTextSize = localStorage.getItem('kisanTextSize') || '2';
+        const savedVoiceSpeed = localStorage.getItem('kisanVoiceSpeed') || '0.9';
+
+        sunlightToggle.checked = savedSunlight;
+        if (savedSunlight) appBody.classList.add('sunlight-mode');
+
+        textSizeSlider.value = savedTextSize;
+        applyTextSize(savedTextSize);
+
+        voiceSpeedSlider.value = savedVoiceSpeed;
+        updateVoiceLabel(savedVoiceSpeed);
+    };
+
+    // 2. Open & Close Modal Functions
+    const openSettings = () => {
+        closeSidebar(); // Ensure sidebar closes when settings opens
+        settingsModal.classList.remove('hidden');
+        settingsModal.classList.add('flex');
+        setTimeout(() => {
+            settingsModal.classList.remove('modal-enter');
+            settingsModal.classList.add('modal-enter-active');
+        }, 10);
+    };
+
+    const closeSettings = () => {
+        settingsModal.classList.remove('modal-enter-active');
+        settingsModal.classList.add('modal-exit-active');
+        setTimeout(() => {
+            settingsModal.classList.add('hidden');
+            settingsModal.classList.remove('flex', 'modal-exit-active', 'modal-exit');
+            settingsModal.classList.add('modal-enter');
+        }, 300);
+    };
+
+    // 3. Event Listeners for UI interaction
+    if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+    if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettings);
+    if (settingsBackdrop) settingsBackdrop.addEventListener('click', closeSettings);
+
+    // 4. Sunlight Mode Logic
+    sunlightToggle.addEventListener('change', (e) => {
+        const isChecked = e.target.checked;
+        localStorage.setItem('kisanSunlightMode', isChecked);
+        if (isChecked) {
+            appBody.classList.add('sunlight-mode');
+        } else {
+            appBody.classList.remove('sunlight-mode');
+        }
+    });
+
+    // 5. Text Size Logic
+    const applyTextSize = (val) => {
+        appBody.classList.remove('text-sm', 'text-base', 'text-lg');
+        if (val === '1') {
+            appBody.classList.add('text-sm');
+            textSizeLabel.innerText = "Small";
+        } else if (val === '2') {
+            appBody.classList.add('text-base');
+            textSizeLabel.innerText = "Medium";
+        } else if (val === '3') {
+            appBody.classList.add('text-lg');
+            textSizeLabel.innerText = "Large";
+        }
+    };
+
+    textSizeSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        localStorage.setItem('kisanTextSize', val);
+        applyTextSize(val);
+    });
+
+    // 6. Voice Speed Logic
+    const updateVoiceLabel = (val) => {
+        if (val < 0.8) voiceSpeedLabel.innerText = `Slow (${val}x)`;
+        else if (val > 1.1) voiceSpeedLabel.innerText = `Fast (${val}x)`;
+        else voiceSpeedLabel.innerText = `Normal (${val}x)`;
+    };
+
+    voiceSpeedSlider.addEventListener('input', (e) => {
+        const val = e.target.value;
+        localStorage.setItem('kisanVoiceSpeed', val);
+        updateVoiceLabel(val);
+    });
+
+    // 7. Clear Cache Logic
+    clearCacheBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to clear all saved settings and reload the app?")) {
+            localStorage.clear();
+            window.location.reload();
+        }
+    });
+
+    // Run initialization
+    initSettings();
+});
