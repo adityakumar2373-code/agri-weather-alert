@@ -240,15 +240,15 @@ async function fetchWeather(coords) {
         drawChart(data.daily); 
         triggerAIIfReady(); 
         
-        // 👇 THIS IS THE NEW SCROLL UPGRADE 👇
+        // 👇 UPDATED: ONLY SCROLL ON MOBILE (< 1024px) 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
-        if (weatherScrollTarget) {
+        if (weatherScrollTarget && window.innerWidth < 1024) {
             setTimeout(() => {
                 weatherScrollTarget.scrollIntoView({ 
                     behavior: 'smooth', 
                     block: 'start' 
                 });
-            }, 100); // 100ms delay allows the DOM to render heights before scrolling
+            }, 100); 
         }
         
     } catch (error) {
@@ -266,7 +266,7 @@ function triggerAIIfReady() {
         );
 
         // ==============================================================
-        // 🚀 NEW UPGRADE: MOVE CARDS TO THE LEFT COLUMN (DESKTOP ONLY)
+        // 🚀 MOVE CARDS TO THE LEFT COLUMN (DESKTOP ONLY)
         // ==============================================================
         if (window.innerWidth >= 1024) { 
             const leftColumn = document.getElementById('sms-section').parentElement;
@@ -283,9 +283,9 @@ function triggerAIIfReady() {
             }
         }
 
-        // 👇 THIS IS THE SCROLL UPGRADE FOR CROP SELECTION 👇
+        // 👇 UPDATED: ONLY SCROLL ON MOBILE (< 1024px) 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
-        if (weatherScrollTarget) {
+        if (weatherScrollTarget && window.innerWidth < 1024) {
             setTimeout(() => {
                 weatherScrollTarget.scrollIntoView({ 
                     behavior: 'smooth', 
