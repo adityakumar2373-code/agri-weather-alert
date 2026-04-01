@@ -240,9 +240,9 @@ async function fetchWeather(coords) {
         drawChart(data.daily); 
         triggerAIIfReady(); 
         
-        // 👇 THIS IS THE NEW SCROLL UPGRADE 👇
+        // 👇 THIS IS THE NEW SCROLL UPGRADE (MOBILE ONLY) 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
-        if (weatherScrollTarget) {
+        if (weatherScrollTarget && window.innerWidth < 1024) {
             setTimeout(() => {
                 weatherScrollTarget.scrollIntoView({ 
                     behavior: 'smooth', 
@@ -283,9 +283,9 @@ function triggerAIIfReady() {
             }
         }
 
-        // 👇 THIS IS THE SCROLL UPGRADE FOR CROP SELECTION 👇
+        // 👇 THIS IS THE SCROLL UPGRADE FOR CROP SELECTION (MOBILE ONLY) 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
-        if (weatherScrollTarget) {
+        if (weatherScrollTarget && window.innerWidth < 1024) {
             setTimeout(() => {
                 weatherScrollTarget.scrollIntoView({ 
                     behavior: 'smooth', 
