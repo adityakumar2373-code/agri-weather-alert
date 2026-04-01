@@ -17,11 +17,25 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
+        /* 🌟 NEW: Global Smooth Scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
         body { 
             font-family: 'Outfit', sans-serif; 
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
+        }
+
+        /* 🌟 NEW: Hardware Acceleration to stop scroll jitter */
+        header, .bento-card, #weather-content.apple-active .bg-gray-50 {
+            will-change: transform, backdrop-filter;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
         }
         
         #search-results::-webkit-scrollbar { width: 6px; }
@@ -30,7 +44,10 @@
         input[type=tel]::-webkit-inner-spin-button, 
         input[type=tel]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .animate-float-slow { animation: float 6s ease-in-out infinite; }
+        .animate-float-slow { 
+            animation: float 6s ease-in-out infinite; 
+            will-change: transform; /* GPU Optimization */
+        }
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -40,7 +57,7 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .bento-card:hover {
-            transform: translateY(-2px);
+            transform: translateY(-2px) translateZ(0); /* GPU Optimization */
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
 
@@ -90,12 +107,19 @@
             transition: all 1s ease;
         }
 
+        /* 🌟 NEW: GPU Optimization for all weather animations */
+        .apple-drop, .apple-cloud, .apple-sun, .apple-moon {
+            will-change: transform, opacity;
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+        }
+
         /* 🌧️ Animations */
         @keyframes apple-rain-fall {
-            0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
+            0% { transform: translate(0, -10vh) rotate(15deg) translateZ(0); opacity: 0; }
             10% { opacity: 1; }
             80% { opacity: 1; }
-            100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; }
+            100% { transform: translate(-15vh, 100vh) rotate(15deg) translateZ(0); opacity: 0; }
         }
         .apple-drop {
             position: absolute; width: 1.5px; height: 60px;
@@ -104,8 +128,8 @@
         }
 
         @keyframes apple-cloud-float {
-            from { transform: translateX(-150px); }
-            to { transform: translateX(120vw); }
+            from { transform: translateX(-150px) translateZ(0); }
+            to { transform: translateX(120vw) translateZ(0); }
         }
         .apple-cloud {
             position: absolute; background: rgba(255, 255, 255, 0.4);
@@ -114,8 +138,8 @@
 
         /* ☀️ Clear Day Sun */
         @keyframes pulse-sun {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.2); opacity: 1; }
+            0% { transform: scale(1) translateZ(0); opacity: 0.8; }
+            100% { transform: scale(1.2) translateZ(0); opacity: 1; }
         }
         .apple-sun {
             position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
@@ -125,8 +149,8 @@
 
         /* 🌙 Clear Night Moon Glow */
         @keyframes pulse-moon {
-            0% { transform: scale(1); opacity: 0.6; }
-            100% { transform: scale(1.1); opacity: 1; }
+            0% { transform: scale(1) translateZ(0); opacity: 0.6; }
+            100% { transform: scale(1.1) translateZ(0); opacity: 1; }
         }
         .apple-moon {
             position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
