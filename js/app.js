@@ -518,6 +518,11 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
+    // 🌟 NEW: Update Location Name in the Weather Card
+    if (document.getElementById('location-name-text')) {
+        document.getElementById('location-name-text').innerText = currentVillageName;
+    }
+
     document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
@@ -623,7 +628,7 @@ function updateLanguage(langCode) {
         document.getElementById('app-title').innerHTML = translatedTitle;
     }
 
-    document.getElementById('current-weather-title').innerHTML = `<i class="fa-solid fa-tower-observation"></i> ${t.currentConditions || "Live Conditions"}`;
+    document.getElementById('current-weather-title').innerHTML = `<i class="fa-solid fa-tower-observation text-emerald-500 shrink-0"></i> ${t.currentConditions || "Live Conditions"}`;
     
     if(document.getElementById('humidity-label')) document.getElementById('humidity-label').innerText = t.humidityLabel || "Humidity";
     if(document.getElementById('rain-label')) document.getElementById('rain-label').innerText = t.rainLabel || "Rain Vol.";
