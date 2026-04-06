@@ -158,6 +158,24 @@
             border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate;
         }
 
+        /* ⚡ Severe Storm Lightning Flash */
+        .flash {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.85);
+            z-index: 1; 
+            opacity: 0;
+            pointer-events: none;
+            will-change: opacity;
+            animation: lightning-strike 7s infinite; 
+        }
+
+        @keyframes lightning-strike {
+            0%, 91%, 93%, 95%, 100% { opacity: 0; }
+            92% { opacity: 0.9; } 
+            94% { opacity: 0.4; } 
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
