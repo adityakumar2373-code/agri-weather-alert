@@ -385,11 +385,16 @@
                     
                     <div id="apple-weather-bg" class="absolute inset-0 z-0 pointer-events-none transition-colors duration-1000"></div>
 
-                    <div class="relative z-10 flex justify-between items-center mb-6">
-                        <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
-                            <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
-                        </h2>
-                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
+                    <div class="relative z-10 flex justify-between items-start mb-6 gap-2">
+                        <div class="flex flex-col min-w-0">
+                            <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2 truncate">
+                                <i class="fa-solid fa-tower-observation text-emerald-500 shrink-0"></i> Live Conditions
+                            </h2>
+                            <p class="text-[11px] font-bold text-gray-500 mt-1 pl-6 flex items-center gap-1.5 opacity-90 truncate w-full">
+                                <i class="fa-solid fa-location-dot shrink-0"></i> <span id="location-name-text" class="truncate">Select a location</span>
+                            </p>
+                        </div>
+                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0 mt-0.5">Real-Time</span>
                     </div>
                     
                     <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
