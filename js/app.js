@@ -356,12 +356,18 @@ function renderAppleForecastList(dailyData) {
     const globalMax = Math.max(...dailyData.temperature_2m_max);
     const globalRange = globalMax - globalMin;
 
+    // 🌟 FIX: Bulletproof Date Anchor to actual system clock
+    const todayAnchor = new Date(); 
+
     for (let i = 0; i < dailyData.time.length; i++) {
-        const dateString = dailyData.time[i];
-        const dateObj = new Date(dateString);
         
-        // Label "Today" for the first row, otherwise use short weekday (e.g., "Tue")
-        const dayName = i === 0 ? "Today" : dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+        // 🌟 FIX: Calculate the days relative to NOW, completely ignoring the API's dates
+        let dayName = "Today";
+        if (i > 0) {
+            const futureDate = new Date(todayAnchor);
+            futureDate.setDate(todayAnchor.getDate() + i);
+            dayName = futureDate.toLocaleDateString('en-US', { weekday: 'short' });
+        }
         
         // Grab correct icon logic
         const wmoCode = dailyData.weather_code ? dailyData.weather_code[i] : 0;
@@ -374,20 +380,20 @@ function renderAppleForecastList(dailyData) {
         const leftPercent = ((dayMin - globalMin) / globalRange) * 100;
         const widthPercent = ((dayMax - dayMin) / globalRange) * 100;
 
-        // Build the Apple-style HTML Row
+        // 🌟 FIX: Colors updated to white/translucent so they look beautiful on all Time-of-Day backgrounds
         const rowHTML = `
-            <div class="flex items-center justify-between py-2.5 sm:py-3 border-b border-slate-700/50 last:border-0 hover:bg-slate-800/30 transition-colors rounded-lg px-2 -mx-2">
-                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-slate-200">${dayName}</div>
+            <div class="flex items-center justify-between py-2.5 sm:py-3 border-b border-white/10 last:border-0 hover:bg-black/10 transition-colors rounded-lg px-2 -mx-2">
+                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-white">${dayName}</div>
                 <div class="w-8 sm:w-10 text-center text-lg sm:text-xl"><i class="${iconClass}"></i></div>
-                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-slate-400 opacity-80">${Math.round(dayMin)}°</div>
+                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-white/70">${Math.round(dayMin)}°</div>
                 
-                <div class="flex-1 mx-3 sm:mx-5 h-1.5 bg-slate-700/50 rounded-full relative overflow-hidden shadow-inner">
+                <div class="flex-1 mx-3 sm:mx-5 h-1.5 bg-black/20 rounded-full relative overflow-hidden shadow-inner">
                     <div class="absolute h-full rounded-full bg-gradient-to-r from-sky-400 via-yellow-400 to-orange-500 shadow-sm" 
                          style="left: ${leftPercent}%; width: ${widthPercent}%;">
                     </div>
                 </div>
                 
-                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold text-slate-100">${Math.round(dayMax)}°</div>
+                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold text-white">${Math.round(dayMax)}°</div>
             </div>
         `;
         
@@ -395,6 +401,7 @@ function renderAppleForecastList(dailyData) {
     }
 }
 
+// 🌟 FIX: Restored this function so it ONLY animates the main weather card
 function applyAppleWeather(condition) {
     let bgLayer = document.getElementById('apple-weather-bg');
     if(!bgLayer) {
@@ -424,9 +431,10 @@ function applyAppleWeather(condition) {
              bgLayer.appendChild(flash);
         }
     } else if (condition === 'cloudy' || condition === 'cloudy-night') {
+        // 🌟 ADDED CLOUDY NIGHT BACKGROUND 
         bgLayer.style.background = condition === 'cloudy-night' 
-            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
-            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)';
+            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' // Darker Slate for night clouds
+            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; // Lighter Slate for day clouds
             
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
@@ -459,6 +467,7 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
+    // 🌟 NEW: Update Location Name in the Weather Card
     if (document.getElementById('location-name-text')) {
         document.getElementById('location-name-text').innerText = currentVillageName;
     }
@@ -481,7 +490,10 @@ function updateUI(weather, daily) {
     const langCode = document.getElementById('language-selector').value;
     const t = translations[langCode] || translations['en'];
     
+    // Check if sun is down using real API data (Fallback to hour if API fails)
     const isNight = weather.is_day !== undefined ? weather.is_day === 0 : (new Date().getHours() < 6 || new Date().getHours() >= 18);
+    
+    // Strict WMO Weather Code
     const wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
 
     let activeCondition = 'clear';
@@ -497,14 +509,17 @@ function updateUI(weather, daily) {
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
     } else if ([3, 45, 48].includes(wmoCode)) { 
+        // 3 = Overcast
         activeCondition = isNight ? 'cloudy-night' : 'cloudy';
         condString = t.condMostlyCloudy || 'Mostly Cloudy';
         iconClass = 'fa-solid fa-cloud';
     } else if ([1, 2].includes(wmoCode)) {
+        // 1 = Mainly Clear, 2 = Partly Cloudy
         activeCondition = isNight ? 'night' : 'clear';
         condString = t.condPartlyCloudy || 'Partly Cloudy';
         iconClass = isNight ? 'fa-solid fa-cloud-moon' : 'fa-solid fa-cloud-sun';
     } else {
+        // 0 = Clear Sky
         activeCondition = isNight ? 'night' : 'clear';
         condString = isNight ? (t.condClearNight || 'Clear Night') : (t.condMostlySunny || 'Mostly Sunny');
         iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
@@ -515,6 +530,25 @@ function updateUI(weather, daily) {
 
     weatherCard.classList.add('apple-active');
     applyAppleWeather(activeCondition);
+
+    // 🌟 FIX: Independent Time-of-Day background logic for the Forecast Card
+    const forecastCard = document.getElementById('forecast-section');
+    if(forecastCard) {
+        const hour = new Date().getHours();
+        // Reset base classes
+        forecastCard.className = "bento-card rounded-[2rem] p-5 sm:p-6 shadow-lg relative overflow-hidden w-full transition-colors duration-700";
+        
+        if (hour >= 6 && hour < 17) {
+            // DAY: Bright Sky Gradient
+            forecastCard.classList.add('bg-gradient-to-br', 'from-sky-400', 'to-blue-500', 'border', 'border-white/20', 'shadow-blue-900/20');
+        } else if (hour >= 17 && hour < 20) {
+            // EVENING: Sunset Gradient
+            forecastCard.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-purple-600', 'border', 'border-white/20', 'shadow-purple-900/20');
+        } else {
+            // NIGHT: Dark Slate
+            forecastCard.classList.add('bg-[#162032]', 'border', 'border-white/10', 'shadow-indigo-900/10');
+        }
+    }
 
     updateLanguage(langCode);
 
@@ -529,6 +563,7 @@ function updateUI(weather, daily) {
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
 
+        // 🌟 REAL-WORLD ALERT LOGIC (Detects rain even if volume is low)
         const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
 
         if (isRainingWMO || currentWeatherData.rain > 0.2) {
@@ -579,7 +614,7 @@ function updateLanguage(langCode) {
     if(document.getElementById('location-search')) document.getElementById('location-search').placeholder = t.searchVillagePlaceholder || "Search village...";
     if(document.getElementById('crop-selector')) document.getElementById('crop-selector').placeholder = t.searchCropPlaceholder || "Search crop...";
     
-    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-regular fa-calendar text-slate-400"></i> ${t.forecastTitle || "10-Day Forecast"}`;
+    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-regular fa-calendar text-white/70"></i> ${t.forecastTitle || "10-Day Forecast"}`;
 
     if(document.getElementById('ui-doc-title')) document.getElementById('ui-doc-title').innerHTML = `<i class="fa-solid fa-camera text-emerald-400 shrink-0"></i> ${t.docTitle || "AI Plant Doctor"}`;
     if(document.getElementById('ui-doc-badge')) document.getElementById('ui-doc-badge').innerText = t.docBadge || "Computer Vision";
@@ -591,6 +626,7 @@ function updateLanguage(langCode) {
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
+    // 🌟 NEW HELPLINES TRANSLATIONS 🌟
     if(document.getElementById('ui-helplines-title')) document.getElementById('ui-helplines-title').innerHTML = `<i class="fa-solid fa-phone-volume"></i> ${t.helplinesTitle || "Important Helplines"}`;
     if(document.getElementById('ui-helpline-1-name')) document.getElementById('ui-helpline-1-name').innerText = t.kisanCallCenter || "Kisan Call Center";
     if(document.getElementById('ui-helpline-1-desc')) document.getElementById('ui-helpline-1-desc').innerText = `1551 • ${t.kccDesc || "Available 6AM - 10PM"}`;
