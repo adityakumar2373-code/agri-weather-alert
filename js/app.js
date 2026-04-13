@@ -2,7 +2,6 @@ let currentWeatherData = null;
 let currentDailyData = null; 
 let currentCoords = null; 
 let currentVillageName = ""; 
-let weatherChart = null; 
 
 // DOM Elements
 const searchInput = document.getElementById('location-search');
@@ -205,12 +204,12 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// 🌟 BULLETPROOF API URL: Includes 'is_day' and 'weather_code' strictly
+// 🌟 UPGRADED API URL: Includes 'forecast_days=10' and daily 'weather_code'
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max&timezone=auto`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -237,10 +236,9 @@ async function fetchWeather(coords) {
         currentDailyData = data.daily;
         
         updateUI(currentWeatherData, currentDailyData); 
-        drawChart(data.daily); 
+        renderAppleForecastList(data.daily); // 🌟 NEW 10-DAY CALL
         triggerAIIfReady(); 
         
-        // 👇 THIS IS THE NEW SCROLL UPGRADE (MOBILE ONLY) 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
         if (weatherScrollTarget && window.innerWidth < 1024) {
             setTimeout(() => {
@@ -248,7 +246,7 @@ async function fetchWeather(coords) {
                     behavior: 'smooth', 
                     block: 'start' 
                 });
-            }, 100); // 100ms delay allows the DOM to render heights before scrolling
+            }, 100); 
         }
         
     } catch (error) {
@@ -265,9 +263,6 @@ function triggerAIIfReady() {
             currentWeatherData.wind_speed_10m
         );
 
-        // ==============================================================
-        // 🚀 NEW UPGRADE: MOVE CARDS TO THE LEFT COLUMN (DESKTOP ONLY)
-        // ==============================================================
         if (window.innerWidth >= 1024) { 
             const leftColumn = document.getElementById('sms-section').parentElement;
             const forecastSection = document.getElementById('forecast-section');
@@ -278,12 +273,11 @@ function triggerAIIfReady() {
                 leftColumn.appendChild(doctorSection);
                 
                 if (currentDailyData) {
-                    drawChart(currentDailyData);
+                    renderAppleForecastList(currentDailyData); // 🌟 NEW 10-DAY CALL
                 }
             }
         }
 
-        // 👇 THIS IS THE SCROLL UPGRADE FOR CROP SELECTION (MOBILE ONLY) 👇
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
         if (weatherScrollTarget && window.innerWidth < 1024) {
             setTimeout(() => {
@@ -341,116 +335,64 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
-function calculateSoilMoisturePrediction(dailyData) {
-    let moistureLevels = [];
-    let currentMoisture = 60; 
-
-    for(let i = 0; i < dailyData.time.length; i++) {
-        let temp = dailyData.temperature_2m_max[i] || 30;
-        let rain = dailyData.precipitation_sum[i] || 0;
-        let wind = dailyData.wind_speed_10m_max[i] || 10;
-
-        currentMoisture = currentMoisture + (rain * 5) - (temp * 0.8) - (wind * 0.2);
-        
-        if(currentMoisture > 100) currentMoisture = 100;
-        if(currentMoisture < 10) currentMoisture = 10;
-
-        moistureLevels.push(Math.round(currentMoisture));
-    }
-    return moistureLevels;
+// 🌟 NEW: Helper function to get exact FontAwesome icon for 10-day list
+function getForecastIcon(wmoCode) {
+    if ([95, 96, 99].includes(wmoCode)) return 'fa-solid fa-cloud-bolt text-indigo-400';
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode)) return 'fa-solid fa-cloud-showers-heavy text-blue-400';
+    if ([3, 45, 48].includes(wmoCode)) return 'fa-solid fa-cloud text-slate-400';
+    if ([1, 2].includes(wmoCode)) return 'fa-solid fa-cloud-sun text-slate-300';
+    return 'fa-solid fa-sun text-yellow-400';
 }
 
-function drawChart(dailyData) {
-    const ctx = document.getElementById('forecastChart').getContext('2d');
-    const dayLabels = dailyData.time.map(dateString => {
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { weekday: 'short' });
-    });
+// 🌟 NEW: Core function to render the Apple-style 10-Day list
+function renderAppleForecastList(dailyData) {
+    const listContainer = document.getElementById('forecast-list');
+    if (!listContainer || !dailyData) return;
 
-    const moistureData = calculateSoilMoisturePrediction(dailyData);
+    listContainer.innerHTML = '';
 
-    if (weatherChart) weatherChart.destroy();
+    // Find absolute min and max of the 10 days to set the bar scale correctly
+    const globalMin = Math.min(...dailyData.temperature_2m_min);
+    const globalMax = Math.max(...dailyData.temperature_2m_max);
+    const globalRange = globalMax - globalMin;
 
-    // Create a beautiful fade gradient for the heat line
-    const gradientLine = ctx.createLinearGradient(0, 0, 0, 250);
-    gradientLine.addColorStop(0, 'rgba(245, 158, 11, 0.25)'); // Amber fade top
-    gradientLine.addColorStop(1, 'rgba(245, 158, 11, 0)');    // Transparent bottom
+    for (let i = 0; i < dailyData.time.length; i++) {
+        const dateString = dailyData.time[i];
+        const dateObj = new Date(dateString);
+        
+        // Label "Today" for the first row, otherwise use short weekday (e.g., "Tue")
+        const dayName = i === 0 ? "Today" : dateObj.toLocaleDateString('en-US', { weekday: 'short' });
+        
+        // Grab correct icon logic
+        const wmoCode = dailyData.weather_code ? dailyData.weather_code[i] : 0;
+        const iconClass = getForecastIcon(wmoCode);
+        
+        const dayMin = dailyData.temperature_2m_min[i];
+        const dayMax = dailyData.temperature_2m_max[i];
+        
+        // Calculate the exact width and position for the dynamic gradient bar
+        const leftPercent = ((dayMin - globalMin) / globalRange) * 100;
+        const widthPercent = ((dayMax - dayMin) / globalRange) * 100;
 
-    weatherChart = new Chart(ctx, {
-        type: 'bar', 
-        data: {
-            labels: dayLabels,
-            datasets: [
-                {
-                    type: 'line', 
-                    label: 'Heat (°C)', 
-                    data: dailyData.temperature_2m_max,
-                    borderColor: '#f59e0b', 
-                    backgroundColor: gradientLine,
-                    fill: true, // Turns on the gradient fill
-                    borderWidth: 3, 
-                    pointBackgroundColor: '#ffffff',
-                    pointBorderColor: '#f59e0b', 
-                    pointBorderWidth: 2,
-                    pointRadius: 4, 
-                    pointHoverRadius: 6,
-                    tension: 0.4, // Smooths the curve
-                    yAxisID: 'yTemp'
-                },
-                {
-                    type: 'bar', 
-                    label: 'Water in Soil (%)', 
-                    data: moistureData,
-                    backgroundColor: 'rgba(16, 185, 129, 0.85)', // Upgraded to Emerald Green
-                    borderRadius: 6, // Rounds the tops of the bars
-                    borderSkipped: false,
-                    barPercentage: 0.5, // Makes bars slightly sleeker
-                    yAxisID: 'yMoist'
-                }
-            ]
-        },
-        options: {
-            responsive: true, 
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
-            },
-            plugins: { 
-                legend: { 
-                    display: true, 
-                    position: 'top',
-                    labels: { font: { family: "'Outfit', sans-serif", size: 12, weight: '600' }, usePointStyle: true, boxWidth: 8 }
-                }, 
-                tooltip: { 
-                    backgroundColor: 'rgba(17, 24, 39, 0.9)', // Premium dark tooltip
-                    titleFont: { family: "'Outfit', sans-serif", size: 13 },
-                    bodyFont: { family: "'Outfit', sans-serif", size: 12 },
-                    padding: 10,
-                    cornerRadius: 8,
-                } 
-            },
-            scales: { 
-                x: { 
-                    grid: { display: false }, 
-                    ticks: { font: { family: "'Outfit', sans-serif", color: '#6b7280' } } 
-                }, 
-                yTemp: { 
-                    type: 'linear', display: true, position: 'left',
-                    title: { display: true, text: 'Heat °C', color: '#f59e0b', font: { size: 11, weight: 'bold', family: "'Outfit', sans-serif" } },
-                    grid: { display: true, color: 'rgba(0,0,0,0.04)', drawBorder: false }, // Subtle background grid
-                    ticks: { font: { family: "'Outfit', sans-serif" } }
-                },
-                yMoist: {
-                    type: 'linear', display: true, position: 'right',
-                    title: { display: true, text: 'Water %', color: '#10b981', font: { size: 11, weight: 'bold', family: "'Outfit', sans-serif" } },
-                    min: 0, max: 100,
-                    grid: { display: false }, 
-                    ticks: { font: { family: "'Outfit', sans-serif" } }
-                }
-            }
-        }
-    });
+        // Build the Apple-style HTML Row
+        const rowHTML = `
+            <div class="flex items-center justify-between py-2.5 sm:py-3 border-b border-slate-700/50 last:border-0 hover:bg-slate-800/30 transition-colors rounded-lg px-2 -mx-2">
+                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-slate-200">${dayName}</div>
+                <div class="w-8 sm:w-10 text-center text-lg sm:text-xl"><i class="${iconClass}"></i></div>
+                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-slate-400 opacity-80">${Math.round(dayMin)}°</div>
+                
+                <div class="flex-1 mx-3 sm:mx-5 h-1.5 bg-slate-700/50 rounded-full relative overflow-hidden shadow-inner">
+                    <div class="absolute h-full rounded-full bg-gradient-to-r from-sky-400 via-yellow-400 to-orange-500 shadow-sm" 
+                         style="left: ${leftPercent}%; width: ${widthPercent}%;">
+                    </div>
+                </div>
+                
+                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold text-slate-100">${Math.round(dayMax)}°</div>
+            </div>
+        `;
+        
+        listContainer.insertAdjacentHTML('beforeend', rowHTML);
+    }
 }
 
 function applyAppleWeather(condition) {
@@ -482,10 +424,9 @@ function applyAppleWeather(condition) {
              bgLayer.appendChild(flash);
         }
     } else if (condition === 'cloudy' || condition === 'cloudy-night') {
-        // 🌟 ADDED CLOUDY NIGHT BACKGROUND 
         bgLayer.style.background = condition === 'cloudy-night' 
-            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' // Darker Slate for night clouds
-            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; // Lighter Slate for day clouds
+            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)'
+            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)';
             
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
@@ -518,7 +459,6 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
-    // 🌟 NEW: Update Location Name in the Weather Card
     if (document.getElementById('location-name-text')) {
         document.getElementById('location-name-text').innerText = currentVillageName;
     }
@@ -541,10 +481,7 @@ function updateUI(weather, daily) {
     const langCode = document.getElementById('language-selector').value;
     const t = translations[langCode] || translations['en'];
     
-    // Check if sun is down using real API data (Fallback to hour if API fails)
     const isNight = weather.is_day !== undefined ? weather.is_day === 0 : (new Date().getHours() < 6 || new Date().getHours() >= 18);
-    
-    // Strict WMO Weather Code
     const wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
 
     let activeCondition = 'clear';
@@ -560,17 +497,14 @@ function updateUI(weather, daily) {
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
     } else if ([3, 45, 48].includes(wmoCode)) { 
-        // 3 = Overcast
         activeCondition = isNight ? 'cloudy-night' : 'cloudy';
         condString = t.condMostlyCloudy || 'Mostly Cloudy';
         iconClass = 'fa-solid fa-cloud';
     } else if ([1, 2].includes(wmoCode)) {
-        // 1 = Mainly Clear, 2 = Partly Cloudy
         activeCondition = isNight ? 'night' : 'clear';
         condString = t.condPartlyCloudy || 'Partly Cloudy';
         iconClass = isNight ? 'fa-solid fa-cloud-moon' : 'fa-solid fa-cloud-sun';
     } else {
-        // 0 = Clear Sky
         activeCondition = isNight ? 'night' : 'clear';
         condString = isNight ? (t.condClearNight || 'Clear Night') : (t.condMostlySunny || 'Mostly Sunny');
         iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
@@ -595,7 +529,6 @@ function updateUI(weather, daily) {
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
 
-        // 🌟 REAL-WORLD ALERT LOGIC (Detects rain even if volume is low)
         const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
 
         if (isRainingWMO || currentWeatherData.rain > 0.2) {
@@ -646,7 +579,7 @@ function updateLanguage(langCode) {
     if(document.getElementById('location-search')) document.getElementById('location-search').placeholder = t.searchVillagePlaceholder || "Search village...";
     if(document.getElementById('crop-selector')) document.getElementById('crop-selector').placeholder = t.searchCropPlaceholder || "Search crop...";
     
-    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-solid fa-chart-area text-emerald-500"></i> ${t.forecastTitle || "7-Day Forecast"}`;
+    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-regular fa-calendar text-slate-400"></i> ${t.forecastTitle || "10-Day Forecast"}`;
 
     if(document.getElementById('ui-doc-title')) document.getElementById('ui-doc-title').innerHTML = `<i class="fa-solid fa-camera text-emerald-400 shrink-0"></i> ${t.docTitle || "AI Plant Doctor"}`;
     if(document.getElementById('ui-doc-badge')) document.getElementById('ui-doc-badge').innerText = t.docBadge || "Computer Vision";
@@ -658,7 +591,6 @@ function updateLanguage(langCode) {
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
-    // 🌟 NEW HELPLINES TRANSLATIONS 🌟
     if(document.getElementById('ui-helplines-title')) document.getElementById('ui-helplines-title').innerHTML = `<i class="fa-solid fa-phone-volume"></i> ${t.helplinesTitle || "Important Helplines"}`;
     if(document.getElementById('ui-helpline-1-name')) document.getElementById('ui-helpline-1-name').innerText = t.kisanCallCenter || "Kisan Call Center";
     if(document.getElementById('ui-helpline-1-desc')) document.getElementById('ui-helpline-1-desc').innerText = `1551 • ${t.kccDesc || "Available 6AM - 10PM"}`;
@@ -695,8 +627,14 @@ const aiResultText = document.getElementById('ai-search-result');
 
 if(aiSearchBtn) {
     aiSearchBtn.addEventListener('click', async () => {
-        const question = aiSearchInput.value.trim();
-        if (!question) return;
+        const rawQuestion = aiSearchInput.value.trim();
+        if (!rawQuestion) return;
+
+        const langSelect = document.getElementById('language-selector');
+        const langCode = langSelect.value;
+        const langName = langSelect.options[langSelect.selectedIndex].text;
+        
+        const finalQuestion = langCode !== 'en' ? `${rawQuestion} (Please answer strictly in ${langName})` : rawQuestion;
 
         aiSearchBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
         aiSearchBtn.disabled = true;
@@ -707,7 +645,7 @@ if(aiSearchBtn) {
             const response = await fetch('https://weather-backend-mocha.vercel.app/ai-search', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ question: question })
+                body: JSON.stringify({ question: finalQuestion })
             });
 
             let fullText = "";
@@ -735,7 +673,9 @@ if(aiSearchBtn) {
                     i++;
                     setTimeout(typeWriter, typingSpeed);
                 } else {
-                    aiSearchBtn.innerHTML = 'Ask';
+                    const currentLangCode = document.getElementById('language-selector').value;
+                    const t = typeof translations !== 'undefined' ? translations[currentLangCode] || translations['en'] : { askBtn: 'Ask' };
+                    aiSearchBtn.innerText = t.askBtn || 'Ask';
                     aiSearchBtn.disabled = false;
                 }
             }
@@ -745,7 +685,10 @@ if(aiSearchBtn) {
         } catch (error) {
             console.error(error);
             aiResultText.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-red-500 mr-1"></i> Sorry, the AI could not answer right now. Please try again.`;
-            aiSearchBtn.innerHTML = 'Ask';
+            
+            const currentLangCode = document.getElementById('language-selector').value;
+            const t = typeof translations !== 'undefined' ? translations[currentLangCode] || translations['en'] : { askBtn: 'Ask' };
+            aiSearchBtn.innerText = t.askBtn || 'Ask';
             aiSearchBtn.disabled = false;
         }
     });
