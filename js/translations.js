@@ -41,7 +41,16 @@ const translations = {
         "kisanCallCenter": "Kisan Call Center",
         "kccDesc": "Available 6AM - 10PM",
         "agriEmergency": "Agri Emergency",
-        "aeDesc": "24/7 Toll-Free"
+        "aeDesc": "24/7 Toll-Free",
+        "sunUvTitle": "Sun & UV",
+        "lblSunrise": "Sunrise",
+        "lblSunset": "Sunset",
+        "lblUv": "UV Index",
+        "uvLow": "LOW",
+        "uvMod": "MODERATE",
+        "uvHigh": "HIGH",
+        "uvVHigh": "V. HIGH",
+        "uvExt": "EXTREME"
     },
     "hi": {
         "appTitle": 'कृषि-अलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -85,7 +94,16 @@ const translations = {
         "kisanCallCenter": "किसान कॉल सेंटर",
         "kccDesc": "सुबह 6 बजे से रात 10 बजे तक उपलब्ध",
         "agriEmergency": "कृषि आपातकाल",
-        "aeDesc": "24/7 टोल-फ्री"
+        "aeDesc": "24/7 टोल-फ्री",
+        "sunUvTitle": "सूर्य और यूवी",
+        "lblSunrise": "सूर्योदय",
+        "lblSunset": "सूर्यास्त",
+        "lblUv": "यूवी इंडेक्स",
+        "uvLow": "कम",
+        "uvMod": "मध्यम",
+        "uvHigh": "उच्च",
+        "uvVHigh": "बहुत उच्च",
+        "uvExt": "अत्यधिक"
     },
     "or": {
         "appTitle": 'କୃଷି-ଆଲର୍ଟ <span class="text-emerald-500">ପ୍ରୋ</span>',
@@ -129,7 +147,16 @@ const translations = {
         "kisanCallCenter": "କିସାନ କଲ୍ ସେଣ୍ଟର",
         "kccDesc": "ସକାଳ 6 ରୁ ରାତି 10 ପର୍ଯ୍ୟନ୍ତ ଉପଲବ୍ଧ",
         "agriEmergency": "କୃଷି ଜରୁରୀକାଳୀନ",
-        "aeDesc": "24/7 ଟୋଲ୍-ଫ୍ରି"
+        "aeDesc": "24/7 ଟୋଲ୍-ଫ୍ରି",
+        "sunUvTitle": "ସୂର୍ଯ୍ୟ ଏବଂ UV",
+        "lblSunrise": "ସୂର୍ଯ୍ୟୋଦୟ",
+        "lblSunset": "ସୂର୍ଯ୍ୟାସ୍ତ",
+        "lblUv": "UV ଇଣ୍ଡେକ୍ସ",
+        "uvLow": "କମ୍",
+        "uvMod": "ମଧ୍ୟମ",
+        "uvHigh": "ଉଚ୍ଚ",
+        "uvVHigh": "ବହୁତ ଉଚ୍ଚ",
+        "uvExt": "ଅତ୍ୟଧିକ"
     },
     "bn": {
         "appTitle": 'এগ্রিঅ্যালার্ট <span class="text-emerald-500">প্রো</span>',
@@ -173,7 +200,16 @@ const translations = {
         "kisanCallCenter": "কিসান কল সেন্টার",
         "kccDesc": "সকাল ৬টা - রাত ১০টা পর্যন্ত উপলব্ধ",
         "agriEmergency": "কৃষি জরুরি অবস্থা",
-        "aeDesc": "24/7 টোল-ফ্রি"
+        "aeDesc": "24/7 টোল-ফ্রি",
+        "sunUvTitle": "সূর্য ও ইউভি",
+        "lblSunrise": "সূর্যোদয়",
+        "lblSunset": "সূর্যাস্ত",
+        "lblUv": "ইউভি সূচক",
+        "uvLow": "কম",
+        "uvMod": "মাঝারি",
+        "uvHigh": "উচ্চ",
+        "uvVHigh": "খুব উচ্চ",
+        "uvExt": "চরম"
     },
     "mr": {
         "appTitle": 'अॅग्रीअलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -217,7 +253,16 @@ const translations = {
         "kisanCallCenter": "किसान कॉल सेंटर",
         "kccDesc": "सकाळी 6 ते रात्री 10 पर्यंत उपलब्ध",
         "agriEmergency": "कृषी आणीबाणी",
-        "aeDesc": "24/7 टोल-फ्री"
+        "aeDesc": "24/7 टोल-फ्री",
+        "sunUvTitle": "सूर्य आणि अतिनील",
+        "lblSunrise": "सूर्योदय",
+        "lblSunset": "सूर्यास्त",
+        "lblUv": "अतिनील निर्देशांक",
+        "uvLow": "कमी",
+        "uvMod": "मध्यम",
+        "uvHigh": "उच्च",
+        "uvVHigh": "खूप उच्च",
+        "uvExt": "अत्यंत"
     },
     "te": {
         "appTitle": 'అగ్రిఅలర్ట్ <span class="text-emerald-500">ప్రో</span>',
@@ -261,7 +306,16 @@ const translations = {
         "kisanCallCenter": "కిసాన్ కాల్ సెంటర్",
         "kccDesc": "ఉదయం 6 నుండి రాత్రి 10 వరకు అందుబాటులో ఉంటుంది",
         "agriEmergency": "వ్యవసాయ అత్యవసర పరిస్థితి",
-        "aeDesc": "24/7 టోల్-ఫ్రీ"
+        "aeDesc": "24/7 టోల్-ఫ్రీ",
+        "sunUvTitle": "సూర్యుడు & UV",
+        "lblSunrise": "సూర్యోదయం",
+        "lblSunset": "సూర్యాస్తమయం",
+        "lblUv": "UV సూచిక",
+        "uvLow": "తక్కువ",
+        "uvMod": "మితమైన",
+        "uvHigh": "అధిక",
+        "uvVHigh": "చాలా అధిక",
+        "uvExt": "తీవ్రమైన"
     },
     "ta": {
         "appTitle": 'அக்ரிஅலர்ட் <span class="text-emerald-500">ப்ரோ</span>',
@@ -305,7 +359,16 @@ const translations = {
         "kisanCallCenter": "கிசான் கால் சென்டர்",
         "kccDesc": "காலை 6 மணி முதல் இரவு 10 மணி வரை",
         "agriEmergency": "வேளாண் அவசரநிலை",
-        "aeDesc": "24/7 கட்டணமில்லா"
+        "aeDesc": "24/7 கட்டணமில்லா",
+        "sunUvTitle": "சூரியன் & UV",
+        "lblSunrise": "சூரிய உதயம்",
+        "lblSunset": "சூரிய அஸ்தமனம்",
+        "lblUv": "UV குறியீடு",
+        "uvLow": "குறைந்த",
+        "uvMod": "மிதமான",
+        "uvHigh": "உயர்",
+        "uvVHigh": "மிக அதிக",
+        "uvExt": "தீவிர"
     },
     "ml": {
         "appTitle": 'അഗ്രിഅലർട്ട് <span class="text-emerald-500">പ്രോ</span>',
@@ -349,7 +412,16 @@ const translations = {
         "kisanCallCenter": "കിസാൻ കോൾ സെന്റർ",
         "kccDesc": "രാവിലെ 6 മുതൽ രാത്രി 10 വരെ",
         "agriEmergency": "കാർഷിക അടിയന്തരാവസ്ഥ",
-        "aeDesc": "24/7 ടോൾ ഫ്രീ"
+        "aeDesc": "24/7 ടോൾ ഫ്രീ",
+        "sunUvTitle": "സൂര്യനും UV യും",
+        "lblSunrise": "സൂര്യോദയം",
+        "lblSunset": "സൂര്യാസ്തമയം",
+        "lblUv": "UV സൂചിക",
+        "uvLow": "കുറഞ്ഞ",
+        "uvMod": "മിതമായ",
+        "uvHigh": "ഉയർന്ന",
+        "uvVHigh": "വളരെ ഉയർന്ന",
+        "uvExt": "തീവ്രമായ"
     },
     "bho": {
         "appTitle": 'एग्री-अलर्ट <span class="text-emerald-500">प्रो</span>',
@@ -393,7 +465,16 @@ const translations = {
         "kisanCallCenter": "किसान कॉल सेंटर",
         "kccDesc": "विहान 6 बजे से रात 10 बजे तक चालू",
         "agriEmergency": "कृषि आपातकाल",
-        "aeDesc": "24/7 टोल-फ्री"
+        "aeDesc": "24/7 टोल-फ्री",
+        "sunUvTitle": "सुरुज अउर UV",
+        "lblSunrise": "सुरुजोदय",
+        "lblSunset": "सुरुजास्त",
+        "lblUv": "UV इंडेक्स",
+        "uvLow": "कम",
+        "uvMod": "बीच के",
+        "uvHigh": "ज्यादा",
+        "uvVHigh": "बहुत ज्यादा",
+        "uvExt": "खतरनाक"
     },
     "gu": {
         "appTitle": 'કિસાન એલર્ટ <span class="text-emerald-500">પ્રો</span>',
@@ -437,7 +518,16 @@ const translations = {
         "kisanCallCenter": "કિસાન કૉલ સેન્ટર",
         "kccDesc": "સવારે 6 થી રાત્રે 10 સુધી ઉપલબ્ધ",
         "agriEmergency": "કૃષિ કટોકટી",
-        "aeDesc": "24/7 ટોલ-ફ્રી"
+        "aeDesc": "24/7 ટોલ-ફ્રી",
+        "sunUvTitle": "સૂર્ય અને યુવી",
+        "lblSunrise": "સૂર્યોદય",
+        "lblSunset": "સૂર્યાસ્ત",
+        "lblUv": "યુવી ઇન્ડેક્સ",
+        "uvLow": "ઓછું",
+        "uvMod": "મધ્યમ",
+        "uvHigh": "ઉચ્ચ",
+        "uvVHigh": "ખૂબ ઉચ્ચ",
+        "uvExt": "અત્યંત"
     },
     "kn": {
         "appTitle": 'ಕಿಸಾನ್ ಅಲರ್ಟ್ <span class="text-emerald-500">ಪ್ರೋ</span>',
@@ -481,7 +571,16 @@ const translations = {
         "kisanCallCenter": "ಕಿಸಾನ್ ಕಾಲ್ ಸೆಂಟರ್",
         "kccDesc": "ಬೆಳಿಗ್ಗೆ 6 ರಿಂದ ರಾತ್ರಿ 10 ರವರೆಗೆ ಲಭ್ಯವಿದೆ",
         "agriEmergency": "ಕೃಷಿ ತುರ್ತುಸ್ಥಿತಿ",
-        "aeDesc": "24/7 ಟೋಲ್-ಫ್ರೀ"
+        "aeDesc": "24/7 ಟೋಲ್-ಫ್ರೀ",
+        "sunUvTitle": "ಸೂರ್ಯ ಮತ್ತು UV",
+        "lblSunrise": "ಸೂರ್ಯೋದಯ",
+        "lblSunset": "ಸೂರ್ಯಾಸ್ತ",
+        "lblUv": "UV ಸೂಚ್ಯಂಕ",
+        "uvLow": "ಕಡಿಮೆ",
+        "uvMod": "ಮಧ್ಯಮ",
+        "uvHigh": "ಹೆಚ್ಚು",
+        "uvVHigh": "ತುಂಬಾ ಹೆಚ್ಚು",
+        "uvExt": "ತೀವ್ರ"
     },
     "pa": {
         "appTitle": 'ਕਿਸਾਨ ਅਲਰਟ <span class="text-emerald-500">ਪ੍ਰੋ</span>',
@@ -525,7 +624,16 @@ const translations = {
         "kisanCallCenter": "ਕਿਸਾਨ ਕਾਲ ਸੈਂਟਰ",
         "kccDesc": "ਸਵੇਰੇ 6 ਵਜੇ ਤੋਂ ਰਾਤ 10 ਵਜੇ ਤੱਕ ਉਪਲਬਧ",
         "agriEmergency": "ਖੇਤੀਬਾੜੀ ਐਮਰਜੈਂਸੀ",
-        "aeDesc": "24/7 ਟੋਲ-ਫ੍ਰੀ"
+        "aeDesc": "24/7 ਟੋਲ-ਫ੍ਰੀ",
+        "sunUvTitle": "ਸੂਰਜ ਅਤੇ UV",
+        "lblSunrise": "ਸੂਰਜ ਚੜ੍ਹਨਾ",
+        "lblSunset": "ਸੂਰਜ ਡੁੱਬਣਾ",
+        "lblUv": "UV ਇੰਡੈਕਸ",
+        "uvLow": "ਘੱਟ",
+        "uvMod": "ਦਰਮਿਆਨਾ",
+        "uvHigh": "ਉੱਚ",
+        "uvVHigh": "ਬਹੁਤ ਉੱਚ",
+        "uvExt": "ਅਤਿਅੰਤ"
     },
     "as": {
         "appTitle": 'কৃষি এলাৰ্ট <span class="text-emerald-500">প্ৰো</span>',
@@ -569,7 +677,16 @@ const translations = {
         "kisanCallCenter": "কিষাণ কল চেণ্টাৰ",
         "kccDesc": "ৰাতিপুৱা ৬ বজাৰ পৰা নিশা ১০ বজালৈ উপলব্ধ",
         "agriEmergency": "কৃষি জৰুৰীকালীন",
-        "aeDesc": "24/7 টোল-ফ্ৰী"
+        "aeDesc": "24/7 টোল-ফ্ৰী",
+        "sunUvTitle": "সূৰ্য আৰু UV",
+        "lblSunrise": "সূৰ্যোদয়",
+        "lblSunset": "সূৰ্যাস্ত",
+        "lblUv": "UV সূচক",
+        "uvLow": "কম",
+        "uvMod": "মধ্যমীয়া",
+        "uvHigh": "উচ্চ",
+        "uvVHigh": "অতি উচ্চ",
+        "uvExt": "চৰম"
     },
     "ur": {
         "appTitle": 'کسان الرٹ <span class="text-emerald-500">پرو</span>',
@@ -613,6 +730,15 @@ const translations = {
         "kisanCallCenter": "کسان کال سینٹر",
         "kccDesc": "صبح 6 بجے سے رات 10 بجے تک دستیاب ہے",
         "agriEmergency": "زرعی ایمرجنسی",
-        "aeDesc": "24/7 ٹول فری"
+        "aeDesc": "24/7 ٹول فری",
+        "sunUvTitle": "سورج اور UV",
+        "lblSunrise": "طلوع آفتاب",
+        "lblSunset": "غروب آفتاب",
+        "lblUv": "UV انڈیکس",
+        "uvLow": "کم",
+        "uvMod": "درمیانہ",
+        "uvHigh": "زیادہ",
+        "uvVHigh": "بہت زیادہ",
+        "uvExt": "انتہائی"
     }
 };
