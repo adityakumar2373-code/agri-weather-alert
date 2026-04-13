@@ -157,42 +157,22 @@
             border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate;
         }
 
-        /* ⚡ Realistic Lightning Bolt Animation */
+        /* ⚡ Severe Storm Lightning Flash */
         .flash {
             position: absolute;
             inset: 0;
+            background-color: rgba(255, 255, 255, 0.85);
             z-index: 1; 
+            opacity: 0;
             pointer-events: none;
+            will-change: opacity;
+            animation: lightning-strike 7s infinite; 
         }
 
-        /* The actual jagged lightning bolt shape */
-        .flash::before {
-            content: '';
-            position: absolute;
-            top: -10%; left: 60%;
-            width: 45px; height: 120%;
-            background: #ffffff;
-            clip-path: polygon(55% 0%, 15% 45%, 60% 45%, 10% 80%, 65% 75%, 0% 100%, 80% 70%, 40% 70%, 90% 40%, 45% 40%);
-            opacity: 0;
-            transform: rotate(15deg);
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.8));
-            animation: strike-bolt 8s infinite; 
-        }
-
-        /* Soft ambient cloud glow around the strike */
-        .flash::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 65% 20%, rgba(255, 255, 255, 0.25) 0%, transparent 60%);
-            opacity: 0;
-            animation: strike-bolt 8s infinite;
-        }
-
-        @keyframes strike-bolt {
+        @keyframes lightning-strike {
             0%, 91%, 93%, 95%, 100% { opacity: 0; }
-            92% { opacity: 1; } 
-            94% { opacity: 0.5; } 
+            92% { opacity: 0.9; } 
+            94% { opacity: 0.4; } 
         }
 
     </style>
@@ -404,11 +384,16 @@
                     
                     <div id="apple-weather-bg" class="absolute inset-0 z-0 pointer-events-none transition-colors duration-1000"></div>
 
-                    <div class="relative z-10 flex justify-between items-center mb-6">
-                        <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2">
-                            <i class="fa-solid fa-tower-observation text-emerald-500"></i> Live Conditions
-                        </h2>
-                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider">Real-Time</span>
+                    <div class="relative z-10 flex justify-between items-start mb-6 gap-2">
+                        <div class="flex flex-col min-w-0">
+                            <h2 id="current-weather-title" class="text-sm font-extrabold text-gray-800 flex items-center gap-2 truncate">
+                                <i class="fa-solid fa-tower-observation text-emerald-500 shrink-0"></i> Live Conditions
+                            </h2>
+                            <p class="text-[11px] font-bold text-gray-500 mt-1 pl-6 flex items-center gap-1.5 opacity-90 truncate w-full">
+                                <i class="fa-solid fa-location-dot shrink-0"></i> <span id="location-name-text" class="truncate">Select a location</span>
+                            </p>
+                        </div>
+                        <span id="ui-realtime-badge" class="bg-emerald-50 text-emerald-600 text-[10px] font-bold px-2.5 py-1 rounded-md uppercase tracking-wider shrink-0 mt-0.5">Real-Time</span>
                     </div>
                     
                     <div class="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-10 w-full">
@@ -466,22 +451,17 @@
 
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
-                    <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-lg shadow-emerald-900/5 border border-emerald-100/50 hidden w-full overflow-hidden relative" id="forecast-section">
-                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-emerald-400/10 rounded-full blur-[60px] z-0 pointer-events-none"></div>
+                    <div class="bento-card bg-[#162032] rounded-[2rem] p-5 sm:p-6 shadow-lg shadow-indigo-900/10 border border-slate-700/50 hidden w-full overflow-hidden relative" id="forecast-section">
+                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[60px] z-0 pointer-events-none"></div>
 
-                        <div class="flex items-center justify-between mb-5 relative z-10">
-                            <h3 id="ui-forecast-title" class="text-base font-extrabold text-gray-800 flex items-center gap-3 truncate">
-                                <div class="bg-emerald-50 border border-emerald-100 text-emerald-500 w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm">
-                                    <i class="fa-solid fa-chart-line"></i>
-                                </div>
-                                7-Day Forecast
+                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-slate-700/50 pb-4">
+                            <h3 id="ui-forecast-title" class="text-xs font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fa-regular fa-calendar text-slate-400"></i> 10-Day Forecast
                             </h3>
-                            <span class="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-md uppercase tracking-widest shadow-sm">AI Predicted</span>
                         </div>
                         
-                        <div class="relative w-full h-[260px] bg-gradient-to-b from-gray-50/50 to-white rounded-2xl p-4 border border-gray-100 shadow-inner z-10">
-                            <canvas id="forecastChart" class="w-full h-full"></canvas>
-                        </div>
+                        <div id="forecast-list" class="relative w-full flex flex-col z-10">
+                            </div>
                     </div>
 
                     <div class="bento-card bg-emerald-900 rounded-[2rem] p-5 sm:p-6 shadow-lg border border-emerald-800 relative overflow-hidden w-full" id="doctor-section">
