@@ -16,10 +16,7 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* 🌟 NEW: Global Smooth Scrolling */
-        html {
-            scroll-behavior: smooth;
-        }
+        html { scroll-behavior: smooth; }
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -28,7 +25,6 @@
             background-size: 24px 24px;
         }
 
-        /* 🌟 NEW: Hardware Acceleration to stop scroll jitter */
         header, .bento-card, #weather-content.apple-active .bg-gray-50 {
             will-change: transform, backdrop-filter;
             -webkit-transform: translateZ(0);
@@ -45,7 +41,7 @@
         
         .animate-float-slow { 
             animation: float 6s ease-in-out infinite; 
-            will-change: transform; /* GPU Optimization */
+            will-change: transform; 
         }
         @keyframes float {
             0%, 100% { transform: translateY(0); }
@@ -56,33 +52,26 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .bento-card:hover {
-            transform: translateY(-2px) translateZ(0); /* GPU Optimization */
+            transform: translateY(-2px) translateZ(0); 
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
 
-        /* ==========================================
-           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
-           ========================================== */
-        
-        /* When active, makes the card transparent to show the background */
+        /* 🌟 FIX: Apply transparency ONLY to the main weather card */
         #weather-content.apple-active {
             background-color: transparent !important;
             border-color: transparent !important;
         }
         
-        /* Forces text and icons white over the animation */
         #weather-content.apple-active * {
             color: #ffffff !important;
         }
         
-        /* Overrides the gradient sun icon to pure white */
         #weather-content.apple-active i.text-transparent {
             background: none !important;
             -webkit-text-fill-color: #ffffff !important;
             text-shadow: 0 0 15px rgba(255,255,255,0.4);
         }
 
-        /* Makes the inner stat boxes look like glassy Apple widgets */
         #weather-content.apple-active .bg-gray-50 {
             background-color: rgba(255, 255, 255, 0.15) !important;
             border-color: rgba(255, 255, 255, 0.2) !important;
@@ -91,13 +80,11 @@
             box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
         }
 
-        /* Styles the Real-Time badge */
         #weather-content.apple-active #ui-realtime-badge {
             background-color: rgba(255, 255, 255, 0.2) !important;
             border: 1px solid rgba(255, 255, 255, 0.3) !important;
         }
 
-        /* Weather Background Layers */
         .weather-bg { 
             position: absolute !important; 
             top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; 
@@ -106,14 +93,12 @@
             transition: all 1s ease;
         }
 
-        /* 🌟 NEW: GPU Optimization for all weather animations */
         .apple-drop, .apple-cloud, .apple-sun, .apple-moon {
             will-change: transform, opacity;
             -webkit-transform: translateZ(0);
             transform: translateZ(0);
         }
 
-        /* 🌧️ Animations */
         @keyframes apple-rain-fall {
             0% { transform: translate(0, -10vh) rotate(15deg) translateZ(0); opacity: 0; }
             10% { opacity: 1; }
@@ -135,7 +120,6 @@
             border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite;
         }
 
-        /* ☀️ Clear Day Sun */
         @keyframes pulse-sun {
             0% { transform: scale(1) translateZ(0); opacity: 0.8; }
             100% { transform: scale(1.2) translateZ(0); opacity: 1; }
@@ -146,7 +130,6 @@
             border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
         }
 
-        /* 🌙 Clear Night Moon Glow */
         @keyframes pulse-moon {
             0% { transform: scale(1) translateZ(0); opacity: 0.6; }
             100% { transform: scale(1.1) translateZ(0); opacity: 1; }
@@ -157,7 +140,6 @@
             border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate;
         }
 
-        /* ⚡ Severe Storm Lightning Flash */
         .flash {
             position: absolute;
             inset: 0;
@@ -451,12 +433,11 @@
 
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
-                    <div class="bento-card bg-[#162032] rounded-[2rem] p-5 sm:p-6 shadow-lg shadow-indigo-900/10 border border-slate-700/50 hidden w-full overflow-hidden relative" id="forecast-section">
-                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-[60px] z-0 pointer-events-none"></div>
-
-                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-slate-700/50 pb-4">
-                            <h3 id="ui-forecast-title" class="text-xs font-bold text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fa-regular fa-calendar text-slate-400"></i> 10-Day Forecast
+                    <div class="bento-card bg-[#162032] rounded-[2rem] p-5 sm:p-6 shadow-lg border border-white/10 hidden w-full overflow-hidden relative transition-colors duration-1000" id="forecast-section">
+                        
+                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-white/20 pb-4">
+                            <h3 id="ui-forecast-title" class="text-xs font-bold text-white/90 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fa-regular fa-calendar text-white/70"></i> 10-Day Forecast
                             </h3>
                         </div>
                         
