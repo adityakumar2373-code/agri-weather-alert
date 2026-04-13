@@ -16,6 +16,7 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
+        /* 🌟 RESTORED: Global Smooth Scrolling */
         html { scroll-behavior: smooth; }
 
         body { 
@@ -25,6 +26,7 @@
             background-size: 24px 24px;
         }
 
+        /* 🌟 RESTORED: Hardware Acceleration to stop scroll jitter */
         header, .bento-card, #weather-content.apple-active .bg-gray-50 {
             will-change: transform, backdrop-filter;
             -webkit-transform: translateZ(0);
@@ -55,6 +57,10 @@
             transform: translateY(-2px) translateZ(0); 
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
+
+        /* ==========================================
+           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
+           ========================================== */
 
         /* 🌟 FIX: Apply transparency ONLY to the main weather card */
         #weather-content.apple-active {
@@ -220,7 +226,7 @@
                 <option value="pa">ਪੰਜਾਬੀ</option>
                 <option value="as">অসমীয়া</option>
                 <option value="ur">اردو</option>
-                <option value="bho">भोजपुरी</option>
+                <option value="bho">ભोजपुरी</option>
             </select>
         </div>
     </header>
