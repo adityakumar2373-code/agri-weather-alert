@@ -16,7 +16,7 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* 🌟 RESTORED: Global Smooth Scrolling */
+        /* 🌟 FIX: Removed aggressive hardware acceleration that causes mobile scroll jitter */
         html { scroll-behavior: smooth; }
 
         body { 
@@ -24,15 +24,6 @@
             background-color: #f8fafc;
             background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
-        }
-
-        /* 🌟 RESTORED: Hardware Acceleration to stop scroll jitter */
-        header, .bento-card, #weather-content.apple-active .bg-gray-50 {
-            will-change: transform, backdrop-filter;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
         }
         
         #search-results::-webkit-scrollbar { width: 6px; }
@@ -43,8 +34,8 @@
         
         .animate-float-slow { 
             animation: float 6s ease-in-out infinite; 
-            will-change: transform; 
         }
+        
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-5px); }
@@ -53,8 +44,9 @@
         .bento-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+        
         .bento-card:hover {
-            transform: translateY(-2px) translateZ(0); 
+            transform: translateY(-2px); 
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
         }
 
@@ -62,7 +54,6 @@
            🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
            ========================================== */
 
-        /* 🌟 FIX: Apply transparency ONLY to the main weather card */
         #weather-content.apple-active {
             background-color: transparent !important;
             border-color: transparent !important;
@@ -99,17 +90,12 @@
             transition: all 1s ease;
         }
 
-        .apple-drop, .apple-cloud, .apple-sun, .apple-moon {
-            will-change: transform, opacity;
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-        }
-
+        /* 🌟 FIX: Removed will-change from animations to save memory */
         @keyframes apple-rain-fall {
-            0% { transform: translate(0, -10vh) rotate(15deg) translateZ(0); opacity: 0; }
+            0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
             10% { opacity: 1; }
             80% { opacity: 1; }
-            100% { transform: translate(-15vh, 100vh) rotate(15deg) translateZ(0); opacity: 0; }
+            100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; }
         }
         .apple-drop {
             position: absolute; width: 1.5px; height: 60px;
@@ -118,8 +104,8 @@
         }
 
         @keyframes apple-cloud-float {
-            from { transform: translateX(-150px) translateZ(0); }
-            to { transform: translateX(120vw) translateZ(0); }
+            from { transform: translateX(-150px); }
+            to { transform: translateX(120vw); }
         }
         .apple-cloud {
             position: absolute; background: rgba(255, 255, 255, 0.4);
@@ -127,8 +113,8 @@
         }
 
         @keyframes pulse-sun {
-            0% { transform: scale(1) translateZ(0); opacity: 0.8; }
-            100% { transform: scale(1.2) translateZ(0); opacity: 1; }
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 1; }
         }
         .apple-sun {
             position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
@@ -137,8 +123,8 @@
         }
 
         @keyframes pulse-moon {
-            0% { transform: scale(1) translateZ(0); opacity: 0.6; }
-            100% { transform: scale(1.1) translateZ(0); opacity: 1; }
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.1); opacity: 1; }
         }
         .apple-moon {
             position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
@@ -153,7 +139,6 @@
             z-index: 1; 
             opacity: 0;
             pointer-events: none;
-            will-change: opacity;
             animation: lightning-strike 7s infinite; 
         }
 
@@ -221,7 +206,7 @@
                 <option value="ta">தமிழ்</option>
                 <option value="gu">ગુજરાતી</option>
                 <option value="kn">ಕನ್ನಡ</option>
-                <option value="or">ଓଡ଼डिया</option>
+                <option value="or">ଓଡ଼ିଆ</option>
                 <option value="ml">മലയാളം</option>
                 <option value="pa">ਪੰਜਾਬੀ</option>
                 <option value="as">অসমীয়া</option>
@@ -473,7 +458,7 @@
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
                     <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full overflow-hidden relative" id="sun-uv-section">
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
+                        <h3 id="ui-sun-uv-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-sun text-amber-500"></i> Sun & UV
                         </h3>
                         
@@ -489,18 +474,18 @@
                             
                             <div class="flex justify-between w-full max-w-[280px] text-sm font-bold text-gray-800 mt-3 px-2">
                                 <div class="text-left">
-                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">Sunrise</p>
+                                    <p id="lbl-sunrise" class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">Sunrise</p>
                                     <p id="sunrise-time" class="text-base">--:--</p>
                                 </div>
                                 <div class="text-center">
-                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">UV Index</p>
+                                    <p id="lbl-uv" class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">UV Index</p>
                                     <div class="flex flex-col items-center">
                                         <span id="uv-index-val" class="text-xl font-black text-purple-500 leading-none">--</span>
                                         <span id="uv-index-desc" class="text-[9px] bg-purple-50 text-purple-600 px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold">--</span>
                                     </div>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">Sunset</p>
+                                    <p id="lbl-sunset" class="text-[10px] text-gray-400 uppercase tracking-wider mb-0.5">Sunset</p>
                                     <p id="sunset-time" class="text-base">--:--</p>
                                 </div>
                             </div>
