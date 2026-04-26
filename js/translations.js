@@ -49,7 +49,7 @@ const translations = {
         "uvLow": "LOW",
         "uvMod": "MODERATE",
         "uvHigh": "HIGH",
-        "uvVHigh": "V. HIGH",
+        "uvVHigh": "VERY HIGH",
         "uvExt": "EXTREME"
     },
     "hi": {
