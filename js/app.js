@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden'); 
+    document.getElementById('sun-uv-section').classList.add('hidden'); 
     document.getElementById('sms-section').classList.add('hidden'); 
     
     loader.classList.remove('hidden');
@@ -204,12 +205,12 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// 🌟 UPGRADED API URL: Includes 'forecast_days=10' and daily 'weather_code'
+// 🌟 FIX: Added missing sunrise, sunset, and uv_index_max variables so the card works properly!
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code&timezone=auto&forecast_days=10`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -226,6 +227,7 @@ async function fetchWeather(coords) {
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('alert-box').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden');
+    document.getElementById('sun-uv-section').classList.add('hidden');
     document.getElementById('sms-section').classList.add('hidden');
 
     try {
@@ -236,7 +238,8 @@ async function fetchWeather(coords) {
         currentDailyData = data.daily;
         
         updateUI(currentWeatherData, currentDailyData); 
-        renderAppleForecastList(data.daily); // 🌟 NEW 10-DAY CALL
+        renderAppleForecastList(data.daily); 
+        renderSunAndUV(data.daily); // 🌟 Now this function will get the correct API data
         triggerAIIfReady(); 
         
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
@@ -273,7 +276,7 @@ function triggerAIIfReady() {
                 leftColumn.appendChild(doctorSection);
                 
                 if (currentDailyData) {
-                    renderAppleForecastList(currentDailyData); // 🌟 NEW 10-DAY CALL
+                    renderAppleForecastList(currentDailyData); 
                 }
             }
         }
@@ -335,7 +338,59 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
-// 🌟 NEW: Helper function to get exact FontAwesome icon for 10-day list
+function renderSunAndUV(daily) {
+    const sunUvSection = document.getElementById('sun-uv-section');
+    // Guard clause in case API data is missing
+    if (!sunUvSection || !daily || !daily.sunrise) return;
+
+    const sunriseStr = daily.sunrise[0];
+    const sunsetStr = daily.sunset[0];
+    const uvMax = daily.uv_index_max[0] || 0;
+
+    const sunriseDate = new Date(sunriseStr);
+    const sunsetDate = new Date(sunsetStr);
+    const now = new Date();
+
+    document.getElementById('sunrise-time').innerText = sunriseDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
+    document.getElementById('sunset-time').innerText = sunsetDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
+    document.getElementById('uv-index-val').innerText = Math.round(uvMax);
+    
+    const langCode = document.getElementById('language-selector').value;
+    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
+
+    // 🌟 FIX: Force override "V. HIGH" to "VERY HIGH"
+    let uvDesc = t.uvLow || "LOW";
+    let uvColor = "text-emerald-500 bg-emerald-50";
+    if (uvMax >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
+    else if (uvMax >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500 bg-red-50"; }
+    else if (uvMax >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500 bg-orange-50"; }
+    else if (uvMax >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600 bg-yellow-50"; }
+
+    const uvDescEl = document.getElementById('uv-index-desc');
+    if (uvDescEl) {
+        uvDescEl.innerText = uvDesc;
+        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor}`;
+    }
+
+    let progress = 0;
+    if (now > sunsetDate) {
+        progress = 1; 
+    } else if (now > sunriseDate) {
+        const totalDaylightMs = sunsetDate.getTime() - sunriseDate.getTime();
+        const elapsedMs = now.getTime() - sunriseDate.getTime();
+        progress = elapsedMs / totalDaylightMs;
+    }
+    
+    progress = Math.max(0, Math.min(1, progress));
+    const degrees = progress * 180;
+    
+    setTimeout(() => {
+        const arc = document.getElementById('sun-arc-progress');
+        // 🌟 FIX: Ensure Tailwind's translateX(-50%) is preserved alongside the new rotation
+        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+    }, 100);
+}
+
 function getForecastIcon(wmoCode) {
     if ([95, 96, 99].includes(wmoCode)) return 'fa-solid fa-cloud-bolt text-indigo-400';
     if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode)) return 'fa-solid fa-cloud-showers-heavy text-blue-400';
@@ -344,24 +399,20 @@ function getForecastIcon(wmoCode) {
     return 'fa-solid fa-sun text-yellow-400';
 }
 
-// 🌟 NEW: Core function to render the Apple-style 10-Day list
 function renderAppleForecastList(dailyData) {
     const listContainer = document.getElementById('forecast-list');
     if (!listContainer || !dailyData) return;
 
     listContainer.innerHTML = '';
 
-    // Find absolute min and max of the 10 days to set the bar scale correctly
     const globalMin = Math.min(...dailyData.temperature_2m_min);
     const globalMax = Math.max(...dailyData.temperature_2m_max);
     const globalRange = globalMax - globalMin;
 
-    // 🌟 FIX: Bulletproof Date Anchor to actual system clock
     const todayAnchor = new Date(); 
 
     for (let i = 0; i < dailyData.time.length; i++) {
         
-        // 🌟 FIX: Calculate the days relative to NOW, completely ignoring the API's dates
         let dayName = "Today";
         if (i > 0) {
             const futureDate = new Date(todayAnchor);
@@ -369,18 +420,15 @@ function renderAppleForecastList(dailyData) {
             dayName = futureDate.toLocaleDateString('en-US', { weekday: 'short' });
         }
         
-        // Grab correct icon logic
         const wmoCode = dailyData.weather_code ? dailyData.weather_code[i] : 0;
         const iconClass = getForecastIcon(wmoCode);
         
         const dayMin = dailyData.temperature_2m_min[i];
         const dayMax = dailyData.temperature_2m_max[i];
         
-        // Calculate the exact width and position for the dynamic gradient bar
         const leftPercent = ((dayMin - globalMin) / globalRange) * 100;
         const widthPercent = ((dayMax - dayMin) / globalRange) * 100;
 
-        // 🌟 FIX: Colors updated to white/translucent so they look beautiful on all Time-of-Day backgrounds
         const rowHTML = `
             <div class="flex items-center justify-between py-2.5 sm:py-3 border-b border-white/10 last:border-0 hover:bg-black/10 transition-colors rounded-lg px-2 -mx-2">
                 <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-white">${dayName}</div>
@@ -401,7 +449,6 @@ function renderAppleForecastList(dailyData) {
     }
 }
 
-// 🌟 FIX: Restored this function so it ONLY animates the main weather card
 function applyAppleWeather(condition) {
     let bgLayer = document.getElementById('apple-weather-bg');
     if(!bgLayer) {
@@ -431,10 +478,9 @@ function applyAppleWeather(condition) {
              bgLayer.appendChild(flash);
         }
     } else if (condition === 'cloudy' || condition === 'cloudy-night') {
-        // 🌟 ADDED CLOUDY NIGHT BACKGROUND 
         bgLayer.style.background = condition === 'cloudy-night' 
-            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' // Darker Slate for night clouds
-            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; // Lighter Slate for day clouds
+            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' 
+            : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; 
             
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
@@ -459,7 +505,6 @@ function applyAppleWeather(condition) {
     }
 }
 
-// 🌟 STRICT WMO LOGIC (NO GUESSING)
 function updateUI(weather, daily) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
@@ -467,7 +512,9 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
-    // 🌟 NEW: Update Location Name in the Weather Card
+    // 🌟 FIX: Unhide the Sun and UV Section so it displays correctly
+    document.getElementById('sun-uv-section').classList.remove('hidden');
+    
     if (document.getElementById('location-name-text')) {
         document.getElementById('location-name-text').innerText = currentVillageName;
     }
@@ -490,10 +537,7 @@ function updateUI(weather, daily) {
     const langCode = document.getElementById('language-selector').value;
     const t = translations[langCode] || translations['en'];
     
-    // Check if sun is down using real API data (Fallback to hour if API fails)
     const isNight = weather.is_day !== undefined ? weather.is_day === 0 : (new Date().getHours() < 6 || new Date().getHours() >= 18);
-    
-    // Strict WMO Weather Code
     const wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
 
     let activeCondition = 'clear';
@@ -509,17 +553,14 @@ function updateUI(weather, daily) {
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
     } else if ([3, 45, 48].includes(wmoCode)) { 
-        // 3 = Overcast
         activeCondition = isNight ? 'cloudy-night' : 'cloudy';
         condString = t.condMostlyCloudy || 'Mostly Cloudy';
         iconClass = 'fa-solid fa-cloud';
     } else if ([1, 2].includes(wmoCode)) {
-        // 1 = Mainly Clear, 2 = Partly Cloudy
         activeCondition = isNight ? 'night' : 'clear';
         condString = t.condPartlyCloudy || 'Partly Cloudy';
         iconClass = isNight ? 'fa-solid fa-cloud-moon' : 'fa-solid fa-cloud-sun';
     } else {
-        // 0 = Clear Sky
         activeCondition = isNight ? 'night' : 'clear';
         condString = isNight ? (t.condClearNight || 'Clear Night') : (t.condMostlySunny || 'Mostly Sunny');
         iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
@@ -531,21 +572,16 @@ function updateUI(weather, daily) {
     weatherCard.classList.add('apple-active');
     applyAppleWeather(activeCondition);
 
-    // 🌟 FIX: Independent Time-of-Day background logic for the Forecast Card
     const forecastCard = document.getElementById('forecast-section');
     if(forecastCard) {
         const hour = new Date().getHours();
-        // Reset base classes
         forecastCard.className = "bento-card rounded-[2rem] p-5 sm:p-6 shadow-lg relative overflow-hidden w-full transition-colors duration-700";
         
         if (hour >= 6 && hour < 17) {
-            // DAY: Bright Sky Gradient
             forecastCard.classList.add('bg-gradient-to-br', 'from-sky-400', 'to-blue-500', 'border', 'border-white/20', 'shadow-blue-900/20');
         } else if (hour >= 17 && hour < 20) {
-            // EVENING: Sunset Gradient
             forecastCard.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-purple-600', 'border', 'border-white/20', 'shadow-purple-900/20');
         } else {
-            // NIGHT: Dark Slate
             forecastCard.classList.add('bg-[#162032]', 'border', 'border-white/10', 'shadow-indigo-900/10');
         }
     }
@@ -563,7 +599,6 @@ function updateUI(weather, daily) {
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
 
-        // 🌟 REAL-WORLD ALERT LOGIC (Detects rain even if volume is low)
         const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
 
         if (isRainingWMO || currentWeatherData.rain > 0.2) {
@@ -626,13 +661,19 @@ function updateLanguage(langCode) {
     document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
     document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
-    // 🌟 NEW HELPLINES TRANSLATIONS 🌟
     if(document.getElementById('ui-helplines-title')) document.getElementById('ui-helplines-title').innerHTML = `<i class="fa-solid fa-phone-volume"></i> ${t.helplinesTitle || "Important Helplines"}`;
     if(document.getElementById('ui-helpline-1-name')) document.getElementById('ui-helpline-1-name').innerText = t.kisanCallCenter || "Kisan Call Center";
     if(document.getElementById('ui-helpline-1-desc')) document.getElementById('ui-helpline-1-desc').innerText = `1551 • ${t.kccDesc || "Available 6AM - 10PM"}`;
     if(document.getElementById('ui-helpline-2-name')) document.getElementById('ui-helpline-2-name').innerText = t.agriEmergency || "Agri Emergency";
     if(document.getElementById('ui-helpline-2-desc')) document.getElementById('ui-helpline-2-desc').innerText = `108 • ${t.aeDesc || "24/7 Toll-Free"}`;
+
+    // 🌟 FIX: Updated HTML animation structure
+    if(document.getElementById('ui-sun-uv-title')) document.getElementById('ui-sun-uv-title').innerHTML = `<i class="fa-solid fa-sun text-amber-500 animate-spin" style="animation-duration: 4s;"></i> ${t.sunUvTitle || "Sun & UV"}`;
+    if(document.getElementById('lbl-sunrise')) document.getElementById('lbl-sunrise').innerText = t.lblSunrise || "Sunrise";
+    if(document.getElementById('lbl-sunset')) document.getElementById('lbl-sunset').innerText = t.lblSunset || "Sunset";
+    if(document.getElementById('lbl-uv')) document.getElementById('lbl-uv').innerText = t.lblUv || "UV Index";
 }
+
 function updateLiveTime() {
     const timeDisplay = document.getElementById('live-time');
     if (!timeDisplay) return;
@@ -647,7 +688,6 @@ function updateLiveTime() {
 setInterval(updateLiveTime, 1000);
 updateLiveTime();
 
-// 🌟 TEMPORARY FIX: Unregister broken Service Worker until we build it properly
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(function(registrations) {
         for(let registration of registrations) {
