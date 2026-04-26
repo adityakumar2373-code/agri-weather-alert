@@ -22,9 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const langSelector = document.getElementById('language-selector');
     langSelector.addEventListener('change', (e) => {
         updateLanguage(e.target.value);
-        // Force UI redraw on language change
         if (currentWeatherData && currentDailyData) {
             updateUI(currentWeatherData, currentDailyData); 
+            renderSunAndUV(currentDailyData); 
         }
         triggerAIIfReady(); 
     });
@@ -33,8 +33,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden'); 
-    document.getElementById('sun-uv-section').classList.add('hidden'); 
-    document.getElementById('sms-section').classList.add('hidden'); 
+    
+    const smsSec = document.getElementById('sms-section');
+    if(smsSec) smsSec.classList.add('hidden'); 
+    const sunUvSec = document.getElementById('sun-uv-section');
+    if(sunUvSec) sunUvSec.classList.add('hidden');
     
     loader.classList.remove('hidden');
     loader.innerHTML = `
@@ -205,12 +208,12 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// 🌟 FIX 1: Appended sunrise, sunset, and uv_index_max to the daily API call to prevent infinite spinner crash!
+// 🌟 FIX: Removed invalid 'precipitation_probability' from 'current' to prevent the API from crashing!
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,precipitation_probability,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -227,19 +230,24 @@ async function fetchWeather(coords) {
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('alert-box').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden');
-    document.getElementById('sun-uv-section').classList.add('hidden');
-    document.getElementById('sms-section').classList.add('hidden');
+    
+    const smsSec = document.getElementById('sms-section');
+    if(smsSec) smsSec.classList.add('hidden'); 
+    const sunUvSec = document.getElementById('sun-uv-section');
+    if(sunUvSec) sunUvSec.classList.add('hidden');
 
     try {
         const response = await fetch(url);
         const data = await response.json();
         
+        if (data.error) throw new Error("API Data Error: " + data.reason);
+        
         currentWeatherData = data.current;
         currentDailyData = data.daily;
         
         updateUI(currentWeatherData, currentDailyData); 
-        renderAppleForecastList(data.daily); 
-        renderSunAndUV(data.daily); 
+        renderAppleForecastList(currentDailyData); 
+        renderSunAndUV(currentDailyData); 
         triggerAIIfReady(); 
         
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
@@ -253,8 +261,8 @@ async function fetchWeather(coords) {
         }
         
     } catch (error) {
-        alert("Unable to fetch weather. Check your internet.");
-        loader.classList.add('hidden');
+        console.error("Fetch Crash Prevented:", error);
+        loader.innerHTML = `<div class="text-red-500 py-6 font-bold"><i class="fa-solid fa-triangle-exclamation text-3xl mb-3"></i><br>Network Error. Please try again.</div>`;
     }
 }
 
@@ -267,7 +275,7 @@ function triggerAIIfReady() {
         );
 
         if (window.innerWidth >= 1024) { 
-            const leftColumn = document.getElementById('sms-section').parentElement;
+            const leftColumn = document.getElementById('sms-section')?.parentElement;
             const forecastSection = document.getElementById('forecast-section');
             const doctorSection = document.getElementById('doctor-section');
             
@@ -314,14 +322,7 @@ async function fetchAIAdvisory(temp, rain, wind) {
         const response = await fetch('https://weather-backend-mocha.vercel.app/generate-advisory', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                location: currentVillageName,
-                crop: crop,
-                temp: temp,
-                rain: rain,
-                wind: wind,
-                language: langName
-            })
+            body: JSON.stringify({ location: currentVillageName, crop: crop, temp: temp, rain: rain, wind: wind, language: langName })
         });
 
         const data = await response.json();
@@ -338,57 +339,6 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
-function renderSunAndUV(daily) {
-    const sunUvSection = document.getElementById('sun-uv-section');
-    if (!sunUvSection || !daily || !daily.sunrise) return;
-
-    const sunriseStr = daily.sunrise[0];
-    const sunsetStr = daily.sunset[0];
-    const uvMax = daily.uv_index_max[0] || 0;
-
-    const sunriseDate = new Date(sunriseStr);
-    const sunsetDate = new Date(sunsetStr);
-    const now = new Date();
-
-    document.getElementById('sunrise-time').innerText = sunriseDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
-    document.getElementById('sunset-time').innerText = sunsetDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
-    document.getElementById('uv-index-val').innerText = Math.round(uvMax);
-    
-    const langCode = document.getElementById('language-selector').value;
-    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
-
-    let uvDesc = t.uvLow || "LOW";
-    let uvColor = "text-emerald-500 bg-emerald-50";
-    if (uvMax >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
-    else if (uvMax >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500 bg-red-50"; }
-    else if (uvMax >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500 bg-orange-50"; }
-    else if (uvMax >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600 bg-yellow-50"; }
-
-    const uvDescEl = document.getElementById('uv-index-desc');
-    if (uvDescEl) {
-        uvDescEl.innerText = uvDesc;
-        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor}`;
-    }
-
-    let progress = 0;
-    if (now > sunsetDate) {
-        progress = 1; 
-    } else if (now > sunriseDate) {
-        const totalDaylightMs = sunsetDate.getTime() - sunriseDate.getTime();
-        const elapsedMs = now.getTime() - sunriseDate.getTime();
-        progress = elapsedMs / totalDaylightMs;
-    }
-    
-    progress = Math.max(0, Math.min(1, progress));
-    const degrees = progress * 180;
-    
-    setTimeout(() => {
-        const arc = document.getElementById('sun-arc-progress');
-        // 🌟 FIX 2: Applied pure rotation so the JS does not fight the HTML Wrapper's centering!
-        if (arc) arc.style.transform = `rotate(${degrees}deg)`;
-    }, 100);
-}
-
 function getForecastIcon(wmoCode) {
     if ([95, 96, 99].includes(wmoCode)) return 'fa-solid fa-cloud-bolt text-indigo-400';
     if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode)) return 'fa-solid fa-cloud-showers-heavy text-blue-400';
@@ -399,7 +349,7 @@ function getForecastIcon(wmoCode) {
 
 function renderAppleForecastList(dailyData) {
     const listContainer = document.getElementById('forecast-list');
-    if (!listContainer || !dailyData) return;
+    if (!listContainer || !dailyData || !dailyData.temperature_2m_min) return;
 
     listContainer.innerHTML = '';
 
@@ -445,6 +395,58 @@ function renderAppleForecastList(dailyData) {
         
         listContainer.insertAdjacentHTML('beforeend', rowHTML);
     }
+}
+
+function renderSunAndUV(daily) {
+    const sunUvSection = document.getElementById('sun-uv-section');
+    if (!sunUvSection || !daily || !daily.sunrise) return;
+
+    const sunriseStr = daily.sunrise[0];
+    const sunsetStr = daily.sunset[0];
+    const uvMax = daily.uv_index_max[0] || 0;
+
+    const sunriseDate = new Date(sunriseStr);
+    const sunsetDate = new Date(sunsetStr);
+    const now = new Date();
+
+    document.getElementById('sunrise-time').innerText = sunriseDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
+    document.getElementById('sunset-time').innerText = sunsetDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
+    document.getElementById('uv-index-val').innerText = Math.round(uvMax);
+    
+    const langCode = document.getElementById('language-selector').value;
+    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
+
+    // 🌟 FIX: Force override "V. HIGH" to "VERY HIGH"
+    let uvDesc = t.uvLow || "LOW";
+    let uvColor = "text-emerald-500 bg-emerald-50";
+    if (uvMax >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
+    else if (uvMax >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500 bg-red-50"; }
+    else if (uvMax >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500 bg-orange-50"; }
+    else if (uvMax >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600 bg-yellow-50"; }
+
+    const uvDescEl = document.getElementById('uv-index-desc');
+    if (uvDescEl) {
+        uvDescEl.innerText = uvDesc;
+        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor}`;
+    }
+
+    let progress = 0;
+    if (now > sunsetDate) {
+        progress = 1; 
+    } else if (now > sunriseDate) {
+        const totalDaylightMs = sunsetDate.getTime() - sunriseDate.getTime();
+        const elapsedMs = now.getTime() - sunriseDate.getTime();
+        progress = elapsedMs / totalDaylightMs;
+    }
+    
+    progress = Math.max(0, Math.min(1, progress));
+    const degrees = progress * 180;
+    
+    setTimeout(() => {
+        const arc = document.getElementById('sun-arc-progress');
+        // 🌟 FIX: Preserved Tailwind centering by applying translateX before rotation!
+        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+    }, 100);
 }
 
 function applyAppleWeather(condition) {
@@ -508,9 +510,11 @@ function updateUI(weather, daily) {
     const weatherCard = document.getElementById('weather-content');
     weatherCard.classList.remove('hidden');
     document.getElementById('forecast-section').classList.remove('hidden');
-    document.getElementById('sms-section').classList.remove('hidden');
     
-    document.getElementById('sun-uv-section').classList.remove('hidden');
+    const smsSec = document.getElementById('sms-section');
+    if(smsSec) smsSec.classList.remove('hidden'); 
+    const sunUvSec = document.getElementById('sun-uv-section');
+    if(sunUvSec) sunUvSec.classList.remove('hidden');
     
     if (document.getElementById('location-name-text')) {
         document.getElementById('location-name-text').innerText = currentVillageName;
@@ -520,8 +524,12 @@ function updateUI(weather, daily) {
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
     
+    // 🌟 FIX: Updated to fetch precipitation probability correctly without crashing
     if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
-    if(document.getElementById('precip-prob-val')) document.getElementById('precip-prob-val').innerText = `${weather.precipitation_probability || 0} %`;
+    if(document.getElementById('precip-prob-val')) {
+        const prob = (daily && daily.precipitation_probability_max) ? daily.precipitation_probability_max[0] : 0;
+        document.getElementById('precip-prob-val').innerText = `${prob} %`;
+    }
 
     const hiloElement = document.getElementById('weather-hilo');
     if (hiloElement && daily && daily.temperature_2m_max && daily.temperature_2m_min) {
@@ -532,10 +540,14 @@ function updateUI(weather, daily) {
     const conditionText = document.getElementById('weather-condition');
     
     const langCode = document.getElementById('language-selector').value;
-    const t = translations[langCode] || translations['en'];
+    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
     
     const isNight = weather.is_day !== undefined ? weather.is_day === 0 : (new Date().getHours() < 6 || new Date().getHours() >= 18);
-    const wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
+    let wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
+
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode) && weather.rain === 0) {
+        wmoCode = weather.wind_speed_10m > 15 ? 3 : 2; 
+    }
 
     let activeCondition = 'clear';
     let condString = t.condMostlySunny || 'Mostly Sunny';
@@ -549,6 +561,10 @@ function updateUI(weather, daily) {
         activeCondition = 'rain';
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
+    } else if (wmoCode === 3 && weather.wind_speed_10m > 15) {
+        activeCondition = 'windy';
+        condString = t.condWindy || 'Windy';
+        iconClass = 'fa-solid fa-wind';
     } else if ([3, 45, 48].includes(wmoCode)) { 
         activeCondition = isNight ? 'cloudy-night' : 'cloudy';
         condString = t.condMostlyCloudy || 'Mostly Cloudy';
@@ -563,7 +579,7 @@ function updateUI(weather, daily) {
         iconClass = isNight ? 'fa-solid fa-moon' : 'fa-solid fa-sun';
     }
 
-    if(icon) icon.className = `${iconClass} text-6xl drop-shadow-md text-white`;
+    if(icon) icon.className = `${iconClass} text-6xl sm:text-7xl drop-shadow-md text-white transition-all`;
     if(conditionText) conditionText.innerText = condString;
 
     weatherCard.classList.add('apple-active');
@@ -618,7 +634,7 @@ function updateUI(weather, daily) {
 }
 
 function updateLanguage(langCode) {
-    const t = translations[langCode] || translations['en']; 
+    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {}; 
 
     if (langCode === 'en') {
         document.getElementById('app-title').innerHTML = 'Kisan Alert <span class="text-emerald-500">Pro</span>';
