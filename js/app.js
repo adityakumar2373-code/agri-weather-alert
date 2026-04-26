@@ -205,7 +205,7 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// 🌟 FIX: Added missing sunrise, sunset, and uv_index_max variables so the card works properly!
+// 🌟 FIX 1: Appended sunrise, sunset, and uv_index_max to the daily API call to prevent infinite spinner crash!
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
@@ -239,7 +239,7 @@ async function fetchWeather(coords) {
         
         updateUI(currentWeatherData, currentDailyData); 
         renderAppleForecastList(data.daily); 
-        renderSunAndUV(data.daily); // 🌟 Now this function will get the correct API data
+        renderSunAndUV(data.daily); 
         triggerAIIfReady(); 
         
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
@@ -340,7 +340,6 @@ async function fetchAIAdvisory(temp, rain, wind) {
 
 function renderSunAndUV(daily) {
     const sunUvSection = document.getElementById('sun-uv-section');
-    // Guard clause in case API data is missing
     if (!sunUvSection || !daily || !daily.sunrise) return;
 
     const sunriseStr = daily.sunrise[0];
@@ -358,7 +357,6 @@ function renderSunAndUV(daily) {
     const langCode = document.getElementById('language-selector').value;
     const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
 
-    // 🌟 FIX: Force override "V. HIGH" to "VERY HIGH"
     let uvDesc = t.uvLow || "LOW";
     let uvColor = "text-emerald-500 bg-emerald-50";
     if (uvMax >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
@@ -386,8 +384,8 @@ function renderSunAndUV(daily) {
     
     setTimeout(() => {
         const arc = document.getElementById('sun-arc-progress');
-        // 🌟 FIX: Ensure Tailwind's translateX(-50%) is preserved alongside the new rotation
-        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+        // 🌟 FIX 2: Applied pure rotation so the JS does not fight the HTML Wrapper's centering!
+        if (arc) arc.style.transform = `rotate(${degrees}deg)`;
     }, 100);
 }
 
@@ -512,7 +510,6 @@ function updateUI(weather, daily) {
     document.getElementById('forecast-section').classList.remove('hidden');
     document.getElementById('sms-section').classList.remove('hidden');
     
-    // 🌟 FIX: Unhide the Sun and UV Section so it displays correctly
     document.getElementById('sun-uv-section').classList.remove('hidden');
     
     if (document.getElementById('location-name-text')) {
@@ -667,7 +664,6 @@ function updateLanguage(langCode) {
     if(document.getElementById('ui-helpline-2-name')) document.getElementById('ui-helpline-2-name').innerText = t.agriEmergency || "Agri Emergency";
     if(document.getElementById('ui-helpline-2-desc')) document.getElementById('ui-helpline-2-desc').innerText = `108 • ${t.aeDesc || "24/7 Toll-Free"}`;
 
-    // 🌟 FIX: Updated HTML animation structure
     if(document.getElementById('ui-sun-uv-title')) document.getElementById('ui-sun-uv-title').innerHTML = `<i class="fa-solid fa-sun text-amber-500 animate-spin" style="animation-duration: 4s;"></i> ${t.sunUvTitle || "Sun & UV"}`;
     if(document.getElementById('lbl-sunrise')) document.getElementById('lbl-sunrise').innerText = t.lblSunrise || "Sunrise";
     if(document.getElementById('lbl-sunset')) document.getElementById('lbl-sunset').innerText = t.lblSunset || "Sunset";
