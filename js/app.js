@@ -444,8 +444,8 @@ function renderSunAndUV(daily) {
     
     setTimeout(() => {
         const arc = document.getElementById('sun-arc-progress');
-        // 🌟 FIX: Preserved Tailwind centering by applying translateX before rotation!
-        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+        // 🌟 FIX: Applied pure rotation to match the new Mountain Landscape HTML structure
+        if (arc) arc.style.transform = `rotate(${degrees}deg)`;
     }, 100);
 }
 
@@ -524,7 +524,6 @@ function updateUI(weather, daily) {
     document.getElementById('rain-val').innerText = `${weather.rain} mm`;
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
     
-    // 🌟 FIX: Updated to fetch precipitation probability correctly without crashing
     if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
     if(document.getElementById('precip-prob-val')) {
         const prob = (daily && daily.precipitation_probability_max) ? daily.precipitation_probability_max[0] : 0;
