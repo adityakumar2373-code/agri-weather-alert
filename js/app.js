@@ -446,7 +446,8 @@ function renderSunAndUV(daily) {
     }, 100);
 }
 
-function applyAppleWeather(condition) {
+// 🌟 FIX: We now accept isNight into the rendering function to correctly style storms and wind
+function applyAppleWeather(condition, isNight) {
     let bgLayer = document.getElementById('apple-weather-bg');
     if(!bgLayer) {
         bgLayer = document.createElement('div');
@@ -460,7 +461,10 @@ function applyAppleWeather(condition) {
     bgLayer.className = 'weather-bg'; 
 
     if (condition === 'rain' || condition === 'storm') {
-        bgLayer.style.background = 'linear-gradient(180deg, #5A6B7C 0%, #2F3C4D 100%)';
+        bgLayer.style.background = isNight 
+            ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' 
+            : 'linear-gradient(180deg, #5A6B7C 0%, #2F3C4D 100%)';
+            
         for(let i=0; i<60; i++) {
             let drop = document.createElement('div');
             drop.className = 'apple-drop';
@@ -474,8 +478,28 @@ function applyAppleWeather(condition) {
              flash.className = 'flash';
              bgLayer.appendChild(flash);
         }
+    } else if (condition === 'windy') {
+        bgLayer.style.background = isNight 
+            ? 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)' 
+            : 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
+            
+        for(let i=0; i<6; i++) {
+            let cloud = document.createElement('div');
+            cloud.className = 'apple-cloud';
+            cloud.style.width = `${Math.random() * 300 + 150}px`;
+            cloud.style.height = `${Math.random() * 80 + 50}px`;
+            cloud.style.top = i % 2 === 0 ? `${Math.random() * 20}%` : `${Math.random() * 20 + 70}%`;
+            cloud.style.animationDuration = `${Math.random() * 15 + 10}s`; // Faster animation for windy
+            cloud.style.animationDelay = `-${Math.random() * 10}s`;
+            bgLayer.appendChild(cloud);
+        }
+        
+        let celestial = document.createElement('div');
+        celestial.className = isNight ? 'apple-moon' : 'apple-sun';
+        bgLayer.appendChild(celestial);
+        
     } else if (condition === 'cloudy' || condition === 'cloudy-night') {
-        bgLayer.style.background = condition === 'cloudy-night' 
+        bgLayer.style.background = isNight 
             ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' 
             : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; 
             
@@ -489,7 +513,7 @@ function applyAppleWeather(condition) {
             cloud.style.animationDelay = `-${Math.random() * 20}s`;
             bgLayer.appendChild(cloud);
         }
-    } else if (condition === 'night') {
+    } else if (condition === 'night' || isNight) {
         bgLayer.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)';
         let moon = document.createElement('div');
         moon.className = 'apple-moon';
@@ -558,6 +582,7 @@ function updateUI(weather, daily) {
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
     } else if (wmoCode === 3 && weather.wind_speed_10m > 15) {
+        // 🌟 FIX: activeCondition is correctly saved as 'windy'
         activeCondition = 'windy';
         condString = t.condWindy || 'Windy';
         iconClass = 'fa-solid fa-wind';
@@ -579,7 +604,9 @@ function updateUI(weather, daily) {
     if(conditionText) conditionText.innerText = condString;
 
     weatherCard.classList.add('apple-active');
-    applyAppleWeather(activeCondition);
+    
+    // 🌟 FIX: We pass the 'isNight' parameter so the weather renderer knows what time it is
+    applyAppleWeather(activeCondition, isNight);
 
     const forecastCard = document.getElementById('forecast-section');
     if(forecastCard) {
