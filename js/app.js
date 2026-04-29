@@ -208,7 +208,6 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// 🌟 FIX: Removed invalid 'precipitation_probability' from 'current' to prevent the API from crashing!
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
@@ -416,7 +415,6 @@ function renderSunAndUV(daily) {
     const langCode = document.getElementById('language-selector').value;
     const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
 
-    // 🌟 FIX: Force override "V. HIGH" to "VERY HIGH"
     let uvDesc = t.uvLow || "LOW";
     let uvColor = "text-emerald-500 bg-emerald-50";
     if (uvMax >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
@@ -444,8 +442,7 @@ function renderSunAndUV(daily) {
     
     setTimeout(() => {
         const arc = document.getElementById('sun-arc-progress');
-        // 🌟 FIX: Applied pure rotation to match the new Mountain Landscape HTML structure
-        if (arc) arc.style.transform = `rotate(${degrees}deg)`;
+        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
     }, 100);
 }
 
