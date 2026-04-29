@@ -206,7 +206,7 @@
                 <option value="ta">தமிழ்</option>
                 <option value="gu">ગુજરાતી</option>
                 <option value="kn">ಕನ್ನಡ</option>
-                <option value="or">ଓଡ଼ିଆ</option>
+                <option value="or">ଓଡ଼িয়া</option>
                 <option value="ml">മലയാളം</option>
                 <option value="pa">ਪੰਜਾਬੀ</option>
                 <option value="as">অসমীয়া</option>
@@ -463,13 +463,27 @@
                         </h3>
                         
                         <div class="flex flex-col items-center">
-                            <div class="relative w-full max-w-[220px] h-[110px] overflow-hidden mx-auto mt-2">
-                                <div class="absolute w-[220px] h-[220px] rounded-full border-2 border-dashed border-gray-200"></div>
-                                <div id="sun-arc-progress" class="absolute w-[220px] h-[220px] rounded-full origin-center transition-transform duration-1000 ease-out" style="transform: rotate(0deg);">
-                                    <div class="absolute top-[94px] -left-4 w-8 h-8 bg-gradient-to-br from-yellow-300 to-orange-500 rounded-full shadow-[0_0_20px_rgba(250,204,21,0.6)] flex items-center justify-center">
+                            <div class="relative w-full max-w-[220px] h-[110px] overflow-hidden mx-auto mt-2 rounded-t-full">
+                                <!-- Sky Background -->
+                                <div class="absolute w-[220px] h-[220px] rounded-full bg-gradient-to-b from-blue-50/80 to-transparent"></div>
+                                
+                                <!-- Animated Sun Arc -->
+                                <div id="sun-arc-progress" class="absolute w-[220px] h-[220px] rounded-full origin-center transition-transform duration-1000 ease-out z-0" style="transform: rotate(0deg);">
+                                    <div class="absolute top-[94px] -left-4 w-8 h-8 bg-gradient-to-br from-yellow-300 to-orange-500 rounded-full shadow-[0_0_20px_rgba(250,204,21,0.6)] flex items-center justify-center animate-pulse">
                                         <i class="fa-solid fa-sun text-white text-[10px]"></i>
                                     </div>
                                 </div>
+
+                                <!-- Mountain Landscape -->
+                                <svg class="absolute bottom-0 left-0 w-full h-[65px] z-10 pointer-events-none drop-shadow-sm" viewBox="0 0 220 65" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Right Mountain (Sunset) -->
+                                    <path d="M110 65 L175 15 L240 65 Z" fill="#e2e8f0"/>
+                                    <path d="M175 15 L240 65 L175 65 Z" fill="#cbd5e1"/>
+                                    
+                                    <!-- Left Mountain (Sunrise) -->
+                                    <path d="M-20 65 L55 20 L130 65 Z" fill="#f1f5f9"/>
+                                    <path d="M55 20 L130 65 L55 65 Z" fill="#e2e8f0"/>
+                                </svg>
                             </div>
                             
                             <div class="flex justify-between w-full max-w-[280px] text-sm font-bold text-gray-800 mt-3 px-2">
@@ -501,7 +515,8 @@
                         </div>
                         
                         <div id="forecast-list" class="relative w-full flex flex-col z-10">
-                            </div>
+                            <!-- JS will inject the 10-day Apple-style rows here -->
+                        </div>
                     </div>
 
                 </div>
