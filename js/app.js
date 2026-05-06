@@ -1,5 +1,6 @@
 let currentWeatherData = null;
 let currentDailyData = null; 
+let currentHourlyData = null; 
 let currentCoords = null; 
 let currentVillageName = ""; 
 
@@ -23,8 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     langSelector.addEventListener('change', (e) => {
         updateLanguage(e.target.value);
         if (currentWeatherData && currentDailyData) {
-            updateUI(currentWeatherData, currentDailyData); 
-            renderSunAndUV(currentDailyData); 
+            updateUI(currentWeatherData, currentDailyData, currentHourlyData); 
+            renderSunAndUV(currentDailyData, currentHourlyData); 
         }
         triggerAIIfReady(); 
     });
@@ -208,11 +209,22 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
+// Helper function to match the device's exact current hour with the API's hourly array
+function getCurrentHourlyIndex(hourlyTimeArray) {
+    if (!hourlyTimeArray || hourlyTimeArray.length === 0) return 0;
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const localTimeStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:00`;
+    const idx = hourlyTimeArray.indexOf(localTimeStr);
+    return idx !== -1 ? idx : now.getHours(); 
+}
+
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
+    // 🌟 FIX: Added '&hourly=precipitation_probability,uv_index' to fetch true real-time values
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&hourly=precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -243,10 +255,11 @@ async function fetchWeather(coords) {
         
         currentWeatherData = data.current;
         currentDailyData = data.daily;
+        currentHourlyData = data.hourly; // 🌟 FIX: Save the new hourly array globally
         
-        updateUI(currentWeatherData, currentDailyData); 
+        updateUI(currentWeatherData, currentDailyData, currentHourlyData); 
         renderAppleForecastList(currentDailyData); 
-        renderSunAndUV(currentDailyData); 
+        renderSunAndUV(currentDailyData, currentHourlyData); 
         triggerAIIfReady(); 
         
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
@@ -396,13 +409,22 @@ function renderAppleForecastList(dailyData) {
     }
 }
 
-function renderSunAndUV(daily) {
+// 🌟 FIX: Passing the new hourly data to dynamically render real-time UV
+function renderSunAndUV(daily, hourly) {
     const sunUvSection = document.getElementById('sun-uv-section');
     if (!sunUvSection || !daily || !daily.sunrise) return;
 
     const sunriseStr = daily.sunrise[0];
     const sunsetStr = daily.sunset[0];
-    const uvMax = daily.uv_index_max[0] || 0;
+    
+    // Check real-time hourly UV if available, otherwise fallback to max
+    let uvLive = 0;
+    if (hourly && hourly.uv_index) {
+        const idx = getCurrentHourlyIndex(hourly.time);
+        uvLive = hourly.uv_index[idx] || 0;
+    } else {
+        uvLive = daily.uv_index_max[0] || 0;
+    }
 
     const sunriseDate = new Date(sunriseStr);
     const sunsetDate = new Date(sunsetStr);
@@ -410,17 +432,17 @@ function renderSunAndUV(daily) {
 
     document.getElementById('sunrise-time').innerText = sunriseDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
     document.getElementById('sunset-time').innerText = sunsetDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
-    document.getElementById('uv-index-val').innerText = Math.round(uvMax);
+    document.getElementById('uv-index-val').innerText = Math.round(uvLive);
     
     const langCode = document.getElementById('language-selector').value;
     const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
 
     let uvDesc = t.uvLow || "LOW";
     let uvColor = "text-emerald-500 bg-emerald-50";
-    if (uvMax >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
-    else if (uvMax >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500 bg-red-50"; }
-    else if (uvMax >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500 bg-orange-50"; }
-    else if (uvMax >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600 bg-yellow-50"; }
+    if (uvLive >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
+    else if (uvLive >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500 bg-red-50"; }
+    else if (uvLive >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500 bg-orange-50"; }
+    else if (uvLive >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600 bg-yellow-50"; }
 
     const uvDescEl = document.getElementById('uv-index-desc');
     if (uvDescEl) {
@@ -446,7 +468,6 @@ function renderSunAndUV(daily) {
     }, 100);
 }
 
-// 🌟 FIX: We now accept isNight into the rendering function to correctly style storms and wind
 function applyAppleWeather(condition, isNight) {
     let bgLayer = document.getElementById('apple-weather-bg');
     if(!bgLayer) {
@@ -489,7 +510,7 @@ function applyAppleWeather(condition, isNight) {
             cloud.style.width = `${Math.random() * 300 + 150}px`;
             cloud.style.height = `${Math.random() * 80 + 50}px`;
             cloud.style.top = i % 2 === 0 ? `${Math.random() * 20}%` : `${Math.random() * 20 + 70}%`;
-            cloud.style.animationDuration = `${Math.random() * 15 + 10}s`; // Faster animation for windy
+            cloud.style.animationDuration = `${Math.random() * 15 + 10}s`; 
             cloud.style.animationDelay = `-${Math.random() * 10}s`;
             bgLayer.appendChild(cloud);
         }
@@ -526,7 +547,8 @@ function applyAppleWeather(condition, isNight) {
     }
 }
 
-function updateUI(weather, daily) {
+// 🌟 FIX: Passing the new hourly data to dynamically render real-time Precipitation %
+function updateUI(weather, daily, hourly) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
     weatherCard.classList.remove('hidden');
@@ -546,8 +568,15 @@ function updateUI(weather, daily) {
     document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
     
     if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
+    
     if(document.getElementById('precip-prob-val')) {
-        const prob = (daily && daily.precipitation_probability_max) ? daily.precipitation_probability_max[0] : 0;
+        let prob = 0;
+        if (hourly && hourly.precipitation_probability) {
+            const idx = getCurrentHourlyIndex(hourly.time);
+            prob = hourly.precipitation_probability[idx] || 0;
+        } else if (daily && daily.precipitation_probability_max) {
+            prob = daily.precipitation_probability_max[0] || 0;
+        }
         document.getElementById('precip-prob-val').innerText = `${prob} %`;
     }
 
@@ -582,7 +611,6 @@ function updateUI(weather, daily) {
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
     } else if (wmoCode === 3 && weather.wind_speed_10m > 15) {
-        // 🌟 FIX: activeCondition is correctly saved as 'windy'
         activeCondition = 'windy';
         condString = t.condWindy || 'Windy';
         iconClass = 'fa-solid fa-wind';
@@ -605,7 +633,6 @@ function updateUI(weather, daily) {
 
     weatherCard.classList.add('apple-active');
     
-    // 🌟 FIX: We pass the 'isNight' parameter so the weather renderer knows what time it is
     applyAppleWeather(activeCondition, isNight);
 
     const forecastCard = document.getElementById('forecast-section');
