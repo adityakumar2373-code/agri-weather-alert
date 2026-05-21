@@ -1,6 +1,7 @@
 let currentWeatherData = null;
 let currentDailyData = null; 
 let currentHourlyData = null; 
+let currentMinutelyData = null; // 🌟 FIX: Added minutely global state
 let currentCoords = null; 
 let currentVillageName = ""; 
 
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
     langSelector.addEventListener('change', (e) => {
         updateLanguage(e.target.value);
         if (currentWeatherData && currentDailyData) {
-            updateUI(currentWeatherData, currentDailyData, currentHourlyData); 
+            updateUI(currentWeatherData, currentDailyData, currentHourlyData, currentMinutelyData); 
             renderSunAndUV(currentDailyData, currentHourlyData); 
         }
         triggerAIIfReady(); 
@@ -209,7 +210,6 @@ sendBtn.addEventListener('click', async () => {
     }
 });
 
-// Helper function to match the device's exact current hour with the API's hourly array
 function getCurrentHourlyIndex(hourlyTimeArray) {
     if (!hourlyTimeArray || hourlyTimeArray.length === 0) return 0;
     const now = new Date();
@@ -219,12 +219,23 @@ function getCurrentHourlyIndex(hourlyTimeArray) {
     return idx !== -1 ? idx : now.getHours(); 
 }
 
+// 🌟 FIX: Helper function to match the device's exact current 15-min interval with the API's array
+function getCurrentMinutelyIndex(minutelyTimeArray) {
+    if (!minutelyTimeArray || minutelyTimeArray.length === 0) return 0;
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, '0');
+    const mins = Math.floor(now.getMinutes() / 15) * 15;
+    const localTimeStr = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(mins)}`;
+    const idx = minutelyTimeArray.indexOf(localTimeStr);
+    return idx !== -1 ? idx : 0; 
+}
+
 async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // 🌟 FIX: Added '&hourly=precipitation_probability,uv_index' to fetch true real-time values
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&hourly=precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
+    // 🌟 FIX: Added '&minutely_15' parameters alongside hourly parameters for true 15-minute tracking
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -255,9 +266,10 @@ async function fetchWeather(coords) {
         
         currentWeatherData = data.current;
         currentDailyData = data.daily;
-        currentHourlyData = data.hourly; // 🌟 FIX: Save the new hourly array globally
+        currentHourlyData = data.hourly; 
+        currentMinutelyData = data.minutely_15; // 🌟 FIX: Save the precise 15-min array globally
         
-        updateUI(currentWeatherData, currentDailyData, currentHourlyData); 
+        updateUI(currentWeatherData, currentDailyData, currentHourlyData, currentMinutelyData); 
         renderAppleForecastList(currentDailyData); 
         renderSunAndUV(currentDailyData, currentHourlyData); 
         triggerAIIfReady(); 
@@ -278,13 +290,21 @@ async function fetchWeather(coords) {
     }
 }
 
+// 🌟 FIX: Updated triggerAIIfReady to pass the exact 15-minute conditions to the AI prompt
 function triggerAIIfReady() {
     if (currentWeatherData && cropSelector.value) {
-        fetchAIAdvisory(
-            currentWeatherData.temperature_2m, 
-            currentWeatherData.rain, 
-            currentWeatherData.wind_speed_10m
-        );
+        let t = currentWeatherData.temperature_2m;
+        let r = currentWeatherData.rain;
+        let w = currentWeatherData.wind_speed_10m;
+        
+        if (currentMinutelyData && currentMinutelyData.time) {
+            const mIdx = getCurrentMinutelyIndex(currentMinutelyData.time);
+            t = currentMinutelyData.temperature_2m[mIdx] ?? t;
+            r = currentMinutelyData.precipitation[mIdx] ?? r;
+            w = currentMinutelyData.wind_speed_10m[mIdx] ?? w;
+        }
+
+        fetchAIAdvisory(t, r, w);
 
         if (window.innerWidth >= 1024) { 
             const leftColumn = document.getElementById('sms-section')?.parentElement;
@@ -409,7 +429,6 @@ function renderAppleForecastList(dailyData) {
     }
 }
 
-// 🌟 FIX: Passing the new hourly data to dynamically render real-time UV
 function renderSunAndUV(daily, hourly) {
     const sunUvSection = document.getElementById('sun-uv-section');
     if (!sunUvSection || !daily || !daily.sunrise) return;
@@ -417,7 +436,6 @@ function renderSunAndUV(daily, hourly) {
     const sunriseStr = daily.sunrise[0];
     const sunsetStr = daily.sunset[0];
     
-    // Check real-time hourly UV if available, otherwise fallback to max
     let uvLive = 0;
     if (hourly && hourly.uv_index) {
         const idx = getCurrentHourlyIndex(hourly.time);
@@ -547,8 +565,8 @@ function applyAppleWeather(condition, isNight) {
     }
 }
 
-// 🌟 FIX: Passing the new hourly data to dynamically render real-time Precipitation %
-function updateUI(weather, daily, hourly) {
+// 🌟 FIX: Added minutely mapping to dynamically update Live UI every 15 mins
+function updateUI(weather, daily, hourly, minutely) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
     weatherCard.classList.remove('hidden');
@@ -563,11 +581,29 @@ function updateUI(weather, daily, hourly) {
         document.getElementById('location-name-text').innerText = currentVillageName;
     }
 
-    document.getElementById('temperature').innerText = `${Math.round(weather.temperature_2m)}°`;
-    document.getElementById('rain-val').innerText = `${weather.rain} mm`;
-    document.getElementById('wind-val').innerText = `${weather.wind_speed_10m} km/h`;
+    let tempLive = weather.temperature_2m;
+    let rainLive = weather.rain;
+    let windLive = weather.wind_speed_10m;
+    let humLive = weather.relative_humidity_2m;
+    let wmoLive = weather.weather_code !== undefined ? weather.weather_code : 0;
+    let isDayLive = weather.is_day !== undefined ? weather.is_day : 1;
+
+    // Pull precise 15-minute data if available
+    if (minutely && minutely.time) {
+        const mIdx = getCurrentMinutelyIndex(minutely.time);
+        tempLive = minutely.temperature_2m[mIdx] ?? tempLive;
+        rainLive = minutely.precipitation[mIdx] ?? rainLive;
+        windLive = minutely.wind_speed_10m[mIdx] ?? windLive;
+        humLive = minutely.relative_humidity_2m[mIdx] ?? humLive;
+        wmoLive = minutely.weather_code[mIdx] ?? wmoLive;
+        isDayLive = minutely.is_day[mIdx] ?? isDayLive;
+    }
+
+    document.getElementById('temperature').innerText = `${Math.round(tempLive)}°`;
+    document.getElementById('rain-val').innerText = `${rainLive} mm`;
+    document.getElementById('wind-val').innerText = `${windLive} km/h`;
     
-    if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${weather.relative_humidity_2m} %`;
+    if(document.getElementById('humidity-val')) document.getElementById('humidity-val').innerText = `${humLive} %`;
     
     if(document.getElementById('precip-prob-val')) {
         let prob = 0;
@@ -591,11 +627,11 @@ function updateUI(weather, daily, hourly) {
     const langCode = document.getElementById('language-selector').value;
     const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
     
-    const isNight = weather.is_day !== undefined ? weather.is_day === 0 : (new Date().getHours() < 6 || new Date().getHours() >= 18);
-    let wmoCode = weather.weather_code !== undefined ? weather.weather_code : 0;
+    const isNight = isDayLive === 0;
+    let wmoCode = wmoLive;
 
-    if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode) && weather.rain === 0) {
-        wmoCode = weather.wind_speed_10m > 15 ? 3 : 2; 
+    if ([51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode) && rainLive === 0) {
+        wmoCode = windLive > 15 ? 3 : 2; 
     }
 
     let activeCondition = 'clear';
@@ -610,7 +646,7 @@ function updateUI(weather, daily, hourly) {
         activeCondition = 'rain';
         condString = t.condRainShowers || 'Rain / Showers';
         iconClass = 'fa-solid fa-cloud-showers-heavy';
-    } else if (wmoCode === 3 && weather.wind_speed_10m > 15) {
+    } else if (wmoCode === 3 && windLive > 15) {
         activeCondition = 'windy';
         condString = t.condWindy || 'Windy';
         iconClass = 'fa-solid fa-wind';
@@ -664,12 +700,12 @@ function updateUI(weather, daily, hourly) {
 
         const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
 
-        if (isRainingWMO || currentWeatherData.rain > 0.2) {
+        if (isRainingWMO || rainLive > 0.2) {
             alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
             alertTitle.innerText = t.alertRainTitle || "Rain Alert";
             alertMsg.innerText = t.alertRainMsg || "Rain detected. Avoid sensitive field work and ensure proper drainage.";
-        } else if (currentWeatherData.wind_speed_10m > 20) { 
+        } else if (windLive > 20) { 
             alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
             alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
