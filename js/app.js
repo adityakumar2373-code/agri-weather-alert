@@ -1,7 +1,7 @@
 let currentWeatherData = null;
 let currentDailyData = null; 
 let currentHourlyData = null; 
-let currentMinutelyData = null; // 🌟 FIX: Added minutely global state
+let currentMinutelyData = null; 
 let currentCoords = null; 
 let currentVillageName = ""; 
 
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (currentWeatherData && currentDailyData) {
             updateUI(currentWeatherData, currentDailyData, currentHourlyData, currentMinutelyData); 
             renderSunAndUV(currentDailyData, currentHourlyData); 
+            renderHourlySlider(currentHourlyData); 
         }
         triggerAIIfReady(); 
     });
@@ -219,7 +220,6 @@ function getCurrentHourlyIndex(hourlyTimeArray) {
     return idx !== -1 ? idx : now.getHours(); 
 }
 
-// 🌟 FIX: Helper function to match the device's exact current 15-min interval with the API's array
 function getCurrentMinutelyIndex(minutelyTimeArray) {
     if (!minutelyTimeArray || minutelyTimeArray.length === 0) return 0;
     const now = new Date();
@@ -234,8 +234,8 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // 🌟 FIX: Added '&minutely_15' parameters alongside hourly parameters for true 15-minute tracking
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
+    // 🌟 FIX: Added temperature_2m, weather_code, and is_day to the hourly request
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=temperature_2m,weather_code,is_day,precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -267,11 +267,12 @@ async function fetchWeather(coords) {
         currentWeatherData = data.current;
         currentDailyData = data.daily;
         currentHourlyData = data.hourly; 
-        currentMinutelyData = data.minutely_15; // 🌟 FIX: Save the precise 15-min array globally
+        currentMinutelyData = data.minutely_15; 
         
         updateUI(currentWeatherData, currentDailyData, currentHourlyData, currentMinutelyData); 
         renderAppleForecastList(currentDailyData); 
         renderSunAndUV(currentDailyData, currentHourlyData); 
+        renderHourlySlider(currentHourlyData); // 🌟 FIX: Trigger the new slider render
         triggerAIIfReady(); 
         
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
@@ -290,7 +291,6 @@ async function fetchWeather(coords) {
     }
 }
 
-// 🌟 FIX: Updated triggerAIIfReady to pass the exact 15-minute conditions to the AI prompt
 function triggerAIIfReady() {
     if (currentWeatherData && cropSelector.value) {
         let t = currentWeatherData.temperature_2m;
@@ -371,12 +371,13 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
-function getForecastIcon(wmoCode) {
+// 🌟 FIX: Updated icon logic to accept day/night context for accurate slider icons
+function getForecastIcon(wmoCode, isDay = 1) {
     if ([95, 96, 99].includes(wmoCode)) return 'fa-solid fa-cloud-bolt text-indigo-400';
     if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode)) return 'fa-solid fa-cloud-showers-heavy text-blue-400';
-    if ([3, 45, 48].includes(wmoCode)) return 'fa-solid fa-cloud text-slate-400';
-    if ([1, 2].includes(wmoCode)) return 'fa-solid fa-cloud-sun text-slate-300';
-    return 'fa-solid fa-sun text-yellow-400';
+    if ([3, 45, 48].includes(wmoCode)) return isDay ? 'fa-solid fa-cloud text-slate-400' : 'fa-solid fa-cloud-moon text-slate-400';
+    if ([1, 2].includes(wmoCode)) return isDay ? 'fa-solid fa-cloud-sun text-slate-300' : 'fa-solid fa-cloud-moon text-slate-300';
+    return isDay ? 'fa-solid fa-sun text-yellow-400' : 'fa-solid fa-moon text-slate-200';
 }
 
 function renderAppleForecastList(dailyData) {
@@ -401,7 +402,7 @@ function renderAppleForecastList(dailyData) {
         }
         
         const wmoCode = dailyData.weather_code ? dailyData.weather_code[i] : 0;
-        const iconClass = getForecastIcon(wmoCode);
+        const iconClass = getForecastIcon(wmoCode); // Default isDay=1 handles daily max visuals fine
         
         const dayMin = dailyData.temperature_2m_min[i];
         const dayMax = dailyData.temperature_2m_max[i];
@@ -426,6 +427,41 @@ function renderAppleForecastList(dailyData) {
         `;
         
         listContainer.insertAdjacentHTML('beforeend', rowHTML);
+    }
+}
+
+// 🌟 NEW: The rendering function for the horizontal hourly slider
+function renderHourlySlider(hourly) {
+    const slider = document.getElementById('hourly-forecast-slider');
+    if (!slider || !hourly || !hourly.time) return;
+
+    slider.innerHTML = '';
+    const currentIdx = getCurrentHourlyIndex(hourly.time);
+    
+    // Loop through the next 24 hours
+    for (let i = currentIdx; i < currentIdx + 24 && i < hourly.time.length; i++) {
+        const timeStr = hourly.time[i];
+        const dateObj = new Date(timeStr);
+        
+        let timeLabel = "Now";
+        if (i !== currentIdx) {
+            timeLabel = dateObj.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true });
+        }
+
+        const temp = Math.round(hourly.temperature_2m[i]);
+        const wmoCode = hourly.weather_code[i];
+        const isDay = hourly.is_day ? hourly.is_day[i] : 1;
+        
+        const iconClass = getForecastIcon(wmoCode, isDay);
+        
+        const itemHTML = `
+            <div class="flex flex-col items-center justify-between gap-3 min-w-[60px] sm:min-w-[70px] snap-center">
+                <span class="text-xs sm:text-sm font-bold text-white/90 whitespace-nowrap">${timeLabel}</span>
+                <i class="${iconClass} text-xl sm:text-2xl drop-shadow-sm"></i>
+                <span class="text-sm sm:text-base font-extrabold text-white">${temp}°</span>
+            </div>
+        `;
+        slider.insertAdjacentHTML('beforeend', itemHTML);
     }
 }
 
@@ -565,7 +601,6 @@ function applyAppleWeather(condition, isNight) {
     }
 }
 
-// 🌟 FIX: Added minutely mapping to dynamically update Live UI every 15 mins
 function updateUI(weather, daily, hourly, minutely) {
     loader.classList.add('hidden');
     const weatherCard = document.getElementById('weather-content');
@@ -588,7 +623,6 @@ function updateUI(weather, daily, hourly, minutely) {
     let wmoLive = weather.weather_code !== undefined ? weather.weather_code : 0;
     let isDayLive = weather.is_day !== undefined ? weather.is_day : 1;
 
-    // Pull precise 15-minute data if available
     if (minutely && minutely.time) {
         const mIdx = getCurrentMinutelyIndex(minutely.time);
         tempLive = minutely.temperature_2m[mIdx] ?? tempLive;
