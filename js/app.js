@@ -54,15 +54,30 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('live-time').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 });
 
+// 🌟 FIX: Added Reverse Geocoding to convert GPS coordinates into a real city/village name
 gpsBtn.addEventListener('click', () => {
     if (navigator.geolocation) {
         searchInput.value = "Detecting satellite location...";
         navigator.geolocation.getCurrentPosition(
-            (position) => {
+            async (position) => {
                 const lat = position.coords.latitude;
                 const lon = position.coords.longitude;
                 currentCoords = `${lat},${lon}`;
-                currentVillageName = "Current Location";
+                
+                try {
+                    // Fetch real location name from coordinates
+                    const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+                    const geoResponse = await fetch(geoUrl);
+                    const geoData = await geoResponse.json();
+                    
+                    // Extract the most accurate local name available
+                    const placeName = geoData.locality || geoData.city || geoData.principalSubdivision || "Current Location";
+                    currentVillageName = placeName;
+                } catch (error) {
+                    console.error("Reverse geocoding failed", error);
+                    currentVillageName = "Current Location"; // Fallback if API fails
+                }
+
                 searchInput.value = currentVillageName;
                 fetchWeather(currentCoords);
             },
@@ -234,7 +249,6 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // 🌟 FIX: Added temperature_2m, weather_code, and is_day to the hourly request
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=temperature_2m,weather_code,is_day,precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
@@ -272,7 +286,7 @@ async function fetchWeather(coords) {
         updateUI(currentWeatherData, currentDailyData, currentHourlyData, currentMinutelyData); 
         renderAppleForecastList(currentDailyData); 
         renderSunAndUV(currentDailyData, currentHourlyData); 
-        renderHourlySlider(currentHourlyData); // 🌟 FIX: Trigger the new slider render
+        renderHourlySlider(currentHourlyData); 
         triggerAIIfReady(); 
         
         const weatherScrollTarget = document.getElementById('weather-scroll-target');
@@ -371,7 +385,6 @@ async function fetchAIAdvisory(temp, rain, wind) {
     }
 }
 
-// 🌟 FIX: Updated icon logic to accept day/night context for accurate slider icons
 function getForecastIcon(wmoCode, isDay = 1) {
     if ([95, 96, 99].includes(wmoCode)) return 'fa-solid fa-cloud-bolt text-indigo-400';
     if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(wmoCode)) return 'fa-solid fa-cloud-showers-heavy text-blue-400';
@@ -402,7 +415,7 @@ function renderAppleForecastList(dailyData) {
         }
         
         const wmoCode = dailyData.weather_code ? dailyData.weather_code[i] : 0;
-        const iconClass = getForecastIcon(wmoCode); // Default isDay=1 handles daily max visuals fine
+        const iconClass = getForecastIcon(wmoCode); 
         
         const dayMin = dailyData.temperature_2m_min[i];
         const dayMax = dailyData.temperature_2m_max[i];
@@ -430,7 +443,6 @@ function renderAppleForecastList(dailyData) {
     }
 }
 
-// 🌟 NEW: The rendering function for the horizontal hourly slider
 function renderHourlySlider(hourly) {
     const slider = document.getElementById('hourly-forecast-slider');
     if (!slider || !hourly || !hourly.time) return;
@@ -438,7 +450,6 @@ function renderHourlySlider(hourly) {
     slider.innerHTML = '';
     const currentIdx = getCurrentHourlyIndex(hourly.time);
     
-    // Loop through the next 24 hours
     for (let i = currentIdx; i < currentIdx + 24 && i < hourly.time.length; i++) {
         const timeStr = hourly.time[i];
         const dateObj = new Date(timeStr);
