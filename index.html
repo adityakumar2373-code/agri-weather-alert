@@ -148,6 +148,10 @@
             94% { opacity: 0.4; } 
         }
 
+        /* 🌟 NEW: Apple-Style Hourly Slider Scrollbar Hiding */
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -433,6 +437,14 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 🌟 NEW: Apple-Style Hourly Forecast Slider Container -->
+                    <div class="relative z-10 w-full mt-6 pt-5 border-t border-white/20">
+                        <div id="hourly-forecast-slider" class="flex items-center gap-5 sm:gap-6 overflow-x-auto pb-2 scrollbar-hide snap-x">
+                            <!-- JS will dynamically inject 24-hour forecast items here -->
+                        </div>
+                    </div>
+
                 </div>
 
                 <div id="alert-box" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden relative overflow-hidden w-full">
