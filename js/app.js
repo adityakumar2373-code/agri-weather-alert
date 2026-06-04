@@ -4,6 +4,7 @@ let currentHourlyData = null;
 let currentMinutelyData = null; 
 let currentCoords = null; 
 let currentVillageName = ""; 
+let weatherChartInstance = null; // 🌟 NEW: Global variable to hold the Chart.js instance
 
 // DOM Elements
 const searchInput = document.getElementById('location-search');
@@ -52,9 +53,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const now = new Date();
     document.getElementById('live-time').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+
+    // 🌟 NEW: Bind the Apple Modal Close Buttons
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const detailsModalOverlay = document.getElementById('details-modal-overlay');
+    if(closeModalBtn) closeModalBtn.addEventListener('click', closeDetailsModal);
+    if(detailsModalOverlay) {
+        detailsModalOverlay.addEventListener('click', (e) => {
+            if (e.target === detailsModalOverlay) closeDetailsModal();
+        });
+    }
 });
 
-// 🌟 FIX: Added Reverse Geocoding to convert GPS coordinates into a real city/village name
 gpsBtn.addEventListener('click', () => {
     if (navigator.geolocation) {
         searchInput.value = "Detecting satellite location...";
@@ -65,17 +75,15 @@ gpsBtn.addEventListener('click', () => {
                 currentCoords = `${lat},${lon}`;
                 
                 try {
-                    // Fetch real location name from coordinates
                     const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
                     const geoResponse = await fetch(geoUrl);
                     const geoData = await geoResponse.json();
                     
-                    // Extract the most accurate local name available
                     const placeName = geoData.locality || geoData.city || geoData.principalSubdivision || "Current Location";
                     currentVillageName = placeName;
                 } catch (error) {
                     console.error("Reverse geocoding failed", error);
-                    currentVillageName = "Current Location"; // Fallback if API fails
+                    currentVillageName = "Current Location"; 
                 }
 
                 searchInput.value = currentVillageName;
@@ -249,7 +257,8 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=temperature_2m,weather_code,is_day,precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
+    // 🌟 FIX: Injected apparent_temperature & precipitation into hourly request for Chart.js rendering
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=temperature_2m,apparent_temperature,precipitation,weather_code,is_day,precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
         <div class="flex flex-col items-center justify-center py-4">
@@ -423,8 +432,9 @@ function renderAppleForecastList(dailyData) {
         const leftPercent = ((dayMin - globalMin) / globalRange) * 100;
         const widthPercent = ((dayMax - dayMin) / globalRange) * 100;
 
+        // 🌟 FIX: Added `onclick="openDetailsModal(${i})"` and `cursor-pointer` to make rows tap-able
         const rowHTML = `
-            <div class="flex items-center justify-between py-2.5 sm:py-3 border-b border-white/10 last:border-0 hover:bg-black/10 transition-colors rounded-lg px-2 -mx-2">
+            <div onclick="openDetailsModal(${i})" class="cursor-pointer flex items-center justify-between py-2.5 sm:py-3 border-b border-white/10 last:border-0 hover:bg-white/10 transition-colors rounded-lg px-2 -mx-2">
                 <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-white">${dayName}</div>
                 <div class="w-8 sm:w-10 text-center text-lg sm:text-xl"><i class="${iconClass}"></i></div>
                 <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-white/70">${Math.round(dayMin)}°</div>
@@ -441,6 +451,161 @@ function renderAppleForecastList(dailyData) {
         
         listContainer.insertAdjacentHTML('beforeend', rowHTML);
     }
+}
+
+// 🌟 NEW: Core function to extract strict 24-hr data for the specific day tapped and display it on Chart.js
+function openDetailsModal(dayIndex) {
+    if (!currentDailyData || !currentHourlyData) return;
+
+    const targetDate = currentDailyData.time[dayIndex];
+    const dateObj = new Date(targetDate);
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('modal-date-title').innerText = dateObj.toLocaleDateString('en-US', options);
+
+    const maxTemp = Math.round(currentDailyData.temperature_2m_max[dayIndex]);
+    const minTemp = Math.round(currentDailyData.temperature_2m_min[dayIndex]);
+    const wmoCode = currentDailyData.weather_code[dayIndex];
+    
+    document.getElementById('modal-temp-display').innerText = `${maxTemp}°`;
+    document.getElementById('modal-summary').innerText = `H:${maxTemp}° L:${minTemp}°`;
+    document.getElementById('modal-icon-display').className = `${getForecastIcon(wmoCode, 1)} text-2xl text-gray-400 mb-2`;
+
+    const targetPrefix = targetDate + "T";
+    const startIndex = currentHourlyData.time.findIndex(t => t.startsWith(targetPrefix));
+    
+    if (startIndex !== -1) {
+        // Slice exactly 24 hours starting from 12:00 AM of that day
+        const hours = currentHourlyData.time.slice(startIndex, startIndex + 24).map(t => {
+            const d = new Date(t);
+            return d.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
+        });
+        const actualTemps = currentHourlyData.temperature_2m.slice(startIndex, startIndex + 24).map(Math.round);
+        const feelsLikeTemps = currentHourlyData.apparent_temperature.slice(startIndex, startIndex + 24).map(Math.round);
+        const precipProbs = currentHourlyData.precipitation_probability.slice(startIndex, startIndex + 24);
+        const precipVols = currentHourlyData.precipitation.slice(startIndex, startIndex + 24);
+
+        const maxProb = Math.max(...precipProbs);
+        document.getElementById('modal-pop').innerText = `${maxProb}%`;
+
+        const totalRain = precipVols.reduce((a, b) => a + b, 0);
+        document.getElementById('modal-rain-total').innerText = `${totalRain.toFixed(1)} mm`;
+
+        // Render the Interactive Chart
+        renderWeatherChart(hours, actualTemps, feelsLikeTemps);
+    }
+
+    const detailsModalOverlay = document.getElementById('details-modal-overlay');
+    const detailsModal = document.getElementById('details-modal');
+    
+    detailsModalOverlay.classList.remove('hidden');
+    setTimeout(() => {
+        detailsModalOverlay.classList.remove('opacity-0');
+        detailsModalOverlay.classList.add('opacity-100');
+        detailsModal.classList.remove('translate-y-full');
+        detailsModal.classList.add('translate-y-0');
+    }, 10);
+}
+
+// 🌟 NEW: Closes the Apple-Style modal gracefully
+function closeDetailsModal() {
+    const detailsModalOverlay = document.getElementById('details-modal-overlay');
+    const detailsModal = document.getElementById('details-modal');
+    detailsModal.classList.remove('translate-y-0');
+    detailsModal.classList.add('translate-y-full');
+    detailsModalOverlay.classList.remove('opacity-100');
+    detailsModalOverlay.classList.add('opacity-0');
+    setTimeout(() => detailsModalOverlay.classList.add('hidden'), 300);
+}
+
+// 🌟 NEW: Draws the Chart.js curves and manages the Actual vs Feels Like toggles
+function renderWeatherChart(labels, data, feelsData) {
+    const canvas = document.getElementById('weatherChart');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    if (weatherChartInstance) {
+        weatherChartInstance.destroy();
+    }
+
+    const minVal = Math.min(...data, ...feelsData) - 3;
+    const maxVal = Math.max(...data, ...feelsData) + 3;
+
+    weatherChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Temperature',
+                data: data,
+                borderColor: '#fbbf24', // Amber Apple color
+                backgroundColor: 'rgba(251, 191, 36, 0.15)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4, // This creates the smooth Apple curve
+                pointRadius: 0,
+                pointHoverRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y + '°';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    grid: { display: false, drawBorder: false },
+                    ticks: { color: '#9ca3af', maxTicksLimit: 6, maxRotation: 0 }
+                },
+                y: {
+                    display: false, // Hide Y axis to keep it clean like Apple Weather
+                    min: minVal,
+                    max: maxVal
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+
+    // Handle toggles
+    const toggleActual = document.getElementById('toggle-actual');
+    const toggleFeels = document.getElementById('toggle-feels');
+
+    // Reset styles on load
+    toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
+    toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
+
+    toggleActual.onclick = () => {
+        weatherChartInstance.data.datasets[0].data = data;
+        weatherChartInstance.data.datasets[0].borderColor = '#fbbf24';
+        weatherChartInstance.data.datasets[0].backgroundColor = 'rgba(251, 191, 36, 0.15)';
+        weatherChartInstance.update();
+        toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
+        toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
+    };
+
+    toggleFeels.onclick = () => {
+        weatherChartInstance.data.datasets[0].data = feelsData;
+        weatherChartInstance.data.datasets[0].borderColor = '#f87171'; // Reddish tint for feels like
+        weatherChartInstance.data.datasets[0].backgroundColor = 'rgba(248, 113, 113, 0.15)';
+        weatherChartInstance.update();
+        toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
+        toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
+    };
 }
 
 function renderHourlySlider(hourly) {
