@@ -165,7 +165,8 @@ function displaySearchResults(results) {
     }
     results.forEach(loc => {
         const div = document.createElement('div');
-        div.className = "p-3 hover:bg-emerald-50 cursor-pointer border-b border-gray-100 text-sm font-medium transition-colors text-gray-700 flex items-center gap-3";
+        // 🌟 FIX: Updated hover state to a neutral black/white tone so it works in both themes
+        div.className = "p-3 hover:bg-black/5 cursor-pointer border-b border-gray-100/20 text-sm font-medium transition-colors flex items-center gap-3";
         div.innerHTML = `<i class="fa-solid fa-location-dot text-emerald-400"></i> ${loc.name}, ${loc.admin1 || 'India'}`; 
         
         div.onclick = () => {
@@ -363,7 +364,7 @@ async function fetchAIAdvisory(temp, rain, wind) {
     const alertIcon = document.getElementById('alert-icon');
     const audioIcon = document.getElementById('audio-icon');
 
-    alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 border-purple-200 text-purple-900";
+    alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300";
     alertIcon.className = "fa-solid fa-sparkles text-lg text-purple-500 animate-pulse";
     audioIcon.className = "fa-solid fa-volume-high text-purple-500";
     alertTitle.innerText = "AI Agronomist Analyzing...";
@@ -430,18 +431,18 @@ function renderAppleForecastList(dailyData) {
         const widthPercent = ((dayMax - dayMin) / globalRange) * 100;
 
         const rowHTML = `
-            <div onclick="openDetailsModal(${i})" class="cursor-pointer flex items-center justify-between py-2.5 sm:py-3 border-b border-white/10 last:border-0 hover:bg-white/10 transition-colors rounded-lg px-2 -mx-2">
-                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-white">${dayName}</div>
+            <div onclick="openDetailsModal(${i})" class="cursor-pointer flex items-center justify-between py-2.5 sm:py-3 border-b border-gray-100/20 last:border-0 hover:bg-black/5 transition-colors rounded-lg px-2 -mx-2">
+                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-gray-800">${dayName}</div>
                 <div class="w-8 sm:w-10 text-center text-lg sm:text-xl"><i class="${iconClass}"></i></div>
-                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-white/70">${Math.round(dayMin)}°</div>
+                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-gray-600">${Math.round(dayMin)}°</div>
                 
-                <div class="flex-1 mx-3 sm:mx-5 h-1.5 bg-black/20 rounded-full relative overflow-hidden shadow-inner">
+                <div class="flex-1 mx-3 sm:mx-5 h-1.5 bg-black/10 rounded-full relative overflow-hidden shadow-inner">
                     <div class="absolute h-full rounded-full bg-gradient-to-r from-sky-400 via-yellow-400 to-orange-500 shadow-sm" 
                          style="left: ${leftPercent}%; width: ${widthPercent}%;">
                     </div>
                 </div>
                 
-                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold text-white">${Math.round(dayMax)}°</div>
+                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold text-gray-800">${Math.round(dayMax)}°</div>
             </div>
         `;
         
@@ -621,16 +622,73 @@ function renderHourlySlider(hourly) {
         
         const itemHTML = `
             <div class="flex flex-col items-center justify-between gap-3 min-w-[60px] sm:min-w-[70px] snap-center">
-                <span class="text-xs sm:text-sm font-bold text-white/90 whitespace-nowrap">${timeLabel}</span>
+                <span class="text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">${timeLabel}</span>
                 <i class="${iconClass} text-xl sm:text-2xl drop-shadow-sm"></i>
-                <span class="text-sm sm:text-base font-extrabold text-white">${temp}°</span>
+                <span class="text-sm sm:text-base font-extrabold text-gray-800">${temp}°</span>
             </div>
         `;
         slider.insertAdjacentHTML('beforeend', itemHTML);
     }
 }
 
-// 🌟 UPGRADED: Added Dynamic Body Background styling to the apple engine
+function renderSunAndUV(daily, hourly) {
+    const sunUvSection = document.getElementById('sun-uv-section');
+    if (!sunUvSection || !daily || !daily.sunrise) return;
+
+    const sunriseStr = daily.sunrise[0];
+    const sunsetStr = daily.sunset[0];
+    
+    let uvLive = 0;
+    if (hourly && hourly.uv_index) {
+        const idx = getCurrentHourlyIndex(hourly.time);
+        uvLive = hourly.uv_index[idx] || 0;
+    } else {
+        uvLive = daily.uv_index_max[0] || 0;
+    }
+
+    const sunriseDate = new Date(sunriseStr);
+    const sunsetDate = new Date(sunsetStr);
+    const now = new Date();
+
+    document.getElementById('sunrise-time').innerText = sunriseDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
+    document.getElementById('sunset-time').innerText = sunsetDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
+    document.getElementById('uv-index-val').innerText = Math.round(uvLive);
+    
+    const langCode = document.getElementById('language-selector').value;
+    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
+
+    let uvDesc = t.uvLow || "LOW";
+    let uvColor = "text-emerald-500";
+    if (uvLive >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600"; }
+    else if (uvLive >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500"; }
+    else if (uvLive >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500"; }
+    else if (uvLive >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600"; }
+
+    const uvDescEl = document.getElementById('uv-index-desc');
+    if (uvDescEl) {
+        uvDescEl.innerText = uvDesc;
+        // 🌟 FIX: Removed solid background so it transitions correctly
+        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor} bg-black/5`;
+    }
+
+    let progress = 0;
+    if (now > sunsetDate) {
+        progress = 1; 
+    } else if (now > sunriseDate) {
+        const totalDaylightMs = sunsetDate.getTime() - sunriseDate.getTime();
+        const elapsedMs = now.getTime() - sunriseDate.getTime();
+        progress = elapsedMs / totalDaylightMs;
+    }
+    
+    progress = Math.max(0, Math.min(1, progress));
+    const degrees = progress * 180;
+    
+    setTimeout(() => {
+        const arc = document.getElementById('sun-arc-progress');
+        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
+    }, 100);
+}
+
 function applyAppleWeather(condition, isNight) {
     let bgLayer = document.getElementById('apple-weather-bg');
     if(!bgLayer) {
@@ -835,18 +893,10 @@ function updateUI(weather, daily, hourly, minutely) {
     
     applyAppleWeather(activeCondition, isNight);
 
+    // 🌟 FIX: Removed hardcoded background injections to allow clean glass-panel transitions
     const forecastCard = document.getElementById('forecast-section');
     if(forecastCard) {
-        const hour = new Date().getHours();
-        forecastCard.className = "bento-card rounded-[2rem] p-5 sm:p-6 shadow-lg relative overflow-hidden w-full transition-colors duration-700";
-        
-        if (hour >= 6 && hour < 17) {
-            forecastCard.classList.add('bg-gradient-to-br', 'from-sky-400', 'to-blue-500', 'border', 'border-white/20', 'shadow-blue-900/20');
-        } else if (hour >= 17 && hour < 20) {
-            forecastCard.classList.add('bg-gradient-to-br', 'from-indigo-500', 'to-purple-600', 'border', 'border-white/20', 'shadow-purple-900/20');
-        } else {
-            forecastCard.classList.add('bg-[#162032]', 'border', 'border-white/10', 'shadow-indigo-900/10');
-        }
+        forecastCard.className = "glass-panel rounded-[2rem] p-5 sm:p-6 w-full overflow-hidden relative transition-colors duration-1000";
     }
 
     updateLanguage(langCode);
@@ -858,19 +908,18 @@ function updateUI(weather, daily, hourly, minutely) {
         const alertIcon = document.getElementById('alert-icon');
         const audioIcon = document.getElementById('audio-icon');
         
-        alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 border-emerald-100 text-emerald-900"; 
+        // 🌟 FIX: Stripped hardcoded colors so alert box stays cohesive
+        alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 transition-all duration-300"; 
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
 
         const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
 
         if (isRainingWMO || rainLive > 0.2) {
-            alertBox.classList.add('border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
             alertTitle.innerText = t.alertRainTitle || "Rain Alert";
             alertMsg.innerText = t.alertRainMsg || "Rain detected. Avoid sensitive field work and ensure proper drainage.";
         } else if (windLive > 20) { 
-            alertBox.classList.add('border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
             alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
             alertMsg.innerText = t.alertWindMsg || "Strong winds detected. Secure equipment and avoid spraying pesticides.";
@@ -911,7 +960,7 @@ function updateLanguage(langCode) {
     if(document.getElementById('location-search')) document.getElementById('location-search').placeholder = t.searchVillagePlaceholder || "Search village...";
     if(document.getElementById('crop-selector')) document.getElementById('crop-selector').placeholder = t.searchCropPlaceholder || "Search crop...";
     
-    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-regular fa-calendar text-white/70"></i> ${t.forecastTitle || "10-Day Forecast"}`;
+    if(document.getElementById('ui-forecast-title')) document.getElementById('ui-forecast-title').innerHTML = `<i class="fa-regular fa-calendar text-gray-500"></i> ${t.forecastTitle || "10-Day Forecast"}`;
 
     if(document.getElementById('ui-doc-title')) document.getElementById('ui-doc-title').innerHTML = `<i class="fa-solid fa-camera text-emerald-400 shrink-0"></i> ${t.docTitle || "AI Plant Doctor"}`;
     if(document.getElementById('ui-doc-badge')) document.getElementById('ui-doc-badge').innerText = t.docBadge || "Computer Vision";
