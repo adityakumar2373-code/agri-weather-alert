@@ -158,16 +158,19 @@ async function fetchLocations(query) {
 
 function displaySearchResults(results) {
     searchResults.innerHTML = ''; 
+    // 🌟 FIX: Apply proper background to the outer dropdown container so it respects glass mode
+    searchResults.className = "absolute w-full mt-2 rounded-xl shadow-xl max-h-56 overflow-y-auto z-50 text-sm glass-panel"; 
+    
     if (results.length === 0) {
-        searchResults.innerHTML = '<div class="p-3 text-sm text-gray-500">No locations found.</div>';
+        searchResults.innerHTML = '<div class="p-3 text-sm text-gray-500 dark:text-gray-400">No locations found.</div>';
         searchResults.classList.remove('hidden');
         return;
     }
     results.forEach(loc => {
         const div = document.createElement('div');
-        // 🌟 FIX: Updated hover state to a neutral black/white tone so it works in both themes
-        div.className = "p-3 hover:bg-black/5 cursor-pointer border-b border-gray-100/20 text-sm font-medium transition-colors flex items-center gap-3";
-        div.innerHTML = `<i class="fa-solid fa-location-dot text-emerald-400"></i> ${loc.name}, ${loc.admin1 || 'India'}`; 
+        // 🌟 FIX: Hover and text color gracefully adapt to dark mode (white text on dark glass)
+        div.className = "p-3 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer border-b border-gray-200/30 text-sm font-medium transition-colors flex items-center gap-3 text-gray-800 dark:text-gray-200";
+        div.innerHTML = `<i class="fa-solid fa-location-dot text-emerald-500"></i> ${loc.name}, ${loc.admin1 || 'India'}`; 
         
         div.onclick = () => {
             searchInput.value = `${loc.name}, ${loc.admin1 || ''}`;
@@ -364,7 +367,7 @@ async function fetchAIAdvisory(temp, rain, wind) {
     const alertIcon = document.getElementById('alert-icon');
     const audioIcon = document.getElementById('audio-icon');
 
-    alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300";
+    alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 border-emerald-100 text-emerald-900"; 
     alertIcon.className = "fa-solid fa-sparkles text-lg text-purple-500 animate-pulse";
     audioIcon.className = "fa-solid fa-volume-high text-purple-500";
     alertTitle.innerText = "AI Agronomist Analyzing...";
@@ -432,9 +435,9 @@ function renderAppleForecastList(dailyData) {
 
         const rowHTML = `
             <div onclick="openDetailsModal(${i})" class="cursor-pointer flex items-center justify-between py-2.5 sm:py-3 border-b border-gray-100/20 last:border-0 hover:bg-black/5 transition-colors rounded-lg px-2 -mx-2">
-                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-gray-800">${dayName}</div>
+                <div class="w-12 sm:w-14 text-sm sm:text-base font-bold">${dayName}</div>
                 <div class="w-8 sm:w-10 text-center text-lg sm:text-xl"><i class="${iconClass}"></i></div>
-                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold text-gray-600">${Math.round(dayMin)}°</div>
+                <div class="w-10 sm:w-12 text-right text-sm sm:text-base font-bold opacity-70">${Math.round(dayMin)}°</div>
                 
                 <div class="flex-1 mx-3 sm:mx-5 h-1.5 bg-black/10 rounded-full relative overflow-hidden shadow-inner">
                     <div class="absolute h-full rounded-full bg-gradient-to-r from-sky-400 via-yellow-400 to-orange-500 shadow-sm" 
@@ -442,7 +445,7 @@ function renderAppleForecastList(dailyData) {
                     </div>
                 </div>
                 
-                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold text-gray-800">${Math.round(dayMax)}°</div>
+                <div class="w-10 sm:w-12 text-left text-sm sm:text-base font-bold">${Math.round(dayMax)}°</div>
             </div>
         `;
         
@@ -576,16 +579,16 @@ function renderWeatherChart(labels, data, feelsData) {
     const toggleActual = document.getElementById('toggle-actual');
     const toggleFeels = document.getElementById('toggle-feels');
 
-    toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
-    toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
+    toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-white/20 shadow-sm transition-colors";
+    toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md opacity-70 hover:opacity-100 transition-colors";
 
     toggleActual.onclick = () => {
         weatherChartInstance.data.datasets[0].data = data;
         weatherChartInstance.data.datasets[0].borderColor = '#fbbf24';
         weatherChartInstance.data.datasets[0].backgroundColor = 'rgba(251, 191, 36, 0.15)';
         weatherChartInstance.update();
-        toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
-        toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
+        toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-white/20 shadow-sm transition-colors";
+        toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md opacity-70 hover:opacity-100 transition-colors";
     };
 
     toggleFeels.onclick = () => {
@@ -593,8 +596,8 @@ function renderWeatherChart(labels, data, feelsData) {
         weatherChartInstance.data.datasets[0].borderColor = '#f87171'; 
         weatherChartInstance.data.datasets[0].backgroundColor = 'rgba(248, 113, 113, 0.15)';
         weatherChartInstance.update();
-        toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
-        toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
+        toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-white/20 shadow-sm transition-colors";
+        toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md opacity-70 hover:opacity-100 transition-colors";
     };
 }
 
@@ -622,9 +625,9 @@ function renderHourlySlider(hourly) {
         
         const itemHTML = `
             <div class="flex flex-col items-center justify-between gap-3 min-w-[60px] sm:min-w-[70px] snap-center">
-                <span class="text-xs sm:text-sm font-bold text-gray-800 whitespace-nowrap">${timeLabel}</span>
+                <span class="text-xs sm:text-sm font-bold whitespace-nowrap">${timeLabel}</span>
                 <i class="${iconClass} text-xl sm:text-2xl drop-shadow-sm"></i>
-                <span class="text-sm sm:text-base font-extrabold text-gray-800">${temp}°</span>
+                <span class="text-sm sm:text-base font-extrabold">${temp}°</span>
             </div>
         `;
         slider.insertAdjacentHTML('beforeend', itemHTML);
@@ -667,8 +670,7 @@ function renderSunAndUV(daily, hourly) {
     const uvDescEl = document.getElementById('uv-index-desc');
     if (uvDescEl) {
         uvDescEl.innerText = uvDesc;
-        // 🌟 FIX: Removed solid background so it transitions correctly
-        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor} bg-black/5`;
+        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor} bg-black/5 dark:bg-white/10 transition-colors`;
     }
 
     let progress = 0;
@@ -702,7 +704,6 @@ function applyAppleWeather(condition, isNight) {
     bgLayer.innerHTML = ''; 
     bgLayer.className = 'weather-bg'; 
 
-    // Synchronize global theme based on night status
     if (isNight) {
         document.body.classList.add('dark-theme');
     } else {
@@ -893,7 +894,6 @@ function updateUI(weather, daily, hourly, minutely) {
     
     applyAppleWeather(activeCondition, isNight);
 
-    // 🌟 FIX: Removed hardcoded background injections to allow clean glass-panel transitions
     const forecastCard = document.getElementById('forecast-section');
     if(forecastCard) {
         forecastCard.className = "glass-panel rounded-[2rem] p-5 sm:p-6 w-full overflow-hidden relative transition-colors duration-1000";
@@ -908,7 +908,6 @@ function updateUI(weather, daily, hourly, minutely) {
         const alertIcon = document.getElementById('alert-icon');
         const audioIcon = document.getElementById('audio-icon');
         
-        // 🌟 FIX: Stripped hardcoded colors so alert box stays cohesive
         alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 transition-all duration-300"; 
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
