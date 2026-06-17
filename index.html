@@ -16,17 +16,15 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
-        /* 🌟 RESTORED: Global Smooth Scrolling */
         html { scroll-behavior: smooth; }
 
-        /* 🌟 UPGRADED: Dynamic body background to support full-page immersion */
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
             transition: background 1s ease;
         }
 
-        /* 🌟 NEW: Apple Premium Glass Widget Component */
+        /* 🌟 UPGRADED: Apple Premium Glass Widget Component */
         .glass-panel {
             background: rgba(255, 255, 255, 0.65);
             backdrop-filter: blur(20px);
@@ -40,38 +38,40 @@
             box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.06);
         }
 
-        /* 🌟 NEW: Dynamic Dark Mode overrides for the glass panels */
+        /* 🌟 FIX: Perfected Dark Mode Overrides for UI Harmony */
         body.dark-theme .glass-panel {
-            background: rgba(30, 41, 59, 0.45) !important;
+            background: rgba(15, 23, 42, 0.45) !important;
             border-color: rgba(255, 255, 255, 0.08) !important;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
-        body.dark-theme .glass-panel * { color: #f1f5f9 !important; }
-        body.dark-theme h1, body.dark-theme h2, body.dark-theme h3, body.dark-theme h4 { color: #ffffff !important; }
+        body.dark-theme .glass-panel *,
+        body.dark-theme .glass-panel h1,
+        body.dark-theme .glass-panel h2,
+        body.dark-theme .glass-panel h3,
+        body.dark-theme .glass-panel p,
+        body.dark-theme .glass-panel span {
+            color: #f8fafc !important;
+        }
         body.dark-theme header { background: rgba(15, 23, 42, 0.8) !important; border-color: rgba(255, 255, 255, 0.05) !important; }
         body.dark-theme header * { color: #ffffff !important; }
         body.dark-theme footer { background: rgba(15, 23, 42, 0.6) !important; border-color: rgba(255, 255, 255, 0.05) !important; }
         body.dark-theme footer * { color: rgba(255, 255, 255, 0.6) !important; }
+        
+        /* 🌟 FIX: Dims the bright green mountains when night mode activates */
+        body.dark-theme #sun-uv-section svg {
+            filter: brightness(0.35) saturate(0.8);
+            opacity: 0.6;
+        }
 
-        /* 🌟 FIX: Removed the memory-hogging hardware acceleration block that caused scroll jitter */
         #search-results::-webkit-scrollbar { width: 6px; }
         #search-results::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 10px; }
-        
-        input[type=tel]::-webkit-inner-spin-button, 
-        input[type=tel]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=tel]::-webkit-inner-spin-button, input[type=tel]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
         .animate-float-slow { animation: float 6s ease-in-out infinite; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
         .bento-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .bento-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08); }
-
-        /* ==========================================
-           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
-           ========================================== */
 
         #weather-content.apple-active { background-color: transparent !important; border-color: transparent !important; }
         #weather-content.apple-active * { color: #ffffff !important; }
@@ -81,7 +81,6 @@
 
         .weather-bg { position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 0 !important; pointer-events: none !important; transition: all 1s ease; }
 
-        /* 🌟 FIX: Removed translateZ and will-change from animations */
         @keyframes apple-rain-fall { 0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; } }
         .apple-drop { position: absolute; width: 1.5px; height: 60px; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); animation: apple-rain-fall linear infinite; }
         @keyframes apple-cloud-float { from { transform: translateX(-150px); } to { transform: translateX(120vw); } }
@@ -93,13 +92,10 @@
         .flash { position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.85); z-index: 1; opacity: 0; pointer-events: none; animation: lightning-strike 7s infinite; }
         @keyframes lightning-strike { 0%, 91%, 93%, 95%, 100% { opacity: 0; } 92% { opacity: 0.9; } 94% { opacity: 0.4; } }
 
-        /* 🌟 NEW: Apple-Style Hourly Slider Scrollbar Hiding */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-        
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
-
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -192,9 +188,7 @@
                                 <i class="fa-solid fa-microphone text-lg"></i>
                             </button>
                         </div>
-                        <button id="ai-search-btn" class="bg-white text-purple-900 hover:bg-purple-50 px-4 sm:px-5 py-3.5 rounded-xl text-sm font-extrabold shadow-md transform active:scale-95 transition-all shrink-0">
-                            Ask
-                        </button>
+                        <button id="ai-search-btn" class="bg-white text-purple-900 hover:bg-purple-50 px-4 sm:px-5 py-3.5 rounded-xl text-sm font-extrabold shadow-md transform active:scale-95 transition-all shrink-0">Ask</button>
                     </div>
 
                     <div class="mt-4 relative z-10 flex flex-wrap gap-2">
@@ -398,13 +392,13 @@
                     <div class="relative z-10 w-full min-w-0">
                         <div class="flex justify-between items-center w-full mb-4 border-b border-gray-100/20 pb-4 gap-2">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="bg-emerald-50 text-emerald-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
+                                <div class="bg-emerald-50/20 text-emerald-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-500/20">
                                     <i id="alert-icon" class="fa-solid fa-triangle-exclamation text-2xl"></i>
                                 </div>
                                 <h3 id="alert-title" class="font-extrabold text-base sm:text-lg text-gray-900 truncate">Agri Alert</h3>
                             </div>
                             
-                            <button id="read-aloud-btn" class="bg-emerald-50 hover:bg-emerald-100 transition-colors text-emerald-700 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
+                            <button id="read-aloud-btn" class="bg-emerald-50/20 hover:bg-emerald-100/30 transition-colors text-emerald-600 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
                                 <i class="fa-solid fa-volume-high" id="audio-icon"></i>
                                 <span id="ui-read-aloud" class="hidden sm:inline">Read Aloud</span>
                             </button>
@@ -416,7 +410,7 @@
 
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
-                    <div class="bento-card bg-gradient-to-b from-blue-50 to-emerald-50 rounded-[2rem] shadow-sm border border-gray-100 hidden w-full overflow-hidden relative" id="sun-uv-section">
+                    <div class="glass-panel rounded-[2rem] shadow-sm hidden w-full overflow-hidden relative" id="sun-uv-section">
                         
                         <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-[2rem]" style="-webkit-transform: translateZ(0); transform: translateZ(0);">
                             <div id="sun-arc-progress" class="absolute top-[20px] sm:top-[30px] left-[50%] w-[320px] sm:w-[440px] h-[320px] sm:h-[440px] rounded-full origin-center transition-transform duration-1000 ease-out" style="transform: translateX(-50%) rotate(0deg);">
@@ -425,10 +419,9 @@
                                 </div>
                             </div>
 
-                            <svg class="absolute bottom-0 left-0 w-full h-[100px] sm:h-[120px] drop-shadow-xl" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <svg class="absolute bottom-0 left-0 w-full h-[100px] sm:h-[120px] drop-shadow-xl transition-all duration-1000" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M-100 100 L150 20 L400 100 Z" fill="#34d399"/>
                                 <path d="M300 100 L650 10 L1100 100 Z" fill="#10b981"/>
-                                
                                 <path d="M-50 100 L100 40 L300 100 Z" fill="#059669"/>
                                 <path d="M200 100 L500 30 L800 100 Z" fill="#047857"/>
                                 <path d="M600 100 L850 50 L1200 100 Z" fill="#059669"/>
@@ -436,7 +429,7 @@
                         </div>
 
                         <div class="relative z-10 flex flex-col h-full p-5 sm:p-6 min-h-[240px] sm:min-h-[280px]">
-                            <h3 id="ui-sun-uv-title" class="text-xs font-bold uppercase tracking-widest text-sky-800 mb-4 flex items-center gap-2">
+                            <h3 id="ui-sun-uv-title" class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
                                 <i class="fa-solid fa-sun text-amber-500"></i> Sun & UV
                             </h3>
 
@@ -460,11 +453,11 @@
                         </div>
                     </div>
 
-                    <div class="bento-card bg-[#162032] rounded-[2rem] p-5 sm:p-6 shadow-lg border border-white/10 hidden w-full overflow-hidden relative transition-colors duration-1000" id="forecast-section">
+                    <div class="glass-panel rounded-[2rem] p-5 sm:p-6 hidden w-full overflow-hidden relative transition-colors duration-1000" id="forecast-section">
                         
-                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-white/20 pb-4">
-                            <h3 id="ui-forecast-title" class="text-xs font-bold text-white/90 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fa-regular fa-calendar text-white/70"></i> 10-Day Forecast
+                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-gray-200/20 pb-4">
+                            <h3 id="ui-forecast-title" class="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fa-regular fa-calendar"></i> 10-Day Forecast
                             </h3>
                         </div>
                         
