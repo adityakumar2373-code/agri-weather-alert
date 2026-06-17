@@ -4,9 +4,8 @@ let currentHourlyData = null;
 let currentMinutelyData = null; 
 let currentCoords = null; 
 let currentVillageName = ""; 
-let weatherChartInstance = null; // 🌟 NEW: Global variable to hold the Chart.js instance
+let weatherChartInstance = null; 
 
-// DOM Elements
 const searchInput = document.getElementById('location-search');
 const searchResults = document.getElementById('search-results');
 const cropSelector = document.getElementById('crop-selector');
@@ -54,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const now = new Date();
     document.getElementById('live-time').innerText = now.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
-    // 🌟 NEW: Bind the Apple Modal Close Buttons
     const closeModalBtn = document.getElementById('close-modal-btn');
     const detailsModalOverlay = document.getElementById('details-modal-overlay');
     if(closeModalBtn) closeModalBtn.addEventListener('click', closeDetailsModal);
@@ -257,7 +255,6 @@ async function fetchWeather(coords) {
     if (!coords) return;
     const [lat, lon] = coords.split(',');
     
-    // 🌟 FIX: Injected apparent_temperature & precipitation into hourly request for Chart.js rendering
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,rain,wind_speed_10m,relative_humidity_2m,weather_code,is_day&minutely_15=temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m,is_day&hourly=temperature_2m,apparent_temperature,precipitation,weather_code,is_day,precipitation_probability,uv_index&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,weather_code,sunrise,sunset,uv_index_max&timezone=auto&forecast_days=10`;
 
     loader.innerHTML = `
@@ -366,7 +363,7 @@ async function fetchAIAdvisory(temp, rain, wind) {
     const alertIcon = document.getElementById('alert-icon');
     const audioIcon = document.getElementById('audio-icon');
 
-    alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 bg-purple-50 border border-purple-200 text-purple-900";
+    alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 border-purple-200 text-purple-900";
     alertIcon.className = "fa-solid fa-sparkles text-lg text-purple-500 animate-pulse";
     audioIcon.className = "fa-solid fa-volume-high text-purple-500";
     alertTitle.innerText = "AI Agronomist Analyzing...";
@@ -432,7 +429,6 @@ function renderAppleForecastList(dailyData) {
         const leftPercent = ((dayMin - globalMin) / globalRange) * 100;
         const widthPercent = ((dayMax - dayMin) / globalRange) * 100;
 
-        // 🌟 FIX: Added `onclick="openDetailsModal(${i})"` and `cursor-pointer` to make rows tap-able
         const rowHTML = `
             <div onclick="openDetailsModal(${i})" class="cursor-pointer flex items-center justify-between py-2.5 sm:py-3 border-b border-white/10 last:border-0 hover:bg-white/10 transition-colors rounded-lg px-2 -mx-2">
                 <div class="w-12 sm:w-14 text-sm sm:text-base font-bold text-white">${dayName}</div>
@@ -453,7 +449,6 @@ function renderAppleForecastList(dailyData) {
     }
 }
 
-// 🌟 NEW: Core function to extract strict 24-hr data for the specific day tapped and display it on Chart.js
 function openDetailsModal(dayIndex) {
     if (!currentDailyData || !currentHourlyData) return;
 
@@ -474,7 +469,6 @@ function openDetailsModal(dayIndex) {
     const startIndex = currentHourlyData.time.findIndex(t => t.startsWith(targetPrefix));
     
     if (startIndex !== -1) {
-        // Slice exactly 24 hours starting from 12:00 AM of that day
         const hours = currentHourlyData.time.slice(startIndex, startIndex + 24).map(t => {
             const d = new Date(t);
             return d.toLocaleTimeString('en-US', {hour: 'numeric', hour12: true});
@@ -490,7 +484,6 @@ function openDetailsModal(dayIndex) {
         const totalRain = precipVols.reduce((a, b) => a + b, 0);
         document.getElementById('modal-rain-total').innerText = `${totalRain.toFixed(1)} mm`;
 
-        // Render the Interactive Chart
         renderWeatherChart(hours, actualTemps, feelsLikeTemps);
     }
 
@@ -506,7 +499,6 @@ function openDetailsModal(dayIndex) {
     }, 10);
 }
 
-// 🌟 NEW: Closes the Apple-Style modal gracefully
 function closeDetailsModal() {
     const detailsModalOverlay = document.getElementById('details-modal-overlay');
     const detailsModal = document.getElementById('details-modal');
@@ -517,7 +509,6 @@ function closeDetailsModal() {
     setTimeout(() => detailsModalOverlay.classList.add('hidden'), 300);
 }
 
-// 🌟 NEW: Draws the Chart.js curves and manages the Actual vs Feels Like toggles
 function renderWeatherChart(labels, data, feelsData) {
     const canvas = document.getElementById('weatherChart');
     if (!canvas) return;
@@ -537,11 +528,11 @@ function renderWeatherChart(labels, data, feelsData) {
             datasets: [{
                 label: 'Temperature',
                 data: data,
-                borderColor: '#fbbf24', // Amber Apple color
+                borderColor: '#fbbf24', 
                 backgroundColor: 'rgba(251, 191, 36, 0.15)',
                 borderWidth: 3,
                 fill: true,
-                tension: 0.4, // This creates the smooth Apple curve
+                tension: 0.4, 
                 pointRadius: 0,
                 pointHoverRadius: 6
             }]
@@ -568,7 +559,7 @@ function renderWeatherChart(labels, data, feelsData) {
                     ticks: { color: '#9ca3af', maxTicksLimit: 6, maxRotation: 0 }
                 },
                 y: {
-                    display: false, // Hide Y axis to keep it clean like Apple Weather
+                    display: false, 
                     min: minVal,
                     max: maxVal
                 }
@@ -581,11 +572,9 @@ function renderWeatherChart(labels, data, feelsData) {
         }
     });
 
-    // Handle toggles
     const toggleActual = document.getElementById('toggle-actual');
     const toggleFeels = document.getElementById('toggle-feels');
 
-    // Reset styles on load
     toggleActual.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
     toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors";
 
@@ -600,7 +589,7 @@ function renderWeatherChart(labels, data, feelsData) {
 
     toggleFeels.onclick = () => {
         weatherChartInstance.data.datasets[0].data = feelsData;
-        weatherChartInstance.data.datasets[0].borderColor = '#f87171'; // Reddish tint for feels like
+        weatherChartInstance.data.datasets[0].borderColor = '#f87171'; 
         weatherChartInstance.data.datasets[0].backgroundColor = 'rgba(248, 113, 113, 0.15)';
         weatherChartInstance.update();
         toggleFeels.className = "flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors";
@@ -641,63 +630,7 @@ function renderHourlySlider(hourly) {
     }
 }
 
-function renderSunAndUV(daily, hourly) {
-    const sunUvSection = document.getElementById('sun-uv-section');
-    if (!sunUvSection || !daily || !daily.sunrise) return;
-
-    const sunriseStr = daily.sunrise[0];
-    const sunsetStr = daily.sunset[0];
-    
-    let uvLive = 0;
-    if (hourly && hourly.uv_index) {
-        const idx = getCurrentHourlyIndex(hourly.time);
-        uvLive = hourly.uv_index[idx] || 0;
-    } else {
-        uvLive = daily.uv_index_max[0] || 0;
-    }
-
-    const sunriseDate = new Date(sunriseStr);
-    const sunsetDate = new Date(sunsetStr);
-    const now = new Date();
-
-    document.getElementById('sunrise-time').innerText = sunriseDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
-    document.getElementById('sunset-time').innerText = sunsetDate.toLocaleTimeString('en-US', {hour: 'numeric', minute:'2-digit'});
-    document.getElementById('uv-index-val').innerText = Math.round(uvLive);
-    
-    const langCode = document.getElementById('language-selector').value;
-    const t = typeof translations !== 'undefined' ? (translations[langCode] || translations['en']) : {};
-
-    let uvDesc = t.uvLow || "LOW";
-    let uvColor = "text-emerald-500 bg-emerald-50";
-    if (uvLive >= 11) { uvDesc = (t.uvExt === "EXT" ? "EXTREME" : t.uvExt) || "EXTREME"; uvColor = "text-purple-600 bg-purple-50"; }
-    else if (uvLive >= 8) { uvDesc = (t.uvVHigh === "V. HIGH" ? "VERY HIGH" : t.uvVHigh) || "VERY HIGH"; uvColor = "text-red-500 bg-red-50"; }
-    else if (uvLive >= 6) { uvDesc = t.uvHigh || "HIGH"; uvColor = "text-orange-500 bg-orange-50"; }
-    else if (uvLive >= 3) { uvDesc = t.uvMod || "MODERATE"; uvColor = "text-yellow-600 bg-yellow-50"; }
-
-    const uvDescEl = document.getElementById('uv-index-desc');
-    if (uvDescEl) {
-        uvDescEl.innerText = uvDesc;
-        uvDescEl.className = `text-[9px] px-2 py-0.5 rounded-full mt-1 uppercase tracking-widest font-bold ${uvColor}`;
-    }
-
-    let progress = 0;
-    if (now > sunsetDate) {
-        progress = 1; 
-    } else if (now > sunriseDate) {
-        const totalDaylightMs = sunsetDate.getTime() - sunriseDate.getTime();
-        const elapsedMs = now.getTime() - sunriseDate.getTime();
-        progress = elapsedMs / totalDaylightMs;
-    }
-    
-    progress = Math.max(0, Math.min(1, progress));
-    const degrees = progress * 180;
-    
-    setTimeout(() => {
-        const arc = document.getElementById('sun-arc-progress');
-        if (arc) arc.style.transform = `translateX(-50%) rotate(${degrees}deg)`;
-    }, 100);
-}
-
+// 🌟 UPGRADED: Added Dynamic Body Background styling to the apple engine
 function applyAppleWeather(condition, isNight) {
     let bgLayer = document.getElementById('apple-weather-bg');
     if(!bgLayer) {
@@ -711,10 +644,21 @@ function applyAppleWeather(condition, isNight) {
     bgLayer.innerHTML = ''; 
     bgLayer.className = 'weather-bg'; 
 
+    // Synchronize global theme based on night status
+    if (isNight) {
+        document.body.classList.add('dark-theme');
+    } else {
+        document.body.classList.remove('dark-theme');
+    }
+
     if (condition === 'rain' || condition === 'storm') {
         bgLayer.style.background = isNight 
             ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' 
             : 'linear-gradient(180deg, #5A6B7C 0%, #2F3C4D 100%)';
+            
+        document.body.style.background = isNight 
+            ? 'linear-gradient(180deg, #0f172a 0%, #020617 100%)' 
+            : 'linear-gradient(180deg, #94a3b8 0%, #64748b 100%)';
             
         for(let i=0; i<60; i++) {
             let drop = document.createElement('div');
@@ -733,6 +677,10 @@ function applyAppleWeather(condition, isNight) {
         bgLayer.style.background = isNight 
             ? 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)' 
             : 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
+            
+        document.body.style.background = isNight 
+            ? 'linear-gradient(180deg, #020617 0%, #0f172a 100%)' 
+            : 'linear-gradient(180deg, #bae6fd 0%, #7dd3fc 100%)';
             
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
@@ -754,6 +702,10 @@ function applyAppleWeather(condition, isNight) {
             ? 'linear-gradient(180deg, #1e293b 0%, #0f172a 100%)' 
             : 'linear-gradient(180deg, #64748b 0%, #334155 100%)'; 
             
+        document.body.style.background = isNight 
+            ? 'linear-gradient(180deg, #0f172a 0%, #020617 100%)' 
+            : 'linear-gradient(180deg, #cbd5e1 0%, #94a3b8 100%)';
+            
         for(let i=0; i<6; i++) {
             let cloud = document.createElement('div');
             cloud.className = 'apple-cloud';
@@ -766,11 +718,13 @@ function applyAppleWeather(condition, isNight) {
         }
     } else if (condition === 'night' || isNight) {
         bgLayer.style.background = 'linear-gradient(180deg, #0f172a 0%, #1e1b4b 100%)';
+        document.body.style.background = 'linear-gradient(180deg, #020617 0%, #0f172a 100%)';
         let moon = document.createElement('div');
         moon.className = 'apple-moon';
         bgLayer.appendChild(moon);
     } else {
         bgLayer.style.background = 'linear-gradient(180deg, #38bdf8 0%, #0284c7 100%)';
+        document.body.style.background = 'linear-gradient(180deg, #e0f2fe 0%, #bae6fd 100%)';
         let sun = document.createElement('div');
         sun.className = 'apple-sun';
         bgLayer.appendChild(sun);
@@ -904,24 +858,23 @@ function updateUI(weather, daily, hourly, minutely) {
         const alertIcon = document.getElementById('alert-icon');
         const audioIcon = document.getElementById('audio-icon');
         
-        alertBox.className = "mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-sm transition-all duration-300"; 
+        alertBox.className = "glass-panel mt-6 p-4 rounded-2xl flex items-start gap-3 shadow-[0_4px_20px_rgb(168,85,247,0.15)] transition-all duration-300 border-emerald-100 text-emerald-900"; 
         audioIcon.className = "fa-solid fa-volume-high text-emerald-500";
         alertBox.classList.remove('hidden');
 
         const isRainingWMO = [51, 53, 55, 61, 63, 65, 80, 81, 82, 95, 96, 99].includes(wmoCode);
 
         if (isRainingWMO || rainLive > 0.2) {
-            alertBox.classList.add('bg-red-50', 'border', 'border-red-100', 'text-red-900');
+            alertBox.classList.add('border-red-100', 'text-red-900');
             alertIcon.className = "fa-solid fa-cloud-showers-heavy text-lg text-red-500";
             alertTitle.innerText = t.alertRainTitle || "Rain Alert";
             alertMsg.innerText = t.alertRainMsg || "Rain detected. Avoid sensitive field work and ensure proper drainage.";
         } else if (windLive > 20) { 
-            alertBox.classList.add('bg-amber-50', 'border', 'border-amber-100', 'text-amber-900');
+            alertBox.classList.add('border-amber-100', 'text-amber-900');
             alertIcon.className = "fa-solid fa-wind text-lg text-amber-500";
             alertTitle.innerText = t.alertWindTitle || "High Wind Warning";
             alertMsg.innerText = t.alertWindMsg || "Strong winds detected. Secure equipment and avoid spraying pesticides.";
         } else {
-            alertBox.classList.add('bg-emerald-50', 'border', 'border-emerald-100', 'text-emerald-900');
             alertIcon.className = "fa-solid fa-check text-lg text-emerald-500";
             alertTitle.innerText = t.alertSafeTitle || "Conditions Safe";
             alertMsg.innerText = t.alertSafeMsg || "Weather is optimal for standard agricultural activities.";
