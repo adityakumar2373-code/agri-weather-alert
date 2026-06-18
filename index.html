@@ -16,90 +16,145 @@
     <link rel="manifest" href="manifest.json">
     
     <style>
+        /* 🌟 RESTORED: Global Smooth Scrolling */
         html { scroll-behavior: smooth; }
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
-            transition: background 1s ease;
+            background-color: #f8fafc;
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
         }
 
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.65);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.4);
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.04);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease, border-color 0.5s ease;
-        }
-        .glass-panel:hover {
-            transform: translateY(-2px); 
-            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.06);
-        }
-
-        body.dark-theme .glass-panel {
-            background: rgba(15, 23, 42, 0.45) !important;
-            border-color: rgba(255, 255, 255, 0.08) !important;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-        }
-        body.dark-theme .glass-panel *,
-        body.dark-theme .glass-panel h1,
-        body.dark-theme .glass-panel h2,
-        body.dark-theme .glass-panel h3,
-        body.dark-theme .glass-panel p,
-        body.dark-theme .glass-panel span {
-            color: #f8fafc !important;
-        }
+        /* 🌟 FIX: Removed the memory-hogging hardware acceleration block that caused scroll jitter */
         
-        /* Ensures dropdown text stays readable when opened in dark mode */
-        body.dark-theme select option {
-            color: #1e293b !important;
-            background: #ffffff !important;
-        }
-
-        body.dark-theme header { background: rgba(15, 23, 42, 0.8) !important; border-color: rgba(255, 255, 255, 0.05) !important; }
-        body.dark-theme header * { color: #ffffff !important; }
-        body.dark-theme footer { background: rgba(15, 23, 42, 0.6) !important; border-color: rgba(255, 255, 255, 0.05) !important; }
-        body.dark-theme footer * { color: rgba(255, 255, 255, 0.6) !important; }
-        
-        body.dark-theme #sun-uv-section svg {
-            filter: brightness(0.35) saturate(0.8);
-            opacity: 0.6;
-        }
-
         #search-results::-webkit-scrollbar { width: 6px; }
         #search-results::-webkit-scrollbar-thumb { background-color: #10b981; border-radius: 10px; }
-        input[type=tel]::-webkit-inner-spin-button, input[type=tel]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         
-        .animate-float-slow { animation: float 6s ease-in-out infinite; }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        input[type=tel]::-webkit-inner-spin-button, 
+        input[type=tel]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        .animate-float-slow { 
+            animation: float 6s ease-in-out infinite; 
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
 
-        .bento-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .bento-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08); }
+        .bento-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .bento-card:hover {
+            transform: translateY(-2px); 
+            box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.08);
+        }
 
-        #weather-content.apple-active { background-color: transparent !important; border-color: transparent !important; }
-        #weather-content.apple-active * { color: #ffffff !important; }
-        #weather-content.apple-active i.text-transparent { background: none !important; -webkit-text-fill-color: #ffffff !important; text-shadow: 0 0 15px rgba(255,255,255,0.4); }
-        #weather-content.apple-active .bg-gray-50 { background-color: rgba(255, 255, 255, 0.15) !important; border-color: rgba(255, 255, 255, 0.2) !important; backdrop-filter: blur(12px) !important; -webkit-backdrop-filter: blur(12px) !important; box-shadow: inset 0 0 10px rgba(255,255,255,0.1); }
-        #weather-content.apple-active #ui-realtime-badge { background-color: rgba(255, 255, 255, 0.2) !important; border: 1px solid rgba(255, 255, 255, 0.3) !important; }
+        /* ==========================================
+           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
+           ========================================== */
 
-        .weather-bg { position: absolute !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; z-index: 0 !important; pointer-events: none !important; transition: all 1s ease; }
+        #weather-content.apple-active {
+            background-color: transparent !important;
+            border-color: transparent !important;
+        }
+        
+        #weather-content.apple-active * {
+            color: #ffffff !important;
+        }
+        
+        #weather-content.apple-active i.text-transparent {
+            background: none !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow: 0 0 15px rgba(255,255,255,0.4);
+        }
 
-        @keyframes apple-rain-fall { 0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; } 10% { opacity: 1; } 80% { opacity: 1; } 100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; } }
-        .apple-drop { position: absolute; width: 1.5px; height: 60px; background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7)); animation: apple-rain-fall linear infinite; }
-        @keyframes apple-cloud-float { from { transform: translateX(-150px); } to { transform: translateX(120vw); } }
-        .apple-cloud { position: absolute; background: rgba(255, 255, 255, 0.4); border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite; }
-        @keyframes pulse-sun { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.2); opacity: 1; } }
-        .apple-sun { position: absolute; top: -30px; right: -30px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%); border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate; }
-        @keyframes pulse-moon { 0% { transform: scale(1); opacity: 0.6; } 100% { transform: scale(1.1); opacity: 1; } }
-        .apple-moon { position: absolute; top: -30px; right: -30px; width: 220px; height: 220px; background: radial-gradient(circle, rgba(165, 180, 252, 0.4) 0%, rgba(165, 180, 252, 0) 70%); border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate; }
-        .flash { position: absolute; inset: 0; background-color: rgba(255, 255, 255, 0.85); z-index: 1; opacity: 0; pointer-events: none; animation: lightning-strike 7s infinite; }
-        @keyframes lightning-strike { 0%, 91%, 93%, 95%, 100% { opacity: 0; } 92% { opacity: 0.9; } 94% { opacity: 0.4; } }
+        #weather-content.apple-active .bg-gray-50 {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            border-color: rgba(255, 255, 255, 0.2) !important;
+            backdrop-filter: blur(12px) !important;
+            -webkit-backdrop-filter: blur(12px) !important;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+        }
 
+        #weather-content.apple-active #ui-realtime-badge {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .weather-bg { 
+            position: absolute !important; 
+            top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; 
+            z-index: 0 !important; 
+            pointer-events: none !important; 
+            transition: all 1s ease;
+        }
+
+        /* 🌟 FIX: Removed translateZ and will-change from animations */
+        @keyframes apple-rain-fall {
+            0% { transform: translate(0, -10vh) rotate(15deg); opacity: 0; }
+            10% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { transform: translate(-15vh, 100vh) rotate(15deg); opacity: 0; }
+        }
+        .apple-drop {
+            position: absolute; width: 1.5px; height: 60px;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.7));
+            animation: apple-rain-fall linear infinite;
+        }
+
+        @keyframes apple-cloud-float {
+            from { transform: translateX(-150px); }
+            to { transform: translateX(120vw); }
+        }
+        .apple-cloud {
+            position: absolute; background: rgba(255, 255, 255, 0.4);
+            border-radius: 200px; filter: blur(18px); animation: apple-cloud-float linear infinite;
+        }
+
+        @keyframes pulse-sun {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.2); opacity: 1; }
+        }
+        .apple-sun {
+            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(253, 224, 71, 0.8) 0%, rgba(253, 224, 71, 0) 70%);
+            border-radius: 50%; animation: pulse-sun 5s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse-moon {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.1); opacity: 1; }
+        }
+        .apple-moon {
+            position: absolute; top: -30px; right: -30px; width: 220px; height: 220px;
+            background: radial-gradient(circle, rgba(165, 180, 252, 0.4) 0%, rgba(165, 180, 252, 0) 70%);
+            border-radius: 50%; animation: pulse-moon 5s ease-in-out infinite alternate;
+        }
+
+        .flash {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.85);
+            z-index: 1; 
+            opacity: 0;
+            pointer-events: none;
+            animation: lightning-strike 7s infinite; 
+        }
+
+        @keyframes lightning-strike {
+            0%, 91%, 93%, 95%, 100% { opacity: 0; }
+            92% { opacity: 0.9; } 
+            94% { opacity: 0.4; } 
+        }
+
+        /* 🌟 NEW: Apple-Style Hourly Slider Scrollbar Hiding */
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
@@ -131,8 +186,7 @@
             </a>
         </nav>
     </div>
-    
-    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-xl border-b border-white/20 shadow-sm w-full transition-colors duration-1000">
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200 shadow-sm w-full">
         <div class="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex justify-between items-center gap-3">
             <div class="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                 <button id="menu-btn" class="text-gray-500 hover:text-emerald-600 focus:outline-none transition-colors shrink-0">
@@ -150,7 +204,7 @@
                 </div>
             </div>
             
-            <select id="language-selector" class="shrink-0 bg-white/20 hover:bg-white/30 backdrop-blur-md text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-white/30 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px] transition-colors">
+            <select id="language-selector" class="shrink-0 bg-gray-50 text-gray-700 font-bold text-[11px] sm:text-xs rounded-lg px-2 py-1.5 sm:px-3 sm:py-2 border border-gray-200 outline-none cursor-pointer shadow-sm text-center w-[95px] sm:w-[140px]">
                 <option value="en">English</option>
                 <option value="hi">हिंदी</option>
                 <option value="bn">বাংলা</option>
@@ -209,16 +263,16 @@
                         </button>
                     </div>
                     
-                    <div id="ai-search-result-box" class="mt-5 hidden bg-white/10 backdrop-blur-md rounded-2xl p-5 shadow-inner relative z-10 w-full border border-white/20">
-                        <div class="flex items-center gap-2 mb-3 border-b border-white/10 pb-2">
-                            <i class="fa-solid fa-sparkles text-purple-400"></i>
-                            <h4 class="text-[10px] font-extrabold text-purple-200 uppercase tracking-widest">AI Analysis</h4>
+                    <div id="ai-search-result-box" class="mt-5 hidden bg-white rounded-2xl p-5 shadow-inner relative z-10 w-full border border-purple-100">
+                        <div class="flex items-center gap-2 mb-3 border-b border-gray-100 pb-2">
+                            <i class="fa-solid fa-sparkles text-purple-500"></i>
+                            <h4 class="text-[10px] font-extrabold text-purple-800 uppercase tracking-widest">AI Analysis</h4>
                         </div>
-                        <p id="ai-search-result" class="text-sm text-white leading-relaxed font-medium w-full break-words whitespace-pre-line"></p>
+                        <p id="ai-search-result" class="text-sm text-gray-800 leading-relaxed font-medium w-full break-words whitespace-pre-line"></p>
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2rem] p-5 sm:p-6 w-full">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full">
                     <h3 id="ui-setup-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-map-location-dot"></i> Setup Parameters
                     </h3>
@@ -227,8 +281,8 @@
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-gray-400">
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
-                        <input type="text" id="location-search" class="w-full bg-white/40 border border-gray-200/50 rounded-xl pl-11 pr-12 p-3.5 outline-none font-semibold text-gray-800 text-sm" placeholder="Search village..." autocomplete="off">
-                        <button id="gps-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-500 bg-emerald-500/10 p-2 rounded-lg hover:bg-emerald-500/20 transition-colors cursor-pointer">
+                        <input type="text" id="location-search" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-12 p-3.5 outline-none font-semibold text-gray-800 text-sm" placeholder="Search village..." autocomplete="off">
+                        <button id="gps-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-500 bg-emerald-50 p-2 rounded-lg hover:bg-emerald-100 transition-colors cursor-pointer">
                             <i class="fa-solid fa-location-crosshairs text-md"></i>
                         </button>
                         <div id="search-results" class="absolute w-full bg-white mt-2 rounded-xl shadow-xl hidden max-h-56 overflow-y-auto border border-gray-100 z-50 text-sm"></div>
@@ -238,7 +292,7 @@
                         <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-emerald-500">
                             <i class="fa-solid fa-seedling"></i>
                         </div>
-                        <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-white/40 border border-gray-200/50 rounded-xl pl-11 pr-14 p-3.5 outline-none font-semibold text-gray-800 text-sm" placeholder="Search crop..." autocomplete="off">
+                        <input type="text" id="crop-selector" list="crop-suggestions" class="w-full bg-gray-50 border border-gray-200 rounded-xl pl-11 pr-14 p-3.5 outline-none font-semibold text-gray-800 text-sm" placeholder="Search crop..." autocomplete="off">
                         <datalist id="crop-suggestions">
                             <option value="Rice (Paddy)"><option value="Wheat"><option value="Cotton"><option value="Sugarcane"><option value="Maize"><option value="Potato"><option value="Soybean"><option value="Tomato"><option value="Onion">
                         </datalist>
@@ -248,14 +302,14 @@
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2rem] p-5 sm:p-6 hidden w-full" id="sms-section">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full" id="sms-section">
                     <div class="flex items-center gap-3 mb-3">
-                        <div class="bg-gray-100/50 p-2 rounded-lg text-gray-600"><i class="fa-solid fa-mobile-screen"></i></div>
+                        <div class="bg-gray-100 p-2 rounded-lg text-gray-600"><i class="fa-solid fa-mobile-screen"></i></div>
                         <h3 id="sms-heading" class="text-base font-extrabold text-gray-800">Automated Alerts</h3>
                     </div>
                     <p id="sms-help" class="text-xs text-gray-500 mb-4 font-medium">Receive this advisory via SMS directly to your phone.</p>
                     
-                    <div class="bg-white/30 rounded-xl p-1.5 flex border border-gray-200/50">
+                    <div class="bg-gray-50 rounded-xl p-1.5 flex border border-gray-200">
                         <div class="flex items-center pl-3 text-gray-500 font-bold text-sm">+91 <span class="mx-2 text-gray-300">|</span></div>
                         <input type="tel" id="farmer-phone" class="w-full bg-transparent outline-none text-sm font-bold text-gray-800 placeholder-gray-400 min-w-0" placeholder="Mobile Number" autocomplete="off">
                         <button id="send-sms-btn" class="bg-gray-800 text-white hover:bg-gray-900 transition-colors rounded-lg w-12 h-10 flex items-center justify-center shrink-0">
@@ -264,12 +318,12 @@
                     </div>
                 </div>
 
-                <div class="glass-panel rounded-[2rem] p-5 sm:p-6 w-full">
+                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full">
                     <h3 id="ui-helplines-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-phone-volume"></i> Important Helplines
                     </h3>
                     <div class="space-y-3">
-                        <a href="tel:1551" class="flex items-center justify-between p-3 bg-emerald-500/10 rounded-xl hover:bg-emerald-500/20 transition-colors cursor-pointer border border-emerald-500/10">
+                        <a href="tel:1551" class="flex items-center justify-between p-3 bg-emerald-50 rounded-xl hover:bg-emerald-100 transition-colors cursor-pointer">
                             <div class="flex items-center gap-3">
                                 <div class="bg-emerald-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-sm">
                                     <i class="fa-solid fa-headset"></i>
@@ -282,7 +336,7 @@
                             <span class="text-gray-300"><i class="fa-solid fa-chevron-right"></i></span>
                         </a>
                         
-                        <a href="tel:108" class="flex items-center justify-between p-3 bg-blue-500/10 rounded-xl hover:bg-blue-500/20 transition-colors cursor-pointer border border-blue-500/10">
+                        <a href="tel:108" class="flex items-center justify-between p-3 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors cursor-pointer">
                             <div class="flex items-center gap-3">
                                 <div class="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center text-xs shadow-sm">
                                     <i class="fa-solid fa-truck-medical"></i>
@@ -334,7 +388,7 @@
 
             <div class="lg:col-span-7 flex flex-col gap-6 w-full min-w-0" id="weather-scroll-target">
                 
-                <div id="loader" class="glass-panel rounded-[2rem] p-12 text-center text-emerald-500 font-bold hidden flex flex-col items-center justify-center min-h-[300px] w-full">
+                <div id="loader" class="bento-card bg-white rounded-[2rem] p-12 text-center text-emerald-500 font-bold hidden shadow-sm border border-gray-100 flex flex-col items-center justify-center min-h-[300px] w-full">
                     <i class="fa-solid fa-circle-notch fa-spin text-4xl mb-4 text-emerald-400"></i>
                     <p class="text-base text-gray-600">AI is analyzing location data...</p>
                 </div>
@@ -387,24 +441,26 @@
                         </div>
                     </div>
 
+                    <!-- 🌟 NEW: Apple-Style Hourly Forecast Slider Container -->
                     <div class="relative z-10 w-full mt-6 pt-5 border-t border-white/20">
                         <div id="hourly-forecast-slider" class="flex items-center gap-5 sm:gap-6 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                            </div>
+                            <!-- JS will dynamically inject 24-hour forecast items here -->
+                        </div>
                     </div>
 
                 </div>
 
-                <div id="alert-box" class="glass-panel rounded-[2rem] p-5 sm:p-6 hidden relative overflow-hidden w-full">
+                <div id="alert-box" class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden relative overflow-hidden w-full">
                     <div class="relative z-10 w-full min-w-0">
-                        <div class="flex justify-between items-center w-full mb-4 border-b border-gray-100/20 pb-4 gap-2">
+                        <div class="flex justify-between items-center w-full mb-4 border-b border-gray-100 pb-4 gap-2">
                             <div class="flex items-center gap-3 min-w-0">
-                                <div class="bg-emerald-500/10 text-emerald-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-500/20">
+                                <div class="bg-emerald-50 text-emerald-500 w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
                                     <i id="alert-icon" class="fa-solid fa-triangle-exclamation text-2xl"></i>
                                 </div>
                                 <h3 id="alert-title" class="font-extrabold text-base sm:text-lg text-gray-900 truncate">Agri Alert</h3>
                             </div>
                             
-                            <button id="read-aloud-btn" class="bg-emerald-500/10 hover:bg-emerald-500/20 transition-colors text-emerald-600 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
+                            <button id="read-aloud-btn" class="bg-emerald-50 hover:bg-emerald-100 transition-colors text-emerald-700 text-xs font-bold py-2.5 px-4 rounded-xl flex items-center gap-2 shadow-sm shrink-0">
                                 <i class="fa-solid fa-volume-high" id="audio-icon"></i>
                                 <span id="ui-read-aloud" class="hidden sm:inline">Read Aloud</span>
                             </button>
@@ -416,26 +472,34 @@
 
                 <div class="grid grid-cols-1 gap-6 w-full min-w-0">
                     
-                    <div class="glass-panel rounded-[2rem] shadow-sm hidden w-full overflow-hidden relative" id="sun-uv-section">
+                    <div class="bento-card bg-gradient-to-b from-blue-50 to-emerald-50 rounded-[2rem] shadow-sm border border-gray-100 hidden w-full overflow-hidden relative" id="sun-uv-section">
                         
+                        <!-- Colorful Edge-to-Edge Graphics Container -->
+                        <!-- 🌟 FIX 2: Added translateZ(0) to force hardware clip on WebKit (Safari/iOS) for curved borders -->
                         <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-[2rem]" style="-webkit-transform: translateZ(0); transform: translateZ(0);">
+                            <!-- Sun Arc spanning the full width -->
                             <div id="sun-arc-progress" class="absolute top-[20px] sm:top-[30px] left-[50%] w-[320px] sm:w-[440px] h-[320px] sm:h-[440px] rounded-full origin-center transition-transform duration-1000 ease-out" style="transform: translateX(-50%) rotate(0deg);">
                                 <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-yellow-300 to-orange-500 rounded-full shadow-[0_0_20px_rgba(250,204,21,0.8)] flex items-center justify-center">
                                     <i class="fa-solid fa-sun text-white text-[10px] sm:text-xs"></i>
                                 </div>
                             </div>
 
-                            <svg class="absolute bottom-0 left-0 w-full h-[100px] sm:h-[120px] drop-shadow-xl transition-all duration-1000" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <!-- Vibrant Mountain Landscape -->
+                            <svg class="absolute bottom-0 left-0 w-full h-[100px] sm:h-[120px] drop-shadow-xl" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- Back Layer -->
                                 <path d="M-100 100 L150 20 L400 100 Z" fill="#34d399"/>
                                 <path d="M300 100 L650 10 L1100 100 Z" fill="#10b981"/>
+                                
+                                <!-- Front Layer -->
                                 <path d="M-50 100 L100 40 L300 100 Z" fill="#059669"/>
                                 <path d="M200 100 L500 30 L800 100 Z" fill="#047857"/>
                                 <path d="M600 100 L850 50 L1200 100 Z" fill="#059669"/>
                             </svg>
                         </div>
 
+                        <!-- Content overlay with Padding -->
                         <div class="relative z-10 flex flex-col h-full p-5 sm:p-6 min-h-[240px] sm:min-h-[280px]">
-                            <h3 id="ui-sun-uv-title" class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4 flex items-center gap-2">
+                            <h3 id="ui-sun-uv-title" class="text-xs font-bold uppercase tracking-widest text-sky-800 mb-4 flex items-center gap-2">
                                 <i class="fa-solid fa-sun text-amber-500"></i> Sun & UV
                             </h3>
 
@@ -459,16 +523,17 @@
                         </div>
                     </div>
 
-                    <div class="glass-panel rounded-[2rem] p-5 sm:p-6 hidden w-full overflow-hidden relative transition-colors duration-1000" id="forecast-section">
+                    <div class="bento-card bg-[#162032] rounded-[2rem] p-5 sm:p-6 shadow-lg border border-white/10 hidden w-full overflow-hidden relative transition-colors duration-1000" id="forecast-section">
                         
-                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-gray-200/20 pb-4">
-                            <h3 id="ui-forecast-title" class="text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center gap-2">
-                                <i class="fa-regular fa-calendar"></i> 10-Day Forecast
+                        <div class="flex items-center justify-between mb-2 relative z-10 border-b border-white/20 pb-4">
+                            <h3 id="ui-forecast-title" class="text-xs font-bold text-white/90 uppercase tracking-widest flex items-center gap-2">
+                                <i class="fa-regular fa-calendar text-white/70"></i> 10-Day Forecast
                             </h3>
                         </div>
                         
                         <div id="forecast-list" class="relative w-full flex flex-col z-10">
-                            </div>
+                            <!-- JS will inject the 10-day Apple-style rows here -->
+                        </div>
                     </div>
 
                 </div>
@@ -476,10 +541,10 @@
         </div>
     </main>
 
-    <footer class="w-full py-6 mt-auto border-t border-white/20 bg-white/60 backdrop-blur-xl transition-colors duration-1000">
+    <footer class="w-full py-6 mt-auto border-t border-gray-200 bg-white">
         <div class="max-w-7xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
             <p class="text-xs text-gray-500 font-medium truncate w-full sm:w-auto">© 2026 Kisan Alert. All Rights Reserved.</p>
-            <p class="text-xs text-gray-600 font-medium bg-white/50 backdrop-blur-md px-4 py-2 rounded-full border border-white/40 shrink-0 max-w-full truncate shadow-sm transition-colors">
+            <p class="text-xs text-gray-500 font-medium bg-gray-50 px-4 py-2 rounded-full border border-gray-100 shrink-0 max-w-full truncate">
                 Designed & Developed by <span class="font-bold text-emerald-600">Aditya</span> & <span class="font-bold text-emerald-600">Nistha</span>
             </p>
         </div>
@@ -495,15 +560,16 @@
         </div>
     </div>
 
+    <!-- 🌟 NEW: Apple Weather Style Details Modal -->
     <div id="details-modal-overlay" class="fixed inset-0 bg-black/60 z-[80] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300 flex items-end sm:items-center justify-center sm:p-4">
-        <div id="details-modal" class="glass-panel w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl transform translate-y-full transition-transform duration-300 flex flex-col max-h-[90vh] sm:max-h-[85vh]">
+        <div id="details-modal" class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl transform translate-y-full transition-transform duration-300 flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-gray-700/50">
             
-            <div class="flex items-center justify-between p-5 border-b border-white/10 shrink-0">
+            <div class="flex items-center justify-between p-5 border-b border-gray-700/50 shrink-0">
                 <div class="w-8"></div>
-                <h3 class="font-bold flex items-center gap-2 text-sm tracking-wide">
+                <h3 class="text-white font-bold flex items-center gap-2 text-sm tracking-wide">
                     <i class="fa-solid fa-cloud"></i> Conditions
                 </h3>
-                <button id="close-modal-btn" class="bg-gray-500/20 hover:bg-gray-500/30 text-gray-400 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                <button id="close-modal-btn" class="bg-gray-700/50 hover:bg-gray-600 text-gray-300 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -512,39 +578,40 @@
                 
                 <div class="mb-6 flex justify-between items-start">
                     <div>
-                        <h2 id="modal-date-title" class="font-semibold text-sm opacity-80 mb-1">--</h2>
+                        <h2 id="modal-date-title" class="text-white font-semibold text-sm opacity-80 mb-1">--</h2>
                         <div class="flex items-end gap-3 mb-1">
-                            <span id="modal-temp-display" class="text-5xl font-light tracking-tight">--°</span>
+                            <span id="modal-temp-display" class="text-5xl font-light text-white tracking-tight">--°</span>
                             <i id="modal-icon-display" class="fa-solid fa-cloud-sun text-2xl text-gray-400 mb-2"></i>
                         </div>
-                        <p id="modal-summary" class="text-sm font-medium opacity-70">H:--° L:--°</p>
+                        <p id="modal-summary" class="text-sm text-gray-400 font-medium">H:--° L:--°</p>
                     </div>
                 </div>
 
-                <div class="bg-gray-500/10 rounded-2xl p-4 border border-white/10 mb-6">
+                <div class="bg-black/20 rounded-2xl p-4 border border-gray-700/50 mb-6">
                     <div class="h-48 w-full relative">
+                        <!-- Chart.js Canvas -->
                         <canvas id="weatherChart"></canvas>
                     </div>
                     
-                    <div class="flex bg-gray-500/20 rounded-lg p-1 mt-4">
-                        <button id="toggle-actual" class="flex-1 text-xs font-semibold py-2 rounded-md bg-white/20 shadow-sm transition-colors">Actual</button>
-                        <button id="toggle-feels" class="flex-1 text-xs font-semibold py-2 rounded-md opacity-70 hover:opacity-100 transition-colors">Feels Like</button>
+                    <div class="flex bg-black/40 rounded-lg p-1 mt-4">
+                        <button id="toggle-actual" class="flex-1 text-xs font-semibold py-2 rounded-md bg-gray-600/60 text-white shadow-sm transition-colors">Actual</button>
+                        <button id="toggle-feels" class="flex-1 text-xs font-semibold py-2 rounded-md text-gray-400 hover:text-white transition-colors">Feels Like</button>
                     </div>
                 </div>
 
                 <div class="space-y-4">
-                    <div class="bg-gray-500/10 rounded-2xl p-4 border border-white/10">
-                        <h4 class="text-xs font-bold uppercase tracking-wider mb-3 opacity-60">Chance of Precipitation</h4>
-                        <p id="modal-pop" class="text-xl font-medium">--%</p>
+                    <div class="bg-black/20 rounded-2xl p-4 border border-gray-700/50">
+                        <h4 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3">Chance of Precipitation</h4>
+                        <p id="modal-pop" class="text-white text-xl font-medium">--%</p>
                     </div>
                     
-                    <div class="bg-gray-500/10 rounded-2xl p-4 border border-white/10">
-                        <h4 class="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 opacity-60">
+                    <div class="bg-black/20 rounded-2xl p-4 border border-gray-700/50">
+                        <h4 class="text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
                             <i class="fa-solid fa-droplet"></i> Precipitation Totals
                         </h4>
-                        <div class="flex justify-between items-center border-b border-white/10 pb-3 mb-3">
-                            <span class="text-sm font-medium opacity-80">Rainfall Amount</span>
-                            <span id="modal-rain-total" class="font-semibold">-- mm</span>
+                        <div class="flex justify-between items-center border-b border-gray-700/50 pb-3 mb-3">
+                            <span class="text-sm text-gray-300 font-medium">Rainfall Amount</span>
+                            <span id="modal-rain-total" class="text-white font-semibold">-- mm</span>
                         </div>
                     </div>
                 </div>
