@@ -51,8 +51,8 @@
         }
 
         /* ==========================================
-           🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
-           ========================================== */
+            🍎 APPLE WEATHER CSS (STRICTLY CONSTRAINED)
+            ========================================== */
 
         #weather-content.apple-active {
             background-color: transparent !important;
@@ -302,22 +302,6 @@
                     </div>
                 </div>
 
-                <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 hidden w-full" id="sms-section">
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="bg-gray-100 p-2 rounded-lg text-gray-600"><i class="fa-solid fa-mobile-screen"></i></div>
-                        <h3 id="sms-heading" class="text-base font-extrabold text-gray-800">Automated Alerts</h3>
-                    </div>
-                    <p id="sms-help" class="text-xs text-gray-500 mb-4 font-medium">Receive this advisory via SMS directly to your phone.</p>
-                    
-                    <div class="bg-gray-50 rounded-xl p-1.5 flex border border-gray-200">
-                        <div class="flex items-center pl-3 text-gray-500 font-bold text-sm">+91 <span class="mx-2 text-gray-300">|</span></div>
-                        <input type="tel" id="farmer-phone" class="w-full bg-transparent outline-none text-sm font-bold text-gray-800 placeholder-gray-400 min-w-0" placeholder="Mobile Number" autocomplete="off">
-                        <button id="send-sms-btn" class="bg-gray-800 text-white hover:bg-gray-900 transition-colors rounded-lg w-12 h-10 flex items-center justify-center shrink-0">
-                            <i class="fa-solid fa-paper-plane"></i>
-                        </button>
-                    </div>
-                </div>
-
                 <div class="bento-card bg-white rounded-[2rem] p-5 sm:p-6 shadow-sm border border-gray-100 w-full">
                     <h3 id="ui-helplines-title" class="text-xs font-bold uppercase tracking-widest text-gray-400 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-phone-volume"></i> Important Helplines
@@ -441,11 +425,9 @@
                         </div>
                     </div>
 
-                    <!-- 🌟 NEW: Apple-Style Hourly Forecast Slider Container -->
                     <div class="relative z-10 w-full mt-6 pt-5 border-t border-white/20">
                         <div id="hourly-forecast-slider" class="flex items-center gap-5 sm:gap-6 overflow-x-auto pb-2 scrollbar-hide snap-x">
-                            <!-- JS will dynamically inject 24-hour forecast items here -->
-                        </div>
+                            </div>
                     </div>
 
                 </div>
@@ -474,30 +456,23 @@
                     
                     <div class="bento-card bg-gradient-to-b from-blue-50 to-emerald-50 rounded-[2rem] shadow-sm border border-gray-100 hidden w-full overflow-hidden relative" id="sun-uv-section">
                         
-                        <!-- Colorful Edge-to-Edge Graphics Container -->
-                        <!-- 🌟 FIX 2: Added translateZ(0) to force hardware clip on WebKit (Safari/iOS) for curved borders -->
                         <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-[2rem]" style="-webkit-transform: translateZ(0); transform: translateZ(0);">
-                            <!-- Sun Arc spanning the full width -->
                             <div id="sun-arc-progress" class="absolute top-[20px] sm:top-[30px] left-[50%] w-[320px] sm:w-[440px] h-[320px] sm:h-[440px] rounded-full origin-center transition-transform duration-1000 ease-out" style="transform: translateX(-50%) rotate(0deg);">
                                 <div class="absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-yellow-300 to-orange-500 rounded-full shadow-[0_0_20px_rgba(250,204,21,0.8)] flex items-center justify-center">
                                     <i class="fa-solid fa-sun text-white text-[10px] sm:text-xs"></i>
                                 </div>
                             </div>
 
-                            <!-- Vibrant Mountain Landscape -->
                             <svg class="absolute bottom-0 left-0 w-full h-[100px] sm:h-[120px] drop-shadow-xl" viewBox="0 0 1000 100" preserveAspectRatio="none" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <!-- Back Layer -->
                                 <path d="M-100 100 L150 20 L400 100 Z" fill="#34d399"/>
                                 <path d="M300 100 L650 10 L1100 100 Z" fill="#10b981"/>
                                 
-                                <!-- Front Layer -->
                                 <path d="M-50 100 L100 40 L300 100 Z" fill="#059669"/>
                                 <path d="M200 100 L500 30 L800 100 Z" fill="#047857"/>
                                 <path d="M600 100 L850 50 L1200 100 Z" fill="#059669"/>
                             </svg>
                         </div>
 
-                        <!-- Content overlay with Padding -->
                         <div class="relative z-10 flex flex-col h-full p-5 sm:p-6 min-h-[240px] sm:min-h-[280px]">
                             <h3 id="ui-sun-uv-title" class="text-xs font-bold uppercase tracking-widest text-sky-800 mb-4 flex items-center gap-2">
                                 <i class="fa-solid fa-sun text-amber-500"></i> Sun & UV
@@ -532,8 +507,7 @@
                         </div>
                         
                         <div id="forecast-list" class="relative w-full flex flex-col z-10">
-                            <!-- JS will inject the 10-day Apple-style rows here -->
-                        </div>
+                            </div>
                     </div>
 
                 </div>
@@ -550,17 +524,6 @@
         </div>
     </footer>
 
-    <div id="sms-toast" class="fixed bottom-6 right-6 transform translate-y-24 opacity-0 transition-all duration-500 bg-gray-900 text-white px-5 py-4 rounded-2xl shadow-2xl flex items-center gap-4 z-50 border border-gray-800">
-        <div class="bg-emerald-500/20 w-10 h-10 rounded-full flex items-center justify-center border border-emerald-500/30 shrink-0">
-            <i class="fa-solid fa-check text-emerald-400 text-lg"></i>
-        </div>
-        <div class="min-w-0">
-            <p class="font-extrabold text-sm tracking-wide text-white truncate">Alert Sent</p>
-            <p id="toast-number" class="text-xs text-gray-400 font-medium truncate"></p>
-        </div>
-    </div>
-
-    <!-- 🌟 NEW: Apple Weather Style Details Modal -->
     <div id="details-modal-overlay" class="fixed inset-0 bg-black/60 z-[80] hidden backdrop-blur-sm transition-opacity opacity-0 duration-300 flex items-end sm:items-center justify-center sm:p-4">
         <div id="details-modal" class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl transform translate-y-full transition-transform duration-300 flex flex-col max-h-[90vh] sm:max-h-[85vh] border border-gray-700/50">
             
@@ -589,7 +552,6 @@
 
                 <div class="bg-black/20 rounded-2xl p-4 border border-gray-700/50 mb-6">
                     <div class="h-48 w-full relative">
-                        <!-- Chart.js Canvas -->
                         <canvas id="weatherChart"></canvas>
                     </div>
                     
