@@ -38,8 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('weather-content').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden'); 
     
-    const smsSec = document.getElementById('sms-section');
-    if(smsSec) smsSec.classList.add('hidden'); 
     const sunUvSec = document.getElementById('sun-uv-section');
     if(sunUvSec) sunUvSec.classList.add('hidden');
     
@@ -188,52 +186,6 @@ document.addEventListener('click', (e) => {
     }
 });
 
-const sendBtn = document.getElementById('send-sms-btn');
-const phoneInput = document.getElementById('farmer-phone');
-const toast = document.getElementById('sms-toast');
-const toastNumber = document.getElementById('toast-number');
-
-sendBtn.addEventListener('click', async () => {
-    const phone = phoneInput.value.trim();
-    if(phone.length !== 10 || isNaN(phone)) {
-        alert("Please enter a valid 10-digit mobile number.");
-        return;
-    }
-
-    const currentAlertMsg = document.getElementById('alert-message').innerText;
-    const finalMessage = `Kisan Alert (${currentVillageName}): ${currentAlertMsg}`;
-
-    sendBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; 
-    
-    try {
-        const response = await fetch('https://weather-backend-mocha.vercel.app/send-sms', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: phone, message: finalMessage })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-            sendBtn.innerHTML = '<i class="fa-solid fa-check"></i>'; 
-            phoneInput.value = ''; 
-            toastNumber.innerText = `Sent to +91 ${phone}`;
-            toast.classList.remove('translate-y-24', 'opacity-0');
-            setTimeout(() => { 
-                toast.classList.add('translate-y-24', 'opacity-0'); 
-                sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-            }, 3000);
-        } else {
-            alert("Server error: " + result.error);
-            sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-        }
-    } catch (error) {
-        console.error(error);
-        alert("Could not connect! Is your backend terminal running?");
-        sendBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i>';
-    }
-});
-
 function getCurrentHourlyIndex(hourlyTimeArray) {
     if (!hourlyTimeArray || hourlyTimeArray.length === 0) return 0;
     const now = new Date();
@@ -276,8 +228,6 @@ async function fetchWeather(coords) {
     document.getElementById('alert-box').classList.add('hidden');
     document.getElementById('forecast-section').classList.add('hidden');
     
-    const smsSec = document.getElementById('sms-section');
-    if(smsSec) smsSec.classList.add('hidden'); 
     const sunUvSec = document.getElementById('sun-uv-section');
     if(sunUvSec) sunUvSec.classList.add('hidden');
 
@@ -330,7 +280,7 @@ function triggerAIIfReady() {
         fetchAIAdvisory(t, r, w);
 
         if (window.innerWidth >= 1024) { 
-            const leftColumn = document.getElementById('sms-section')?.parentElement;
+            const leftColumn = document.getElementById('doctor-section')?.parentElement;
             const forecastSection = document.getElementById('forecast-section');
             const doctorSection = document.getElementById('doctor-section');
             
@@ -783,8 +733,6 @@ function updateUI(weather, daily, hourly, minutely) {
     weatherCard.classList.remove('hidden');
     document.getElementById('forecast-section').classList.remove('hidden');
     
-    const smsSec = document.getElementById('sms-section');
-    if(smsSec) smsSec.classList.remove('hidden'); 
     const sunUvSec = document.getElementById('sun-uv-section');
     if(sunUvSec) sunUvSec.classList.remove('hidden');
     
@@ -966,9 +914,6 @@ function updateLanguage(langCode) {
     if(document.getElementById('ui-doc-btn')) document.getElementById('ui-doc-btn').innerHTML = `<i class="fa-solid fa-camera text-lg"></i> ${t.docBtn || "Scan Leaf Now"}`;
     if(document.getElementById('ui-realtime-badge')) document.getElementById('ui-realtime-badge').innerText = t.realtimeBadge || "Real-Time";
     if(document.getElementById('ui-read-aloud')) document.getElementById('ui-read-aloud').innerText = t.readAloudBtn || "Read Aloud";
-
-    document.getElementById('sms-heading').innerText = t.smsHeading || "Automated Alerts";
-    document.getElementById('sms-help').innerText = t.smsHelp || "Receive this advisory via SMS directly to your phone.";
 
     if(document.getElementById('ui-helplines-title')) document.getElementById('ui-helplines-title').innerHTML = `<i class="fa-solid fa-phone-volume"></i> ${t.helplinesTitle || "Important Helplines"}`;
     if(document.getElementById('ui-helpline-1-name')) document.getElementById('ui-helpline-1-name').innerText = t.kisanCallCenter || "Kisan Call Center";
