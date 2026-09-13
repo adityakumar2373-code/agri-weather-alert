@@ -1,3 +1,16 @@
+// 🌟 SPLASH SCREEN LOGIC
+window.addEventListener('load', () => {
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
+        // Wait 1.8 seconds so the user can enjoy the animation
+        setTimeout(() => {
+            splash.classList.add('opacity-0', '-translate-y-full');
+            // Completely remove it from the code after it fades out so it doesn't block clicks
+            setTimeout(() => splash.remove(), 700);
+        }, 1800);
+    }
+});
+
 let currentWeatherData = null;
 let currentDailyData = null; 
 let currentHourlyData = null; 
