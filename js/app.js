@@ -7,7 +7,7 @@ window.addEventListener('load', () => {
             splash.classList.add('opacity-0', '-translate-y-full');
             // Completely remove it from the code after it fades out so it doesn't block clicks
             setTimeout(() => splash.remove(), 700);
-        }, 1800);
+        }, 3000);
     }
 });
 
