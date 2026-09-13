@@ -155,29 +155,72 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.2); border-radius: 10px; }
 
+        /* 🌟 SUNRISE SPLASH SCREEN CSS */
+        @keyframes sunrise-sky {
+            0% { background-position: 50% 100%; }
+            100% { background-position: 50% 0%; }
+        }
+        @keyframes sun-rise {
+            0% { transform: translateY(200px) scale(0.8); opacity: 0; }
+            100% { transform: translateY(20px) scale(1.5); opacity: 1; }
+        }
+        @keyframes leaf-spring {
+            0% { transform: scale(0) rotate(-45deg); opacity: 0; }
+            60% { transform: scale(1.15) rotate(15deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+        @keyframes text-float-up {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .sunrise-bg {
+            background: linear-gradient(180deg, #10b981 0%, #34d399 25%, #fcd34d 50%, #1e293b 75%, #0f172a 100%);
+            background-size: 100% 400%;
+            background-position: 50% 100%;
+            animation: sunrise-sky 2.5s ease-out forwards;
+        }
+        .glowing-sun {
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(253,224,71,1) 0%, rgba(245,158,11,0.8) 40%, rgba(255,255,255,0) 70%);
+            position: absolute;
+            bottom: 10%;
+            border-radius: 50%;
+            animation: sun-rise 2.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-gray-800 overflow-x-hidden">
 
-    <!-- 🌟 KISAN ALERT PRO SPLASH SCREEN -->
-    <div id="splash-screen" class="fixed inset-0 z-[100] bg-gray-900 flex flex-col items-center justify-center transition-all duration-700 ease-in-out transform origin-top">
-        <div class="relative flex justify-center items-center mb-6">
-            <!-- Pulsing Rings -->
-            <div class="absolute animate-ping rounded-full h-32 w-32 border-4 border-emerald-500 opacity-20" style="animation-duration: 2s;"></div>
-            <div class="absolute animate-ping rounded-full h-24 w-24 border-4 border-emerald-400 opacity-40" style="animation-duration: 2s; animation-delay: 0.3s;"></div>
+    <!-- 🌟 KISAN ALERT PRO SUNRISE SPLASH SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center overflow-hidden m-0 sunrise-bg transition-opacity duration-1000 ease-in-out">
+        
+        <!-- The Rising Sun -->
+        <div class="glowing-sun blur-sm"></div>
+
+        <!-- Central Logo Container -->
+        <div class="relative z-10 flex flex-col items-center">
             
-            <!-- Center Logo -->
-            <div class="bg-gradient-to-br from-emerald-400 to-teal-500 w-20 h-20 rounded-2xl flex items-center justify-center shadow-2xl z-10 shadow-emerald-900/50">
-                <i class="fa-solid fa-leaf text-white text-4xl animate-pulse"></i>
+            <!-- Frosted Glass Leaf Emblem -->
+            <div class="w-28 h-28 bg-white/20 backdrop-blur-md border border-white/40 shadow-[0_0_40px_rgba(255,255,255,0.4)] rounded-full flex items-center justify-center mb-6 opacity-0 animate-[leaf-spring_1.2s_cubic-bezier(0.34,1.56,0.64,1)_forwards_0.5s]">
+                <i class="fa-solid fa-leaf text-6xl text-white drop-shadow-md"></i>
             </div>
-        </div>
-        <h1 class="text-3xl sm:text-4xl font-black text-white tracking-tight drop-shadow-md">
-            Kisan Alert <span class="text-emerald-500">Pro</span>
-        </h1>
-        <div class="mt-4 flex items-center gap-2">
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-bounce"></div>
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+
+            <!-- Typography -->
+            <h1 class="text-4xl sm:text-5xl font-black text-white tracking-tight drop-shadow-lg opacity-0 animate-[text-float-up_1s_ease-out_forwards_1.2s]">
+                Kisan Alert <span class="text-yellow-300">Pro</span>
+            </h1>
+            
+            <!-- Loading Indicator -->
+            <div class="mt-4 flex items-center gap-2 opacity-0 animate-[text-float-up_1s_ease-out_forwards_1.6s]">
+                <span class="text-white/90 font-bold tracking-widest uppercase text-xs">Syncing Weather</span>
+                <div class="flex gap-1">
+                    <div class="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-bounce"></div>
+                    <div class="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-bounce" style="animation-delay: 0.1s;"></div>
+                    <div class="w-1.5 h-1.5 bg-yellow-300 rounded-full animate-bounce" style="animation-delay: 0.2s;"></div>
+                </div>
+            </div>
         </div>
     </div>
 
