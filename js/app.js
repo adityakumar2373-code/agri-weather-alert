@@ -8,7 +8,7 @@ window.addEventListener('load', () => {
             splash.style.pointerEvents = 'none'; // Prevent clicks while fading
             // Completely remove from code after the fade finishes
             setTimeout(() => splash.remove(), 1000);
-        }, 2500); 
+        }, 3000); 
     }
 });
 
